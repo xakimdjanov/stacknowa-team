@@ -1,0 +1,46 @@
+# Dependency directories (ALL subprojects)
+node_modules/
+*/node_modules/
+*/*/node_modules/
+
+# Environment variables & secrets
+.env
+.env.*
+*.env
+*.env.*
+!.env.example
+
+# Production builds & dist
+dist/
+*/dist/
+build/
+*/build/
+out/
+.next/
+.nuxt/
+
+# Logs & Debugging
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Uploads & temporary media
+uploads/
+*/uploads/
+public/uploads/
+storage/
+
+# Editor & OS files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Test coverage
+coverage/
+.nyc_output/
