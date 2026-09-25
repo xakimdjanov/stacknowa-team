@@ -1,4 +1,4 @@
-const { Group, GroupMember, User, Assignment, Submission, Evaluation } = require("../models");
+const { Group, GroupMember, User, Assignment, Submission } = require("../models");
 const { nanoid } = require("nanoid");
 const QRCode = require("qrcode");
 const Joi = require("joi");
@@ -115,20 +115,7 @@ exports.getGroupDetail = async (req, res) => {
           as: "members",
           include: [{ model: User, as: "student", attributes: ["id", "name", "email"] }],
         },
-        { 
-          model: Assignment, 
-          as: "assignments",
-          include: [
-            {
-              model: Submission,
-              as: "submissions",
-              include: [
-                { model: User, as: "student", attributes: ["id", "name", "email"] },
-                { model: Evaluation, as: "evaluation" },
-              ],
-            },
-          ],
-        },
+        { model: Assignment, as: "assignments" },
       ],
     });
 
@@ -140,105 +127,11 @@ exports.getGroupDetail = async (req, res) => {
     const joinUrl = `${req.protocol}://${req.get("host")}/join/${group.join_token}`;
     const qrCodeDataUrl = await QRCode.toDataURL(joinUrl);
 
-    // Guruhning batafsil statistikasini hisoblash
-    const totalStudents = group.members?.length || 0;
-    const assignments = group.assignments || [];
-    const totalAssignments = assignments.length;
-
-    // Barcha topshiriqlar bo'yicha submissionlar
-    let allSubmissions = [];
-    assignments.forEach((a) => {
-      if (a.submissions) {
-        allSubmissions.push(...a.submissions);
-      }
-    });
-
-    const totalSubmissions = allSubmissions.length;
-    const gradedSubmissions = allSubmissions.filter((s) => s.status === "graded" && s.evaluation);
-    const returnedSubmissions = allSubmissions.filter((s) => s.status === "returned");
-    const pendingSubmissions = allSubmissions.filter((s) => s.status === "submitted" || s.status === "evaluating");
-
-    // Ballar statistikasi
-    const scores = gradedSubmissions.map((s) => Number(s.evaluation.total_score || 0));
-    const averageScore = scores.length > 0 ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) : 0;
-    const maxScore = scores.length > 0 ? Math.max(...scores) : 0;
-    const minScore = scores.length > 0 ? Math.min(...scores) : 0;
-
-    // Baholar taqsimoti (Grade distribution)
-    const gradeDistribution = {
-      excellent: scores.filter((sc) => sc >= 86).length, // A'lo (86-100)
-      good: scores.filter((sc) => sc >= 71 && sc < 86).length, // Yaxshi (71-85)
-      satisfactory: scores.filter((sc) => sc >= 55 && sc < 71).length, // Qoniqarli (55-70)
-      unsatisfactory: scores.filter((sc) => sc < 55).length, // Qoniqarsiz (<55)
-    };
-
-    // AI tahlil ko'rsatkichlari (O'rtacha o'xshashlik va AI yozuv)
-    const similarityScores = gradedSubmissions
-      .map((s) => s.evaluation.similarity_score)
-      .filter((v) => v !== null && v !== undefined);
-    const avgSimilarity = similarityScores.length > 0
-      ? (similarityScores.reduce((a, b) => a + Number(b), 0) / similarityScores.length).toFixed(1)
-      : 0;
-
-    const aiWritingProbs = gradedSubmissions
-      .map((s) => s.evaluation.ai_writing_probability)
-      .filter((v) => v !== null && v !== undefined);
-    const avgAiWriting = aiWritingProbs.length > 0
-      ? Math.round((aiWritingProbs.reduce((a, b) => a + Number(b), 0) / aiWritingProbs.length) * 100)
-      : 0;
-
-    // Topshirish foizi (Expected vs Actual)
-    const expectedTotalSubmissions = totalStudents * totalAssignments;
-    const submissionRate = expectedTotalSubmissions > 0
-      ? Math.round((totalSubmissions / expectedTotalSubmissions) * 100)
-      : 0;
-
-    // Har bir talaba bo'yicha tahlil (Student matrix)
-    const studentStats = (group.members || []).map((m) => {
-      const student = m.student;
-      const studentSubs = allSubmissions.filter((s) => s.student_id === student?.id);
-      const studentScores = studentSubs
-        .filter((s) => s.evaluation)
-        .map((s) => Number(s.evaluation.total_score || 0));
-      const studentAvg = studentScores.length > 0
-        ? (studentScores.reduce((a, b) => a + b, 0) / studentScores.length).toFixed(1)
-        : null;
-
-      return {
-        id: student?.id,
-        name: student?.name,
-        email: student?.email,
-        joined_at: m.created_at,
-        submissions_count: studentSubs.length,
-        submissions: studentSubs,
-        average_score: studentAvg ? Number(studentAvg) : null,
-        has_returned: studentSubs.some((s) => s.status === "returned"),
-      };
-    });
-
-    const statistics = {
-      total_students: totalStudents,
-      total_assignments: totalAssignments,
-      total_submissions: totalSubmissions,
-      graded_count: gradedSubmissions.length,
-      returned_count: returnedSubmissions.length,
-      pending_count: pendingSubmissions.length,
-      submission_rate: submissionRate,
-      average_score: Number(averageScore),
-      max_score: maxScore,
-      min_score: minScore,
-      grade_distribution: gradeDistribution,
-      avg_similarity: Number(avgSimilarity),
-      avg_ai_writing: avgAiWriting,
-      student_stats: studentStats,
-    };
-
     return res.status(200).json({
       success: true,
       group,
       join_url: joinUrl,
       qr_code: qrCodeDataUrl,
-      statistics,
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -251,7 +144,7 @@ exports.getGroupDetail = async (req, res) => {
 exports.joinGroup = async (req, res) => {
   try {
     const { token } = req.params;
-    const { access_code } = req.body || {};
+    const { access_code } = req.body;
 
     const group = await Group.findOne({ where: { join_token: token, status: "active" } });
     if (!group) {
@@ -270,14 +163,10 @@ exports.joinGroup = async (req, res) => {
 
     // Agar o'qituvchi guruhga kirish paroli (access_code) o'rnatgan bo'lsa
     if (group.access_code && group.access_code.trim() !== "") {
-      const providedCode = access_code ? String(access_code).trim() : "";
-      if (group.access_code.trim() !== providedCode) {
+      if (group.access_code !== access_code) {
         return res.status(400).json({
           success: false,
-          requires_access_code: true,
-          message: providedCode 
-            ? "Guruhga kirish paroli (access_code) noto'g'ri" 
-            : "Ushbu guruhga kirish uchun maxfiy parol (access_code) talab qilinadi. Iltimos, o'qituvchi bergan parolni kiriting.",
+          message: "Guruhga kirish paroli (access_code) noto'g'ri",
         });
       }
     }
