@@ -43,31 +43,10 @@ class AIService {
   }
 
   async evaluateWithGemini({ content, title, rubric, templateFileUrl, attachedImages, isPro }) {
-    // Contentni tahlil uchun tozalash va tayyorlash
-    let parsedContent = content;
-    if (typeof content === 'string') {
-      try {
-        parsedContent = JSON.parse(content);
-      } catch {
-        parsedContent = { text: content };
-      }
-    }
-
-    let cleanTextSummary = "";
-    if (parsedContent?.pages && Array.isArray(parsedContent.pages)) {
-      cleanTextSummary = parsedContent.pages
-        .map((p, i) => `${i + 1}-bet (${p.title}): ${p.html ? p.html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : ''}`)
-        .join("\n\n");
-    } else {
-      cleanTextSummary = JSON.stringify(parsedContent, null, 2);
-    }
-
     const prompt = `Siz universitet o'qituvchisi va AI baholovchisisiz.
 Topshiriq mavzusi: "${title}"
 O'qituvchi biriktirgan shablon fayl: ${templateFileUrl || "Fayl biriktirilmagan"}
-Talaba yuborgan ish bo'limlari va sahifalari:
-${cleanTextSummary.slice(0, 15000)}
-
+Talaba yuborgan ish bo'limlari: ${JSON.stringify(content)}
 Talaba biriktirgan rasm/fayllar soni: ${attachedImages.length} ta
 Baholash mezonlari (Rubrika): ${JSON.stringify(rubric || [])}
 Tarif darajasi: ${isPro ? "PRO (Kengaytirilgan tahlil)" : "FREE (Oddiy tahlil)"}
@@ -108,37 +87,14 @@ Iltimos, ishni tekshirib, quyidagi qat'iy JSON formatida javob bering:
   "similarity": null`}
 }`;
 
-    // Google Gemini mavjud modellari (prioritet bo'yicha)
-    const candidateModels = [
-      "gemini-3.5-flash-lite",
-      "gemini-3.1-flash-lite",
-      "gemini-3.5-flash",
-      "gemini-3.8-flash",
-      "gemini-flash-latest"
-    ];
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
+    const response = await axios.post(url, {
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { responseMimeType: "application/json" }
+    });
 
-    let lastError = null;
-    for (const model of candidateModels) {
-      try {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`;
-        const response = await axios.post(url, {
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { responseMimeType: "application/json" }
-        }, { timeout: 25000 });
-
-        const text = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (text) {
-          const result = JSON.parse(text);
-          console.log(`✅ Gemini AI [${model}] orqali muvaffaqiyatli baholandi. Ball: ${result.totalScore}`);
-          return result;
-        }
-      } catch (err) {
-        lastError = err;
-        console.warn(`⚠️ Gemini AI model [${model}] ulanishda xato (${err.response?.status || err.message}), keyingi modelga o'tilmoqda...`);
-      }
-    }
-
-    throw lastError || new Error("Gemini AI modellariga ulanib bo'lmadi");
+    const text = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    return JSON.parse(text);
   }
 
   fallbackEvaluation({ content, title, rubric, templateFileUrl, attachedImages, isPro, otherSubmissions }) {
