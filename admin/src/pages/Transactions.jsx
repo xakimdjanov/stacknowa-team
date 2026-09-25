@@ -43,7 +43,7 @@ const MethodBadge = ({ method }) => {
       className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide"
       style={
         isCard
-          ? { background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', color: '#6366f1' }
+          ? { background: 'rgba(5,150,105,0.08)', border: '1px solid rgba(5,150,105,0.2)', color: '#059669' }
           : { background: 'rgba(100,116,139,0.08)', border: '1px solid rgba(100,116,139,0.2)', color: '#64748b' }
       }
     >
@@ -55,14 +55,14 @@ const MethodBadge = ({ method }) => {
 
 /* ─── Stat Card ──────────────────────────── */
 const StatCard = ({ label, value, sub, color, icon: Icon }) => (
-  <div className="bg-white rounded-2xl border border-slate-100 px-5 py-4 flex items-center gap-3 shadow-sm">
+  <div className="bg-white rounded-2xl border border-slate-200/80 px-5 py-4 flex items-center gap-3 shadow-xs">
     <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${color}12` }}>
       <Icon className="w-5 h-5" style={{ color }} />
     </div>
     <div>
-      <p className="text-xl font-extrabold text-slate-800 leading-none">{value}</p>
-      <p className="text-xs text-slate-400 mt-0.5">{label}</p>
-      {sub && <p className="text-[10px] font-semibold mt-0.5" style={{ color }}>{sub}</p>}
+      <p className="text-xl font-black text-slate-800 leading-none">{value}</p>
+      <p className="text-xs text-slate-400 mt-0.5 font-medium">{label}</p>
+      {sub && <p className="text-[10px] font-bold mt-0.5" style={{ color }}>{sub}</p>}
     </div>
   </div>
 );
@@ -111,14 +111,14 @@ const Transactions = () => {
     <div className="min-h-full bg-slate-50">
 
       {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-100 px-4 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-6">
+      <div className="bg-white border-b border-slate-200/80 px-4 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-xl sm:text-2xl font-extrabold text-slate-800 tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">
                 To'lovlar Tarixi
               </h1>
-              <p className="text-slate-400 text-xs sm:text-sm mt-1">
+              <p className="text-slate-500 text-xs sm:text-sm mt-1">
                 Foydalanuvchilarning Pro obuna uchun amalga oshirgan barcha tranzaksiyalari.
               </p>
             </div>
@@ -126,9 +126,9 @@ const Transactions = () => {
             <button
               onClick={fetchTransactions}
               disabled={loading}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs hover:bg-slate-50 transition-all w-full sm:w-auto self-start sm:self-auto"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition-all duration-200 w-full sm:w-auto self-start sm:self-auto"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-indigo-500' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-emerald-600' : ''}`} />
               Yangilash
             </button>
           </div>
@@ -138,14 +138,14 @@ const Transactions = () => {
             <StatCard
               label="Jami daromad"
               value={`${totalRevenue.toLocaleString()} so'm`}
-              color="#6366f1"
+              color="#059669"
               icon={Banknote}
               sub={`${successCount} ta to'lov`}
             />
             <StatCard
               label="Muvaffaqiyatli"
               value={successCount}
-              color="#059669"
+              color="#0d9488"
               icon={CheckCircle2}
             />
             <StatCard
@@ -168,7 +168,7 @@ const Transactions = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-5 sm:py-6 space-y-5">
 
         {/* Filter bar */}
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm px-4 sm:px-5 py-3 sm:py-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs px-4 sm:px-5 py-3 sm:py-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
           <div className="relative flex-1 w-full">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
@@ -176,7 +176,7 @@ const Transactions = () => {
               placeholder="Ism, email, order ID yoki tarif bo'yicha..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-4 focus:ring-emerald-100/60 focus:border-emerald-500 transition-all font-medium"
             />
           </div>
 
@@ -184,7 +184,7 @@ const Transactions = () => {
           <div className="flex items-center gap-1.5 bg-slate-100 rounded-xl p-1 overflow-x-auto w-full sm:w-auto flex-shrink-0">
             <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400 ml-1 flex-shrink-0" />
             {[
-              { value: '',         label: 'Hammasi',       color: '#6366f1' },
+              { value: '',         label: 'Hammasi',       color: '#059669' },
               { value: 'success',  label: "Muvaffaqiyatli", color: '#059669' },
               { value: 'pending',  label: 'Kutilmoqda',     color: '#d97706' },
               { value: 'failed',   label: 'Rad etilgan',    color: '#ef4444' },
@@ -192,11 +192,11 @@ const Transactions = () => {
               <button
                 key={opt.value}
                 onClick={() => setStatusFilter(opt.value)}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
+                className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap"
                 style={
                   statusFilter === opt.value
-                    ? { background: 'white', color: opt.color, boxShadow: '0 1px 4px rgba(0,0,0,0.1)' }
-                    : { color: '#94a3b8' }
+                    ? { background: 'white', color: opt.color, boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }
+                    : { color: '#64748b' }
                 }
               >
                 {opt.label}
@@ -210,15 +210,15 @@ const Transactions = () => {
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead>
-                <tr style={{ background: 'linear-gradient(90deg,#f8faff,#f1f5ff)' }}>
+                <tr className="bg-slate-50/80 border-b border-slate-100">
                   {['Order ID', 'Foydalanuvchi', 'Tarif', 'Summa', "To'lov usuli", 'Holat', 'Sana'].map((h) => (
                     <th
                       key={h}
-                      className="px-5 py-3.5 text-[10px] font-bold uppercase tracking-widest text-slate-400 border-b border-slate-100"
+                      className="px-5 py-3.5 text-[10px] font-bold uppercase tracking-widest text-slate-400"
                     >
                       {h}
                     </th>
@@ -226,7 +226,7 @@ const Transactions = () => {
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-slate-50">
+              <tbody className="divide-y divide-slate-100">
                 {loading ? (
                   [...Array(5)].map((_, i) => (
                     <tr key={i}>
@@ -242,8 +242,8 @@ const Transactions = () => {
                     <td colSpan="7" className="px-5 py-16 text-center">
                       <div className="flex flex-col items-center gap-3 text-slate-400">
                         <CreditCard className="w-10 h-10 opacity-20" />
-                        <p className="text-sm font-semibold">To'lovlar topilmadi</p>
-                        <p className="text-xs">Hozircha hech qanday tranzaksiya amalga oshirilmagan</p>
+                        <p className="text-sm font-semibold">Tranzaksiyalar topilmadi</p>
+                        <p className="text-xs">Qidiruvni o'zgartiring yoki filtrni bekor qiling</p>
                       </div>
                     </td>
                   </tr>
@@ -251,50 +251,33 @@ const Transactions = () => {
                   filtered.map((tx) => (
                     <tr
                       key={tx.id}
-                      className="group transition-colors"
-                      onMouseEnter={(e) => (e.currentTarget.style.background = '#f8f9ff')}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                      className="group hover:bg-slate-50/60 transition-colors"
                     >
                       {/* Order ID */}
                       <td className="px-5 py-4">
-                        <span className="inline-flex items-center gap-1 font-mono text-[11px] font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg border border-indigo-100">
-                          <Hash className="w-3 h-3" />
-                          {tx.order_id || `TXN-${tx.id}`}
-                        </span>
+                        <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-slate-700">
+                          <Hash className="w-3 h-3 text-slate-400" />
+                          {tx.order_id || `#TX-${tx.id}`}
+                        </div>
                       </td>
 
                       {/* User */}
                       <td className="px-5 py-4">
-                        <div className="flex items-center gap-2.5">
-                          <div
-                            className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-                            style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)' }}
-                          >
-                            {tx.user?.name?.[0]?.toUpperCase() || '?'}
-                          </div>
-                          <div>
-                            <p className="font-semibold text-slate-800 text-xs leading-tight">
-                              {tx.user?.name || "Noma'lum"}
-                            </p>
-                            <p className="text-[11px] text-slate-400 mt-0.5">{tx.user?.email}</p>
-                          </div>
-                        </div>
+                        <p className="font-bold text-slate-800 leading-tight">{tx.user?.name || "Noma'lum"}</p>
+                        <p className="text-xs text-slate-400 font-medium mt-0.5">{tx.user?.email || '—'}</p>
                       </td>
 
                       {/* Plan */}
                       <td className="px-5 py-4">
-                        <span className="text-xs font-semibold text-slate-700">
-                          {tx.plan?.title || tx.plan?.name || 'Pro Tarif'}
+                        <span className="font-bold text-slate-700 text-xs">
+                          {tx.plan?.title || tx.plan?.name || 'Pro Obuna'}
                         </span>
                       </td>
 
                       {/* Amount */}
                       <td className="px-5 py-4">
-                        <span
-                          className="text-sm font-extrabold"
-                          style={{ color: tx.status === 'success' ? '#059669' : '#64748b' }}
-                        >
-                          {tx.amount ? `${Number(tx.amount).toLocaleString()} so'm` : '—'}
+                        <span className="font-black text-slate-800 text-sm">
+                          {Number(tx.amount || 0).toLocaleString()} so'm
                         </span>
                       </td>
 
@@ -309,17 +292,13 @@ const Transactions = () => {
                       </td>
 
                       {/* Date */}
-                      <td className="px-5 py-4 text-xs text-slate-400">
+                      <td className="px-5 py-4 text-xs text-slate-400 font-medium">
                         {tx.created_at
                           ? new Date(tx.created_at).toLocaleDateString('uz-UZ', {
-                              day: '2-digit', month: 'short', year: 'numeric',
+                              year: 'numeric', month: 'short', day: 'numeric',
+                              hour: '2-digit', minute: '2-digit',
                             })
                           : '—'}
-                        <p className="text-[10px] mt-0.5">
-                          {tx.created_at
-                            ? new Date(tx.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                            : ''}
-                        </p>
                       </td>
                     </tr>
                   ))
@@ -330,13 +309,13 @@ const Transactions = () => {
 
           {/* Footer */}
           {filtered.length > 0 && (
-            <div className="px-5 py-3 border-t border-slate-50 flex items-center justify-between">
-              <span className="text-xs text-slate-400">
-                Jami <span className="font-semibold text-slate-600">{filtered.length}</span> ta tranzaksiya
+            <div className="px-5 py-3 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
+              <span className="text-xs text-slate-500">
+                Jami <span className="font-bold text-slate-700">{filtered.length}</span> ta to'lov
               </span>
-              <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
-                <TrendingUp className="w-3.5 h-3.5" />
-                {totalRevenue.toLocaleString()} so'm daromad
+              <span className="text-xs text-slate-500">
+                Muvaffaqiyatli: <span className="font-bold text-emerald-600">{successCount}</span> | Rad etilgan:{' '}
+                <span className="font-bold text-rose-500">{failedCount}</span>
               </span>
             </div>
           )}

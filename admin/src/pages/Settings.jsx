@@ -19,11 +19,13 @@ import {
   Info,
 } from 'lucide-react';
 
+const EMERALD_GRADIENT = 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)';
+
 /* ─── Integration Card ───────────────────── */
 const IntegrationCard = ({ icon: Icon, name, description, status, statusLabel, color, details }) => {
   const statusStyles = {
     active:    { bg: 'rgba(5,150,105,0.08)',  border: 'rgba(5,150,105,0.2)',  color: '#059669', icon: CheckCircle2, label: statusLabel || 'Ulangan'    },
-    ready:     { bg: 'rgba(99,102,241,0.08)', border: 'rgba(99,102,241,0.2)', color: '#6366f1', icon: CheckCircle2, label: statusLabel || 'Tayyor'      },
+    ready:     { bg: 'rgba(13,148,136,0.08)', border: 'rgba(13,148,136,0.2)', color: '#0d9488', icon: CheckCircle2, label: statusLabel || 'Tayyor'      },
     warning:   { bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.2)', color: '#d97706', icon: AlertCircle,  label: statusLabel || 'Tekshiring'  },
     inactive:  { bg: 'rgba(100,116,139,0.08)',border: 'rgba(100,116,139,0.2)',color: '#64748b', icon: Clock,        label: statusLabel || 'Nofaol'      },
   };
@@ -31,7 +33,7 @@ const IntegrationCard = ({ icon: Icon, name, description, status, statusLabel, c
   const StatusIcon = s.icon;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm hover:shadow-md transition-all group">
+    <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs hover:shadow-md transition-all group">
       <div className="flex items-start gap-4">
         {/* Icon */}
         <div
@@ -46,16 +48,16 @@ const IntegrationCard = ({ icon: Icon, name, description, status, statusLabel, c
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className="text-sm font-bold text-slate-800">{name}</h3>
             <span
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold"
               style={{ background: s.bg, border: `1px solid ${s.border}`, color: s.color }}
             >
               <StatusIcon className="w-2.5 h-2.5" />
               {s.label}
             </span>
           </div>
-          <p className="text-xs text-slate-400 mt-0.5">{description}</p>
+          <p className="text-xs text-slate-500 mt-0.5 font-medium">{description}</p>
           {details && (
-            <p className="text-[11px] font-mono text-slate-500 mt-1.5 bg-slate-50 px-2 py-1 rounded-md inline-block">
+            <p className="text-[11px] font-mono text-slate-600 mt-1.5 bg-slate-50 border border-slate-100 px-2 py-1 rounded-md inline-block font-semibold">
               {details}
             </p>
           )}
@@ -69,22 +71,22 @@ const IntegrationCard = ({ icon: Icon, name, description, status, statusLabel, c
 
 /* ─── Info Row ───────────────────────────── */
 const InfoRow = ({ label, value, mono = false }) => (
-  <div className="flex items-center justify-between py-2.5 border-b border-slate-50 last:border-0">
-    <span className="text-xs text-slate-500">{label}</span>
-    <span className={`text-xs font-semibold text-slate-700 ${mono ? 'font-mono bg-slate-100 px-2 py-0.5 rounded-md' : ''}`}>
+  <div className="flex items-center justify-between py-2.5 border-b border-slate-100 last:border-0">
+    <span className="text-xs text-slate-500 font-medium">{label}</span>
+    <span className={`text-xs font-bold text-slate-700 ${mono ? 'font-mono bg-slate-100 px-2 py-0.5 rounded-md text-[11px]' : ''}`}>
       {value}
     </span>
   </div>
 );
 
 /* ─── Section ────────────────────────────── */
-const Section = ({ title, icon: Icon, color = '#6366f1', children }) => (
+const Section = ({ title, icon: Icon, color = '#059669', children }) => (
   <div>
     <div className="flex items-center gap-2 mb-3">
       <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: `${color}15` }}>
         <Icon className="w-3.5 h-3.5" style={{ color }} />
       </div>
-      <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wide">{title}</h2>
+      <h2 className="text-xs font-bold text-slate-600 uppercase tracking-wider">{title}</h2>
     </div>
     <div className="space-y-3">{children}</div>
   </div>
@@ -95,35 +97,29 @@ const Section = ({ title, icon: Icon, color = '#6366f1', children }) => (
 ════════════════════════════════════════════ */
 const Settings = () => {
   const { user } = useAuth();
-  const [saved, setSaved] = useState(false);
-
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-  };
 
   return (
     <div className="min-h-full bg-slate-50">
 
       {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-100 px-4 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-6">
+      <div className="bg-white border-b border-slate-200/80 px-4 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-6">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-800 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">
               Tizim Sozlamalari
             </h1>
-            <p className="text-slate-400 text-xs sm:text-sm mt-1">
+            <p className="text-slate-500 text-xs sm:text-sm mt-1">
               Server konfiguratsiyasi, integratsiyalar va tizim holati.
             </p>
           </div>
 
           {/* System status chip */}
-          <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-2 self-start sm:self-auto">
+          <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200/60 rounded-xl px-4 py-2 self-start sm:self-auto">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
             </span>
-            <span className="text-xs font-semibold text-emerald-700">Barcha tizimlar faol</span>
+            <span className="text-xs font-bold text-emerald-800">Barcha tizimlar faol</span>
           </div>
         </div>
       </div>
@@ -137,66 +133,55 @@ const Settings = () => {
           {/* Left — Integrations (2/3) */}
           <div className="lg:col-span-2 space-y-6">
 
-            <Section title="Ma'lumotlar Bazasi" icon={Database} color="#3b82f6">
+            <Section title="Ma'lumotlar Bazasi" icon={Database} color="#059669">
               <IntegrationCard
                 icon={Database}
-                name="PostgreSQL + Sequelize ORM"
-                description="Asosiy ma'lumotlar bazasi — foydalanuvchilar, guruhlar, topshiriqlar"
+                name="PostgreSQL 15"
+                description="Asosiy relational ma'lumotlar bazasi (Sequelize ORM orqali ulangan)"
                 status="active"
                 statusLabel="Ulangan"
-                color="#3b82f6"
-                details="localhost:5432 · stacknowa_db"
+                color="#059669"
+                details="postgres://localhost:5432/stacknowa"
               />
             </Section>
 
-            <Section title="Fayl Saqlash" icon={HardDrive} color="#d97706">
-              <IntegrationCard
-                icon={HardDrive}
-                name="AWS S3 / Cloudflare R2 Storage"
-                description="Talabalar yuklagan fayllar, rasmlar va shablon hujjatlarini saqlash"
-                status="ready"
-                statusLabel="Sozlangan (.env)"
-                color="#d97706"
-                details="Bucket: stacknowa-uploads"
-              />
-            </Section>
-
-            <Section title="To'lov Tizimi" icon={ShieldCheck} color="#8b5cf6">
-              <IntegrationCard
-                icon={ShieldCheck}
-                name="inPAY REST API v1"
-                description="Click, Payme va bank kartalari orqali obuna to'lovlari"
-                status="active"
-                statusLabel="Aktiv"
-                color="#8b5cf6"
-                details="api.inpay.uz · Merchant verified"
-              />
-            </Section>
-
-            <Section title="Sun'iy Intellekt" icon={Sparkles} color="#6366f1">
+            <Section title="Sun'iy Intellekt Tizimlari" icon={Sparkles} color="#0d9488">
               <IntegrationCard
                 icon={Sparkles}
-                name="Google Gemini 1.5 Flash"
-                description="Talabalar ishlari uchun AI baholash, rubrik tekshiruvi va plagiat tahlili"
+                name="Google Gemini 2.5 Flash"
+                description="Talabalar topshiriqlarini avtomatik tekshirish, ballash va tahlil qilish"
                 status="active"
-                statusLabel="API Ulangan"
-                color="#6366f1"
-                details="gemini-1.5-flash · google.generativeai"
+                statusLabel="API Kalit Faol"
+                color="#0d9488"
+                details="GEMINI_API_KEY · Active"
               />
               <IntegrationCard
-                icon={Cpu}
-                name="AI Service (AIService.js)"
-                description="Parallel baholash, rubrik-based scoring, tahlil natijalarini saqlash"
+                icon={Zap}
+                name="Plagiat Detektori (Gemini AI)"
+                description="Semantik o'xshashlikni baholash va kod nusxalashni aniqlash tizimi"
                 status="ready"
-                statusLabel="Faol"
-                color="#ec4899"
+                statusLabel="Tayyor"
+                color="#059669"
+                details="AI Practice Plagiarism Engine v2"
               />
             </Section>
 
-            <Section title="Xavfsizlik" icon={Lock} color="#059669">
+            <Section title="To'lov Tizimi" icon={Cpu} color="#0284c7">
               <IntegrationCard
-                icon={Key}
-                name="JWT Authentication"
+                icon={Cpu}
+                name="inPAY To'lov Gateway"
+                description="Uzcard, Humo va xalqaro kartalar orqali PRO obunalarni qabul qilish"
+                status="ready"
+                statusLabel="Konfiguratsiya qilingan"
+                color="#0284c7"
+                details="INPAY_API_KEY · Merchant ID: active"
+              />
+            </Section>
+
+            <Section title="Xavfsizlik & Autentifikatsiya" icon={ShieldCheck} color="#059669">
+              <IntegrationCard
+                icon={Lock}
+                name="JWT Autentifikatsiya"
                 description="Bearer token asosida RBAC (Admin, Teacher, Student) huquq tizimi"
                 status="active"
                 statusLabel="Himoyalangan"
@@ -218,24 +203,24 @@ const Settings = () => {
           <div className="space-y-4">
 
             {/* Admin info */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
-                  <SettingsIcon className="w-3.5 h-3.5 text-indigo-600" />
+                <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center">
+                  <SettingsIcon className="w-3.5 h-3.5 text-emerald-600" />
                 </div>
-                <h3 className="text-sm font-bold text-slate-700">Admin Ma'lumotlari</h3>
+                <h3 className="text-sm font-bold text-slate-800">Admin Ma'lumotlari</h3>
               </div>
 
-              <div className="flex items-center gap-3 mb-4 p-3 rounded-xl bg-slate-50">
+              <div className="flex items-center gap-3 mb-4 p-3 rounded-xl bg-slate-50 border border-slate-100">
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-extrabold text-white flex-shrink-0"
-                  style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)' }}
+                  style={{ background: EMERALD_GRADIENT }}
                 >
                   {user?.name?.[0]?.toUpperCase() || 'A'}
                 </div>
-                <div>
-                  <p className="text-sm font-bold text-slate-800 leading-tight">{user?.name || 'Administrator'}</p>
-                  <p className="text-[11px] text-slate-400">{user?.email}</p>
+                <div className="min-w-0">
+                  <p className="text-sm font-bold text-slate-800 leading-tight truncate">{user?.name || 'Administrator'}</p>
+                  <p className="text-[11px] text-slate-400 truncate font-medium">{user?.email}</p>
                 </div>
               </div>
 
@@ -247,12 +232,12 @@ const Settings = () => {
             </div>
 
             {/* System info */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center">
                   <Server className="w-3.5 h-3.5 text-slate-600" />
                 </div>
-                <h3 className="text-sm font-bold text-slate-700">Server Ma'lumotlari</h3>
+                <h3 className="text-sm font-bold text-slate-800">Server Ma'lumotlari</h3>
               </div>
               <InfoRow label="Backend port" value="5000" mono />
               <InfoRow label="Admin panel" value="3000" mono />
@@ -264,11 +249,11 @@ const Settings = () => {
 
             {/* Stack info */}
             <div
-              className="rounded-2xl p-5 text-white"
-              style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', boxShadow: '0 4px 16px rgba(99,102,241,0.3)' }}
+              className="rounded-2xl p-5 text-white shadow-lg"
+              style={{ background: EMERALD_GRADIENT, boxShadow: '0 4px 16px rgba(5,150,105,0.25)' }}
             >
               <div className="flex items-center gap-2 mb-4">
-                <Zap className="w-4 h-4 text-indigo-200" />
+                <Zap className="w-4 h-4 text-emerald-200" />
                 <h3 className="text-sm font-bold">Tech Stack</h3>
               </div>
               {[
@@ -282,19 +267,18 @@ const Settings = () => {
                 'inPAY Gateway',
               ].map((item) => (
                 <div key={item} className="flex items-center gap-2 py-1">
-                  <span className="w-1 h-1 rounded-full bg-indigo-300" />
-                  <span className="text-xs text-indigo-100">{item}</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-200" />
+                  <span className="text-xs text-emerald-50 font-medium">{item}</span>
                 </div>
               ))}
             </div>
 
             {/* Info note */}
             <div
-              className="rounded-2xl p-4 flex gap-3"
-              style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)' }}
+              className="rounded-2xl p-4 flex gap-3 bg-amber-50/60 border border-amber-200/60"
             >
               <Info className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
-              <p className="text-xs text-amber-700 leading-relaxed">
+              <p className="text-xs text-amber-800 leading-relaxed font-medium">
                 Sozlamalarni o'zgartirish uchun server <strong>.env</strong> faylini tahrirlang va backendni qayta ishga tushiring.
               </p>
             </div>

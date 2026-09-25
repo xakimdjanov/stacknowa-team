@@ -16,8 +16,11 @@ const ProtectedLayout = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white font-semibold">
-        Yuklanmoqda...
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm font-bold text-slate-600">Admin paneli yuklanmoqda...</p>
+        </div>
       </div>
     );
   }

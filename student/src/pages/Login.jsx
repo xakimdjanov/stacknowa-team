@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Mail, Lock, Eye, EyeOff, Check } from 'lucide-react';
 
+const EMERALD_GRADIENT = 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)';
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -43,16 +45,19 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-white">
-      {/* CHAP TOMON: KO'K BRENDING VA RASMLI ILUSTRATSIYA (faqat desktopda ko'rinadi) */}
-      <div className="hidden lg:flex lg:w-1/2 bg-[#1d58d8] p-8 lg:p-14 flex-col justify-between text-white relative overflow-hidden">
+      {/* CHAP TOMON: EMERALD BRENDING VA RASMLI ILUSTRATSIYA */}
+      <div 
+        style={{ background: EMERALD_GRADIENT }}
+        className="hidden lg:flex lg:w-1/2 p-8 lg:p-14 flex-col justify-between text-white relative overflow-hidden"
+      >
         {/* Yuqori logotip */}
         <div className="flex items-center space-x-3 z-10">
-          <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center text-white backdrop-blur-sm">
+          <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center text-white backdrop-blur-sm shadow-xs">
             <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
               <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
             </svg>
           </div>
-          <span className="font-bold text-lg tracking-wider uppercase">AI PRACTICE</span>
+          <span className="font-black text-lg tracking-wider uppercase">AI PRACTICE</span>
         </div>
 
         {/* Markaziy rasm va matn */}
@@ -65,42 +70,42 @@ const Login = () => {
             />
           </div>
 
-          <h2 className="text-2xl lg:text-3xl font-extrabold tracking-tight mb-4 text-white">
+          <h2 className="text-2xl lg:text-3xl font-black tracking-tight mb-4 text-white">
             Talabalar uchun raqamli amaliy ish daftari va tezkor AI baholash
           </h2>
-          <p className="text-blue-100 text-sm leading-relaxed">
+          <p className="text-emerald-100 text-sm leading-relaxed font-medium">
             Amaliy mashg'ulotlarni tezroq bajaring, shablon materiallardan foydalaning va topshirgan ishingizga sun'iy intellektdan xolis baho oling.
           </p>
         </div>
 
         {/* Pastki qism */}
-        <div className="flex items-center justify-between text-xs text-blue-200/80 pt-6 border-t border-blue-400/20 z-10">
+        <div className="flex items-center justify-between text-xs text-emerald-200/80 pt-6 border-t border-emerald-400/20 z-10 font-semibold">
           <span>Talabalar uchun xavfsiz va qulay ta'lim muhiti</span>
           <div className="flex items-center space-x-1 font-bold tracking-widest uppercase">
             <span>CCO</span>
           </div>
         </div>
 
-        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-600 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-emerald-500 rounded-full blur-3xl opacity-30 pointer-events-none"></div>
       </div>
 
       {/* O'NG TOMON: KIRISH FORMASI */}
       <div className="w-full lg:w-1/2 p-6 sm:p-8 lg:p-16 flex flex-col justify-between bg-white min-h-screen lg:min-h-0">
         <div className="max-w-md w-full mx-auto my-auto py-8">
           {/* Kichik brend sarlavhasi */}
-          <div className="flex items-center space-x-2 text-[#1d58d8] font-bold text-xs uppercase tracking-wider mb-8">
-            <div className="w-5 h-5 rounded bg-blue-100 flex items-center justify-center">
-              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+          <div className="flex items-center space-x-2 text-emerald-700 font-bold text-xs uppercase tracking-wider mb-8">
+            <div className="w-5 h-5 rounded bg-emerald-100 flex items-center justify-center">
+              <svg className="w-3.5 h-3.5 fill-current text-emerald-700" viewBox="0 0 24 24">
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
               </svg>
             </div>
             <span>AI PRACTICE • TALABA PORTALI</span>
           </div>
 
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">
             Xush kelibsiz
           </h1>
-          <p className="text-sm text-slate-500 mb-8">
+          <p className="text-sm text-slate-500 mb-8 font-medium">
             Talaba profiliga kirish uchun ma'lumotlaringizni kiriting
           </p>
 
@@ -113,7 +118,7 @@ const Login = () => {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
                 Email Manzil
               </label>
               <div className="relative">
@@ -124,14 +129,14 @@ const Login = () => {
                   placeholder="student@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-[#1d58d8] focus:bg-white transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100/60 focus:bg-white transition-all font-medium"
                 />
               </div>
             </div>
 
             {/* Parol */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
                 Maxfiy Parol
               </label>
               <div className="relative">
@@ -142,12 +147,12 @@ const Login = () => {
                   placeholder="Parolingizni kiriting"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-11 text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-[#1d58d8] focus:bg-white transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-11 text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100/60 focus:bg-white transition-all font-medium"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -156,16 +161,16 @@ const Login = () => {
 
             {/* Eslab qolish & Parolni unutdingizmi */}
             <div className="flex items-center justify-between text-xs">
-              <label className="flex items-center space-x-2 text-slate-600 cursor-pointer">
+              <label className="flex items-center space-x-2 text-slate-600 cursor-pointer font-medium">
                 <input
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded text-[#1d58d8] focus:ring-[#1d58d8] border-slate-300"
+                  className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300"
                 />
                 <span>Meni eslab qol</span>
               </label>
-              <a href="#" className="text-[#1d58d8] hover:underline font-semibold">
+              <a href="#" className="text-emerald-700 hover:underline font-bold">
                 Parolni unutdingizmi?
               </a>
             </div>
@@ -174,7 +179,8 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#1d58d8] hover:bg-[#1648b8] text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-500/25 flex items-center justify-center transition-all disabled:opacity-60 text-sm"
+              style={{ background: EMERALD_GRADIENT }}
+              className="w-full text-white font-bold py-3.5 px-4 rounded-xl shadow-md shadow-emerald-700/20 flex items-center justify-center transition-all hover:opacity-95 active:scale-95 disabled:opacity-60 text-sm cursor-pointer"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -189,7 +195,7 @@ const Login = () => {
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-slate-200"></div>
             </div>
-            <span className="relative bg-white px-3 text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
+            <span className="relative bg-white px-3 text-[11px] uppercase tracking-wider text-slate-400 font-bold">
               yoki Google orqali
             </span>
           </div>
@@ -199,7 +205,7 @@ const Login = () => {
             type="button"
             onClick={handleGoogleSignIn}
             disabled={loading}
-            className="w-full border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-3 px-4 rounded-xl flex items-center justify-center space-x-2.5 transition-all text-sm disabled:opacity-60"
+            className="w-full border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center space-x-2.5 transition-all text-sm disabled:opacity-60 cursor-pointer shadow-2xs"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path
@@ -223,16 +229,16 @@ const Login = () => {
           </button>
 
           {/* Ro'yxatdan o'tishga o'tish */}
-          <p className="mt-8 text-center text-xs text-slate-600">
+          <p className="mt-8 text-center text-xs text-slate-600 font-medium">
             Yangi talabamisiz?{' '}
-            <Link to="/register" className="text-[#1d58d8] font-bold hover:underline">
+            <Link to="/register" className="text-emerald-700 font-bold hover:underline">
               Talaba hisobini yaratish
             </Link>
           </p>
         </div>
 
         {/* Xavfsizlik kafolati */}
-        <div className="flex items-center justify-center space-x-2 text-[11px] text-emerald-700 font-medium pt-4">
+        <div className="flex items-center justify-center space-x-2 text-[11px] text-emerald-800 font-semibold pt-4">
           <div className="w-3.5 h-3.5 rounded-full bg-emerald-100 flex items-center justify-center">
             <Check className="w-2.5 h-2.5 text-emerald-600 stroke-[3]" />
           </div>

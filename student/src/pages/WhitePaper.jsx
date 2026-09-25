@@ -968,7 +968,7 @@ console.log("Muvaffaqiyatli yakunlandi:", output);
       return;
     }
 
-    if (!confirm(`Ushbu ${pages.length} betlik amaliy ish kitobchasini topshirishni tasdiqlaysizmi? Gemini AI barcha sahifalar, jadvallar va xulosalarni real vaqtda baholaydi.`)) {
+    if (!confirm(`Ushbu ${pages.length} betlik amaliy ish kitobchasini topshirishni tasdiqlaysizmi? AI tizimi barcha sahifalar, jadvallar va xulosalarni real vaqtda baholaydi.`)) {
       return;
     }
 
@@ -1151,7 +1151,7 @@ console.log("Muvaffaqiyatli yakunlandi:", output);
               type="button"
               onClick={handleSubmitWork}
               disabled={submitting}
-              title={pages.length < 7 ? `Topshirish uchun kamida 7 ta sahifa kerak (hozirda: ${pages.length} ta)` : isReturned ? "Tahrirlangan kitobchani qayta topshirish" : "Gemini AI ga baholash uchun topshirish"}
+              title={pages.length < 7 ? `Topshirish uchun kamida 7 ta sahifa kerak (hozirda: ${pages.length} ta)` : isReturned ? "Tahrirlangan kitobchani qayta topshirish" : "AI ga baholash uchun topshirish"}
               className={`inline-flex items-center space-x-1.5 font-bold py-1.5 px-3.5 rounded-xl shadow-md text-xs transition-all disabled:opacity-50 text-white ${
                 isReturned
                   ? 'bg-amber-600 hover:bg-amber-700 shadow-amber-600/20'
@@ -1287,7 +1287,7 @@ console.log("Muvaffaqiyatli yakunlandi:", output);
             <List className="w-3.5 h-3.5" />
           </button>
           <button type="button" onClick={handleInsertTable} className="inline-flex items-center space-x-1 p-1.5 rounded-lg hover:bg-slate-100 text-slate-700 text-xs font-semibold" title="Jadval">
-            <Table className="w-3.5 h-3.5 text-blue-600" />
+            <Table className="w-3.5 h-3.5 text-emerald-600" />
             <span className="hidden sm:inline">Jadval</span>
           </button>
         </div>
@@ -1299,8 +1299,8 @@ console.log("Muvaffaqiyatli yakunlandi:", output);
             onClick={() => setImageMode(!imageMode)}
             className={`inline-flex items-center space-x-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all border ${
               imageMode
-                ? 'bg-blue-600 text-white border-blue-600 shadow-sm ring-2 ring-blue-300'
-                : 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
+                ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm ring-2 ring-emerald-300'
+                : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200'
             }`}
             title={imageMode ? "Rasm joylash rejimini o'chirish" : "Rasm joylash rejimini yoqish — sahifaning istalgan joyiga bosib rasm yuklash"}
           >
@@ -1315,13 +1315,13 @@ console.log("Muvaffaqiyatli yakunlandi:", output);
               fileInputRef.current?.click();
             }}
             disabled={uploadingImage}
-            className="inline-flex items-center space-x-1 p-1.5 rounded-lg hover:bg-slate-100 text-slate-700 text-xs font-semibold"
+            className="inline-flex items-center space-x-1 p-1.5 rounded-lg hover:bg-slate-100 text-slate-700 text-xs font-semibold cursor-pointer"
             title="Kursor turgan joyga rasm yuklash"
           >
             {uploadingImage ? (
-              <div className="w-3.5 h-3.5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-3.5 h-3.5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
             ) : (
-              <ImageIcon className="w-3.5 h-3.5 text-blue-600" />
+              <ImageIcon className="w-3.5 h-3.5 text-emerald-600" />
             )}
             <span className="hidden sm:inline">Rasm qo'yish</span>
           </button>
@@ -1332,7 +1332,7 @@ console.log("Muvaffaqiyatli yakunlandi:", output);
         <button
           type="button"
           onClick={handleAddNewPage}
-          className="inline-flex items-center space-x-1 px-3 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-xs font-bold border border-emerald-200 transition-colors"
+          className="inline-flex items-center space-x-1 px-3 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-xs font-bold border border-emerald-200 transition-colors cursor-pointer"
           title="Yangi A4 sahifa qo'shish"
         >
           <Plus className="w-3.5 h-3.5" />
@@ -1342,7 +1342,10 @@ console.log("Muvaffaqiyatli yakunlandi:", output);
 
       {/* Rasm Mode Faol Ko'rsatmasi */}
       {imageMode && (
-        <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white text-xs font-medium py-2 px-4 sm:px-6 flex items-center justify-between shadow-md select-none flex-shrink-0">
+        <div 
+          style={{ background: 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)' }}
+          className="text-white text-xs font-medium py-2 px-4 sm:px-6 flex items-center justify-between shadow-md select-none flex-shrink-0"
+        >
           <div className="flex items-center space-x-2">
             <span className="flex h-2.5 w-2.5 relative flex-shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-300 opacity-75"></span>
@@ -1355,7 +1358,7 @@ console.log("Muvaffaqiyatli yakunlandi:", output);
           <button
             type="button"
             onClick={() => setImageMode(false)}
-            className="text-xs font-bold bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded-lg ml-4 flex-shrink-0 transition-colors"
+            className="text-xs font-bold bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded-lg ml-4 flex-shrink-0 transition-colors cursor-pointer"
           >
             Rejimni yopish ✕
           </button>
@@ -1376,13 +1379,13 @@ console.log("Muvaffaqiyatli yakunlandi:", output);
         <aside className="w-60 bg-white border-r border-slate-200/90 flex flex-col justify-between hidden lg:flex flex-shrink-0 select-none print:hidden h-full min-h-0">
           <div className="p-3 border-b border-slate-100 flex items-center justify-between flex-shrink-0">
             <span className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center space-x-1.5">
-              <Layers className="w-3.5 h-3.5 text-[#1d58d8]" />
+              <Layers className="w-3.5 h-3.5 text-emerald-600" />
               <span>Sahifalar ({pages.length})</span>
             </span>
             <button
               type="button"
               onClick={handleAddNewPage}
-              className="p-1 rounded-lg hover:bg-emerald-50 text-emerald-600 transition-colors"
+              className="p-1 rounded-lg hover:bg-emerald-50 text-emerald-600 transition-colors cursor-pointer"
               title="Yangi sahifa qo'shish"
             >
               <Plus className="w-4 h-4" />
@@ -1399,7 +1402,7 @@ console.log("Muvaffaqiyatli yakunlandi:", output);
                   onClick={() => scrollToPage(idx)}
                   className={`p-2.5 rounded-xl border text-left cursor-pointer transition-all ${
                     isActive
-                      ? 'bg-blue-50/70 border-blue-500 shadow-sm ring-1 ring-blue-400'
+                      ? 'bg-emerald-50/70 border-emerald-500 shadow-xs ring-1 ring-emerald-400'
                       : 'bg-slate-50/60 border-slate-200 hover:bg-slate-100 hover:border-slate-300'
                   }`}
                 >
@@ -1412,7 +1415,7 @@ console.log("Muvaffaqiyatli yakunlandi:", output);
                       <button
                         type="button"
                         onClick={(e) => handleDeletePage(idx, e)}
-                        className="text-slate-400 hover:text-rose-600 p-0.5 rounded transition-colors"
+                        className="text-slate-400 hover:text-rose-600 p-0.5 rounded transition-colors cursor-pointer"
                         title="Ushbu sahifani o'chirish"
                       >
                         <Trash2 className="w-3 h-3" />
@@ -1606,7 +1609,7 @@ console.log("Muvaffaqiyatli yakunlandi:", output);
           <span className="hidden sm:inline">•</span>
           <span className="hidden sm:inline text-indigo-600 font-semibold flex items-center space-x-1">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Gemini AI Kitobchani baholashga tayyor</span>
+            <span>AI Kitobchani baholashga tayyor</span>
           </span>
         </div>
 

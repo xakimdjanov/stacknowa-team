@@ -17,6 +17,8 @@ import {
   Link2,
 } from 'lucide-react';
 
+const EMERALD_GRADIENT = 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)';
+
 /* ─── Status Badge ───────────────────────── */
 const StatusBadge = ({ status }) => {
   const active = status === 'active' || status === 'ACTIVE';
@@ -41,11 +43,11 @@ const StatusBadge = ({ status }) => {
 /* ─── Group Card ─────────────────────────── */
 const GroupCard = ({ g, onQr }) => {
   const colors = [
-    { bg: 'rgba(99,102,241,0.08)', border: 'rgba(99,102,241,0.18)', accent: '#6366f1', light: '#eef2ff' },
-    { bg: 'rgba(5,150,105,0.08)',  border: 'rgba(5,150,105,0.18)',  accent: '#059669', light: '#ecfdf5' },
-    { bg: 'rgba(217,119,6,0.08)', border: 'rgba(217,119,6,0.18)',  accent: '#d97706', light: '#fffbeb' },
-    { bg: 'rgba(139,92,246,0.08)', border: 'rgba(139,92,246,0.18)', accent: '#8b5cf6', light: '#f5f3ff' },
-    { bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.18)',  accent: '#ef4444', light: '#fef2f2' },
+    { bg: 'rgba(5,150,105,0.08)',  border: 'rgba(5,150,105,0.2)',  accent: '#059669', light: '#ecfdf5' },
+    { bg: 'rgba(13,148,136,0.08)', border: 'rgba(13,148,136,0.2)', accent: '#0d9488', light: '#f0fdfa' },
+    { bg: 'rgba(2,132,199,0.08)',  border: 'rgba(2,132,199,0.2)',  accent: '#0284c7', light: '#f0f9ff' },
+    { bg: 'rgba(217,119,6,0.08)',  border: 'rgba(217,119,6,0.2)',  accent: '#d97706', light: '#fffbeb' },
+    { bg: 'rgba(16,185,129,0.08)', border: 'rgba(16,185,129,0.2)', accent: '#10b981', light: '#ecfdf5' },
   ];
   const c = colors[g.id % colors.length];
 
@@ -55,9 +57,8 @@ const GroupCard = ({ g, onQr }) => {
 
   return (
     <div
-      className="bg-white rounded-2xl border overflow-hidden flex flex-col shadow-sm group transition-all duration-200 hover:shadow-md"
-      style={{ borderColor: '#e2e8f0' }}
-      onMouseEnter={(e) => (e.currentTarget.style.borderColor = c.accent + '44')}
+      className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden flex flex-col shadow-xs group transition-all duration-200 hover:shadow-md"
+      onMouseEnter={(e) => (e.currentTarget.style.borderColor = c.accent + '55')}
       onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#e2e8f0')}
     >
       {/* Top accent bar */}
@@ -96,8 +97,7 @@ const GroupCard = ({ g, onQr }) => {
           ].map(({ icon: Icon, label, value }) => (
             <div
               key={label}
-              className="rounded-xl p-2 text-center"
-              style={{ background: '#f8fafc' }}
+              className="rounded-xl p-2 text-center bg-slate-50 border border-slate-100"
             >
               <Icon className="w-3.5 h-3.5 text-slate-400 mx-auto mb-1" />
               <p className="text-sm font-extrabold text-slate-800 leading-none">{value}</p>
@@ -124,17 +124,16 @@ const GroupCard = ({ g, onQr }) => {
         {/* Token + QR button */}
         <div className="flex items-center gap-2 mt-3">
           <div
-            className="flex-1 flex items-center gap-1.5 px-3 py-1.5 rounded-xl min-w-0"
-            style={{ background: '#f1f5f9' }}
+            className="flex-1 flex items-center gap-1.5 px-3 py-1.5 rounded-xl min-w-0 bg-slate-100/80"
           >
             <Hash className="w-3 h-3 text-slate-400 flex-shrink-0" />
-            <code className="text-[11px] font-mono text-indigo-600 font-semibold truncate">
+            <code className="text-[11px] font-mono text-emerald-700 font-bold truncate">
               {g.join_token || '—'}
             </code>
           </div>
           <button
             onClick={() => onQr(g.id)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex-shrink-0"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex-shrink-0"
             style={{ background: c.bg, color: c.accent, border: `1px solid ${c.border}` }}
             onMouseEnter={(e) => (e.currentTarget.style.background = c.light)}
             onMouseLeave={(e) => (e.currentTarget.style.background = c.bg)}
@@ -150,7 +149,7 @@ const GroupCard = ({ g, onQr }) => {
 
 /* ─── Skeleton Card ──────────────────────── */
 const SkeletonCard = () => (
-  <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm animate-pulse">
+  <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs animate-pulse">
     <div className="h-1 bg-slate-100" />
     <div className="p-5 space-y-3">
       <div className="flex items-start justify-between">
@@ -170,12 +169,12 @@ const SkeletonCard = () => (
 
 /* ─── Mini Stat ──────────────────────────── */
 const MiniStat = ({ label, value, color, icon: Icon }) => (
-  <div className="bg-white rounded-2xl border border-slate-100 px-5 py-4 flex items-center gap-3 shadow-sm">
+  <div className="bg-white rounded-2xl border border-slate-200/80 px-5 py-4 flex items-center gap-3 shadow-xs">
     <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${color}15` }}>
       <Icon className="w-5 h-5" style={{ color }} />
     </div>
     <div>
-      <p className="text-2xl font-extrabold text-slate-800 leading-none">{value}</p>
+      <p className="text-2xl font-black text-slate-800 leading-none">{value}</p>
       <p className="text-xs text-slate-400 font-medium mt-0.5">{label}</p>
     </div>
   </div>
@@ -242,22 +241,22 @@ const Groups = () => {
     <div className="min-h-full bg-slate-50">
 
       {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-100 px-4 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-6">
+      <div className="bg-white border-b border-slate-200/80 px-4 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-6">
         <div className="max-w-7xl mx-auto">
           <div className="mb-6">
-            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-800 tracking-tight">
-              Guruhlar & QR Kodlar
+            <h1 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">
+              Guruhlar
             </h1>
-            <p className="text-slate-400 text-xs sm:text-sm mt-1">
+            <p className="text-slate-500 text-xs sm:text-sm mt-1">
               O'qituvchilar tomonidan yaratilgan barcha akademik guruhlar, talabalar va topshiriqlar.
             </p>
           </div>
 
           {/* Mini stats */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-            <MiniStat label="Jami guruhlar"  value={groups.length}    color="#6366f1" icon={Layers}      />
-            <MiniStat label="Faol guruhlar"  value={activeCount}      color="#059669" icon={Layers}      />
-            <MiniStat label="Jami talabalar" value={totalMembers}     color="#8b5cf6" icon={Users}       />
+            <MiniStat label="Jami guruhlar"  value={groups.length}    color="#059669" icon={Layers}      />
+            <MiniStat label="Faol guruhlar"  value={activeCount}      color="#0d9488" icon={Layers}      />
+            <MiniStat label="Jami talabalar" value={totalMembers}     color="#0284c7" icon={Users}       />
             <MiniStat label="Topshiriqlar"   value={totalAssignments} color="#d97706" icon={FileCheck2}  />
           </div>
         </div>
@@ -267,7 +266,7 @@ const Groups = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-5 sm:py-6 space-y-5">
 
         {/* Filter bar */}
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm px-4 sm:px-5 py-3 sm:py-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs px-4 sm:px-5 py-3 sm:py-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
           <div className="relative flex-1 w-full">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
@@ -275,7 +274,7 @@ const Groups = () => {
               placeholder="Guruh nomi, fan yoki o'qituvchi bo'yicha..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-4 focus:ring-emerald-100/60 focus:border-emerald-500 transition-all font-medium"
             />
           </div>
 
@@ -288,11 +287,11 @@ const Groups = () => {
               <button
                 key={opt.value}
                 onClick={() => setStatusFilter(opt.value)}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all"
                 style={
                   statusFilter === opt.value
-                    ? { background: 'white', color: '#6366f1', boxShadow: '0 1px 4px rgba(0,0,0,0.1)' }
-                    : { color: '#94a3b8' }
+                    ? { background: 'white', color: '#059669', boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }
+                    : { color: '#64748b' }
                 }
               >
                 {opt.label}
@@ -311,7 +310,7 @@ const Groups = () => {
             {[...Array(6)].map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center justify-center py-20 gap-3 text-slate-400">
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs flex flex-col items-center justify-center py-20 gap-3 text-slate-400">
             <Layers className="w-12 h-12 opacity-20" />
             <p className="text-sm font-semibold">Guruhlar topilmadi</p>
             <p className="text-xs">Qidiruvni o'zgartiring yoki filtrni bekor qiling</p>
@@ -333,37 +332,34 @@ const Groups = () => {
         maxWidth="max-w-sm"
       >
         <div className="space-y-4">
-          <p className="text-xs text-slate-500 text-center">
+          <p className="text-xs text-slate-500 text-center font-medium">
             Talabalar ushbu QR-kodni skanerlab mustaqil ravishda guruhga qo'shiladi
           </p>
 
           {/* QR Code */}
           {selectedGroup?.qr_code ? (
             <div
-              className="p-5 rounded-2xl flex items-center justify-center mx-auto"
-              style={{ background: '#f8fafc', border: '1px solid #e2e8f0' }}
+              className="p-5 rounded-2xl flex items-center justify-center mx-auto bg-slate-50 border border-slate-200/80"
             >
               <img src={selectedGroup.qr_code} alt="QR Code" className="w-48 h-48" />
             </div>
           ) : (
             <div
-              className="h-48 rounded-2xl flex flex-col items-center justify-center gap-2"
-              style={{ background: '#f8fafc', border: '1px dashed #e2e8f0' }}
+              className="h-48 rounded-2xl flex flex-col items-center justify-center gap-2 bg-slate-50 border border-dashed border-slate-200"
             >
               <QrCode className="w-10 h-10 text-slate-300" />
-              <p className="text-xs text-slate-400">QR kod mavjud emas</p>
+              <p className="text-xs text-slate-400 font-medium">QR kod mavjud emas</p>
             </div>
           )}
 
           {/* Join URL */}
           {selectedGroup?.join_url && (
             <div>
-              <p className="text-xs font-semibold text-slate-500 mb-1.5 flex items-center gap-1">
-                <Link2 className="w-3 h-3" /> Kirish havolasi
+              <p className="text-xs font-semibold text-slate-600 mb-1.5 flex items-center gap-1">
+                <Link2 className="w-3.5 h-3.5 text-emerald-600" /> Kirish havolasi
               </p>
               <div
-                className="flex items-center gap-2 p-3 rounded-xl"
-                style={{ background: '#f8fafc', border: '1px solid #e2e8f0' }}
+                className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200"
               >
                 <span className="text-[11px] font-mono text-slate-600 truncate flex-1">
                   {selectedGroup.join_url}
@@ -382,7 +378,7 @@ const Groups = () => {
                 </button>
               </div>
               {copied && (
-                <p className="text-[11px] text-emerald-600 font-semibold mt-1 ml-1">
+                <p className="text-[11px] text-emerald-600 font-bold mt-1 ml-1">
                   ✓ Nusxalandi!
                 </p>
               )}
@@ -391,8 +387,8 @@ const Groups = () => {
 
           <button
             onClick={() => setSelectedGroup(null)}
-            className="w-full py-2.5 rounded-xl font-semibold text-sm text-white transition-all"
-            style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)' }}
+            className="w-full py-2.5 rounded-xl font-bold text-sm text-white transition-all duration-200 shadow-md shadow-emerald-700/20 hover:opacity-95 active:scale-95"
+            style={{ background: EMERALD_GRADIENT }}
           >
             Yopish
           </button>

@@ -41,29 +41,29 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/40 to-violet-50/30 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50/20 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Orqa fon orblari */}
-      <div className="absolute top-[-10%] left-[-5%] w-[450px] h-[450px] bg-indigo-400/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] bg-violet-400/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-5%] w-[450px] h-[450px] bg-emerald-400/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] bg-teal-400/15 rounded-full blur-3xl pointer-events-none" />
       <div
         className="absolute inset-0 opacity-[0.025] pointer-events-none"
-        style={{ backgroundImage: `radial-gradient(#4f46e5 1px, transparent 1px)`, backgroundSize: '24px 24px' }}
+        style={{ backgroundImage: `radial-gradient(#059669 1px, transparent 1px)`, backgroundSize: '24px 24px' }}
       />
 
       {/* Login Card */}
       <div className="w-full max-w-[420px] relative z-10">
-        <div className="bg-white/95 backdrop-blur-xl border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-2xl shadow-indigo-900/10">
+        <div className="bg-white/95 backdrop-blur-xl border border-slate-200/80 rounded-3xl p-6 sm:p-10 shadow-2xl shadow-emerald-950/10">
 
           {/* Logo + Sarlavha */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white shadow-xl shadow-indigo-600/35 mb-5">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-700 text-white shadow-xl shadow-emerald-600/30 mb-5">
               <Sparkles className="w-8 h-8" />
             </div>
             <h1 className="text-2xl font-black text-slate-900 tracking-tight">
-              Xush kelibsiz
+              Administrator Portali
             </h1>
             <p className="text-sm text-slate-500 mt-1.5">
-              AI Practice boshqaruv paneliga kirish
+              AI Practice boshqaruv tizimiga kirish
             </p>
           </div>
 
@@ -92,7 +92,7 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@gmail.uz"
-                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-3.5 pl-10 pr-4 text-slate-900 text-sm placeholder-slate-400 font-medium focus:outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100/60 transition-all hover:border-slate-300"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-3.5 pl-10 pr-4 text-slate-900 text-sm placeholder-slate-400 font-medium focus:outline-none focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-100/60 transition-all hover:border-slate-300"
                 />
               </div>
             </div>
@@ -111,7 +111,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-3.5 pl-10 pr-12 text-slate-900 text-sm placeholder-slate-400 font-medium focus:outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100/60 transition-all hover:border-slate-300"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl py-3.5 pl-10 pr-12 text-slate-900 text-sm placeholder-slate-400 font-medium focus:outline-none focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-100/60 transition-all hover:border-slate-300"
                 />
                 <button
                   type="button"
@@ -129,7 +129,7 @@ const Login = () => {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 rounded-md border-2 border-slate-300 accent-indigo-600 cursor-pointer"
+                className="w-4 h-4 rounded-md border-2 border-slate-300 accent-emerald-600 cursor-pointer"
               />
               <span className="text-xs font-semibold text-slate-600">Meni eslab qol</span>
             </label>
@@ -139,7 +139,7 @@ const Login = () => {
               type="submit"
               id="admin-login-btn"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold py-4 px-6 rounded-2xl shadow-lg shadow-indigo-600/35 flex items-center justify-center gap-2.5 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.99] group text-sm mt-2"
+              className="w-full bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold py-4 px-6 rounded-2xl shadow-lg shadow-emerald-700/25 flex items-center justify-center gap-2.5 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.99] group text-sm mt-2"
             >
               {loading ? (
                 <>
@@ -157,7 +157,7 @@ const Login = () => {
 
           {/* Pastki xavfsizlik satri */}
           <div className="mt-7 pt-6 border-t border-slate-100 flex items-center justify-center gap-2 text-slate-500">
-            <CheckCircle className="w-4 h-4 text-emerald-500" />
+            <CheckCircle className="w-4 h-4 text-emerald-600" />
             <span className="text-[11px] font-semibold">256-bit SSL xavfsiz shifrlangan</span>
           </div>
 

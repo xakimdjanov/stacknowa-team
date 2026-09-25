@@ -17,12 +17,12 @@ const GroupDetail = () => {
             <input 
               type="text" 
               placeholder="Search anything..." 
-              className="pl-4 pr-10 py-2.5 rounded-xl border border-slate-200 text-sm w-64 focus:outline-none focus:border-blue-500 bg-white"
+              className="pl-4 pr-10 py-2.5 rounded-xl border border-slate-200 text-sm w-64 focus:outline-none focus:border-emerald-500 bg-white"
             />
           </div>
           <div className="w-10 h-10 rounded-full border border-slate-200 bg-white flex items-center justify-center cursor-pointer">
           </div>
-          <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm cursor-pointer">
+          <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white font-bold text-sm cursor-pointer">
             T
           </div>
         </div>
@@ -36,9 +36,9 @@ const GroupDetail = () => {
             <p className="text-sm text-slate-500 font-medium">Backend Development · 32 students · 3 active assignments</p>
           </div>
           <div className="flex items-center space-x-6">
-            <span className="bg-green-100 text-green-700 text-[11px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">Active</span>
-            <span className="text-sm font-bold text-blue-600">aipractice.uz/join/BACKEND101</span>
-            <button className="bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold px-6 py-2 rounded-full transition-colors">Copy link</button>
+            <span className="bg-emerald-100 text-emerald-700 text-[11px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">Active</span>
+            <span className="text-sm font-bold text-emerald-700">aipractice.uz/join/BACKEND101</span>
+            <button className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold px-6 py-2 rounded-full transition-colors cursor-pointer">Copy link</button>
           </div>
         </div>
 
