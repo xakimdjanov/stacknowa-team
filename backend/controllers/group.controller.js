@@ -130,6 +130,7 @@ exports.getGroupDetail = async (req, res) => {
     return res.status(200).json({
       success: true,
       group,
+      join_token: group.join_token,
       join_url: joinUrl,
       qr_code: qrCodeDataUrl,
     });

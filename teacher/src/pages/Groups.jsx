@@ -295,20 +295,23 @@ const Groups = () => {
           </p>
 
           <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 inline-block my-2">
-            <QRCodeSVG value={selectedGroup?.join_url || "https://aipractice.uz"} size={170} />
+            <QRCodeSVG value={selectedGroup?.join_token || selectedGroup?.group?.join_token || selectedGroup?.join_url || ""} size={170} />
           </div>
 
-          <div className="flex items-center space-x-2 bg-slate-100 p-2.5 rounded-xl border border-slate-200">
-            <span className="text-xs font-mono text-slate-700 truncate flex-1 text-left">
-              {selectedGroup?.join_url}
-            </span>
-            <button
-              onClick={() => copyToClipboard(selectedGroup?.join_url)}
-              className="p-1.5 rounded-lg bg-white text-slate-600 hover:text-[#1d58d8] shadow-sm border border-slate-200 text-xs flex items-center space-x-1"
-              title="Nusxalash"
-            >
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-            </button>
+          <div className="space-y-1 text-left">
+            <label className="text-[11px] font-semibold text-slate-500">Qo'shilish tokeni:</label>
+            <div className="flex items-center space-x-2 bg-slate-100 p-2.5 rounded-xl border border-slate-200">
+              <span className="text-xs font-mono font-bold text-slate-800 truncate flex-1 text-left select-all">
+                {selectedGroup?.join_token || selectedGroup?.group?.join_token || selectedGroup?.join_url}
+              </span>
+              <button
+                onClick={() => copyToClipboard(selectedGroup?.join_token || selectedGroup?.group?.join_token || selectedGroup?.join_url)}
+                className="p-1.5 rounded-lg bg-white text-slate-600 hover:text-[#1d58d8] shadow-sm border border-slate-200 text-xs flex items-center space-x-1"
+                title="Nusxalash"
+              >
+                {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+              </button>
+            </div>
           </div>
 
           {selectedGroup?.group?.access_code && (
