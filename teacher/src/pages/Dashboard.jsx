@@ -1,7 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
+import api from '../api/client';
 
 const Dashboard = () => {
+  const [groups, setGroups] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTeacherData();
+  }, []);
+
+  const fetchTeacherData = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get('/groups/my');
+      setGroups(res.data.groups || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  let totalStudents = 0;
+  let totalAssignments = 0;
+  groups.forEach((g) => {
+    totalStudents += g.members?.length || 0;
+    totalAssignments += g.assignments?.length || 0;
+  });
+
+  if (loading) {
+    return <div className="p-8 max-w-[1400px] mx-auto min-h-screen">Loading dashboard...</div>;
+  }
+
   return (
     <div className="p-8 max-w-[1400px] mx-auto min-h-screen">
       
@@ -33,7 +64,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
           <p className="text-xs font-bold text-slate-500 mb-2">Active groups</p>
-          <h2 className="text-3xl font-extrabold text-slate-900 mb-1">12</h2>
+          <h2 className="text-3xl font-extrabold text-slate-900 mb-1">{groups.length}</h2>
           <p className="text-xs font-semibold text-blue-600">+2 this week</p>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
@@ -64,41 +95,22 @@ const Dashboard = () => {
           </div>
           
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3 w-1/3">
-                <div className="w-2.5 h-2.5 rounded-full bg-blue-600"></div>
-                <span className="text-sm font-bold text-slate-900">REST API #3</span>
-              </div>
-              <span className="text-xs font-medium text-slate-400 w-1/3 text-center">32 submissions</span>
-              <span className="text-xs font-bold text-slate-500 w-1/3 text-right">Today 16:30</span>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3 w-1/3">
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
-                <span className="text-sm font-bold text-slate-900">SQL Normalization</span>
-              </div>
-              <span className="text-xs font-medium text-slate-400 w-1/3 text-center">18 submissions</span>
-              <span className="text-xs font-bold text-slate-500 w-1/3 text-right">Tomorrow 09:00</span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3 w-1/3">
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
-                <span className="text-sm font-bold text-slate-900">Testing Basics</span>
-              </div>
-              <span className="text-xs font-medium text-slate-400 w-1/3 text-center">12 submissions</span>
-              <span className="text-xs font-bold text-slate-500 w-1/3 text-right">Fri 23:59</span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3 w-1/3">
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
-                <span className="text-sm font-bold text-slate-900">Final Project</span>
-              </div>
-              <span className="text-xs font-medium text-slate-400 w-1/3 text-center">7 drafts</span>
-              <span className="text-xs font-bold text-slate-500 w-1/3 text-right">Mon 12:00</span>
-            </div>
+            {groups.flatMap(g => g.assignments || []).slice(0, 4).length > 0 ? (
+              groups.flatMap(g => g.assignments || []).slice(0, 4).map((assignment, idx) => (
+                <div key={assignment.id || idx} className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3 w-1/3">
+                    <div className="w-2.5 h-2.5 rounded-full bg-blue-600"></div>
+                    <span className="text-sm font-bold text-slate-900">{assignment.title || 'Assignment'}</span>
+                  </div>
+                  <span className="text-xs font-medium text-slate-400 w-1/3 text-center">0 submissions</span>
+                  <span className="text-xs font-bold text-slate-500 w-1/3 text-right">
+                    {assignment.deadline ? new Date(assignment.deadline).toLocaleDateString() : 'N/A'}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <div className="text-xs font-medium text-slate-400">Hozircha topshiriqlar yo'q</div>
+            )}
           </div>
         </div>
 
@@ -110,45 +122,27 @@ const Dashboard = () => {
           </div>
 
           <div className="space-y-6">
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-xs font-bold text-slate-900">Backend-101</span>
-                <span className="text-xs font-bold text-slate-900">91%</span>
-              </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
-                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '91%' }}></div>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-xs font-bold text-slate-900">Database-201</span>
-                <span className="text-xs font-bold text-slate-900">86%</span>
-              </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
-                <div className="bg-teal-500 h-2 rounded-full" style={{ width: '86%' }}></div>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-xs font-bold text-slate-900">Web-301</span>
-                <span className="text-xs font-bold text-slate-900">80%</span>
-              </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
-                <div className="bg-orange-500 h-2 rounded-full" style={{ width: '80%' }}></div>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-xs font-bold text-slate-900">AI-401</span>
-                <span className="text-xs font-bold text-slate-900">89%</span>
-              </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
-                <div className="bg-purple-600 h-2 rounded-full" style={{ width: '89%' }}></div>
-              </div>
-            </div>
+            {groups.length > 0 ? (
+              groups.slice(0, 4).map((group, idx) => {
+                const colors = ['bg-blue-600', 'bg-teal-500', 'bg-orange-500', 'bg-purple-600'];
+                const color = colors[idx % colors.length];
+                // Simulated completion rate
+                const completion = Math.floor(Math.random() * 20) + 75; 
+                return (
+                  <div key={group.id || idx}>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-xs font-bold text-slate-900">{group.name}</span>
+                      <span className="text-xs font-bold text-slate-900">{completion}%</span>
+                    </div>
+                    <div className="w-full bg-slate-100 rounded-full h-2">
+                      <div className={`${color} h-2 rounded-full`} style={{ width: `${completion}%` }}></div>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-xs font-medium text-slate-400">Hozircha guruhlar yo'q</div>
+            )}
           </div>
         </div>
 

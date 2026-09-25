@@ -1,6 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '../api/client';
 
 const Assignments = () => {
+  const [assignments, setAssignments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAssignments();
+  }, []);
+
+  const fetchAssignments = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get('/groups/my');
+      const allGroups = res.data.groups || [];
+      const allAssignments = allGroups.flatMap(g => g.assignments || []);
+      setAssignments(allAssignments);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <div className="p-8 max-w-[1400px] mx-auto min-h-screen">Loading assignments...</div>;
+  }
+
   return (
     <div className="p-8 max-w-[1400px] mx-auto min-h-screen">
       
@@ -48,47 +74,26 @@ const Assignments = () => {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
           <div className="mb-6">
             <h3 className="text-lg font-bold text-slate-900">Active assignments</h3>
-            <p className="text-xs text-slate-500 font-medium mt-1">4 live · 2 scheduled</p>
+            <p className="text-xs text-slate-500 font-medium mt-1">{assignments.length} live</p>
           </div>
 
           <div className="space-y-4">
-            {/* Selected Card */}
-            <div className="p-5 rounded-2xl border border-blue-400 bg-blue-50/50 cursor-pointer">
-              <div className="flex justify-between items-start mb-3">
-                <h4 className="text-[15px] font-bold text-slate-900">REST API yaratish</h4>
-                <span className="bg-green-100 text-green-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">AUTO-SCORE ON</span>
-              </div>
-              <p className="text-[13px] text-slate-500 font-medium mb-3">Practical Work v3 - 100 pts</p>
-              <p className="text-[11px] text-slate-400 font-medium">Due tomorrow</p>
-            </div>
-
-            {/* Unselected Cards */}
-            <div className="p-5 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer transition-colors">
-              <div className="flex justify-between items-start mb-3">
-                <h4 className="text-[15px] font-bold text-slate-900">SQL Normalization</h4>
-                <span className="bg-blue-50 text-blue-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">READY</span>
-              </div>
-              <p className="text-[13px] text-slate-500 font-medium mb-3">Lab v2 - 100 pts</p>
-              <p className="text-[11px] text-slate-400 font-medium">Fri 23:59</p>
-            </div>
-
-            <div className="p-5 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer transition-colors">
-              <div className="flex justify-between items-start mb-3">
-                <h4 className="text-[15px] font-bold text-slate-900">Testing Basics</h4>
-                <span className="bg-blue-50 text-blue-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">READY</span>
-              </div>
-              <p className="text-[13px] text-slate-500 font-medium mb-3">Lab v1 - 80 pts</p>
-              <p className="text-[11px] text-slate-400 font-medium">Mon 23:59</p>
-            </div>
-
-            <div className="p-5 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer transition-colors">
-              <div className="flex justify-between items-start mb-3">
-                <h4 className="text-[15px] font-bold text-slate-900">Final Project</h4>
-                <span className="bg-blue-50 text-blue-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">READY</span>
-              </div>
-              <p className="text-[13px] text-slate-500 font-medium mb-3">Project Brief - 120 pts</p>
-              <p className="text-[11px] text-slate-400 font-medium">20 Dec</p>
-            </div>
+            {assignments.length > 0 ? (
+              assignments.map((assignment, idx) => (
+                <div key={assignment.id} className={`p-5 rounded-2xl border cursor-pointer transition-colors ${idx === 0 ? 'border-blue-400 bg-blue-50/50' : 'border-slate-200 bg-white hover:bg-slate-50'}`}>
+                  <div className="flex justify-between items-start mb-3">
+                    <h4 className="text-[15px] font-bold text-slate-900">{assignment.title}</h4>
+                    <span className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider ${idx === 0 ? 'bg-green-100 text-green-700' : 'bg-blue-50 text-blue-600'}`}>
+                      {idx === 0 ? 'AUTO-SCORE ON' : 'READY'}
+                    </span>
+                  </div>
+                  <p className="text-[13px] text-slate-500 font-medium mb-3">Max pts: {assignment.max_score || 100}</p>
+                  <p className="text-[11px] text-slate-400 font-medium">{assignment.deadline ? new Date(assignment.deadline).toLocaleDateString() : 'No deadline'}</p>
+                </div>
+              ))
+            ) : (
+              <div className="text-sm text-slate-500">Hozircha topshiriqlar yo'q</div>
+            )}
           </div>
         </div>
 

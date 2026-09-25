@@ -1,6 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import api from '../api/client';
 
 const Groups = () => {
+  const [groups, setGroups] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchGroups();
+  }, []);
+
+  const fetchGroups = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get('/groups/my');
+      setGroups(res.data.groups || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <div className="p-8 max-w-[1400px] mx-auto min-h-screen">Loading groups...</div>;
+  }
+
   return (
     <div className="p-8 max-w-[1400px] mx-auto min-h-screen">
       
@@ -41,73 +67,42 @@ const Groups = () => {
         </button>
       </div>
 
-      {/* 4 Cards Grid */}
+      {/* Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        
-        {/* Card 1 */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between h-40">
-          <div>
-            <h3 className="text-base font-bold text-slate-900 mb-1">Backend-101</h3>
-            <p className="text-xs text-slate-500 font-medium">32 students · 82.4% avg</p>
-          </div>
-          <div className="flex items-center justify-between mt-4">
-            <div className="flex items-center space-x-3">
-              <span className="bg-green-100 text-green-700 text-xs font-bold px-4 py-1.5 rounded-full">Active</span>
-              <button className="bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold px-4 py-1.5 rounded-full transition-colors">Open group</button>
-              <button className="bg-cyan-50 hover:bg-cyan-100 text-cyan-600 text-xs font-bold px-4 py-1.5 rounded-full transition-colors">Copy link</button>
+        {groups.length > 0 ? (
+          groups.map(group => (
+            <div key={group.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between h-40">
+              <div>
+                <h3 className="text-base font-bold text-slate-900 mb-1">{group.name}</h3>
+                <p className="text-xs text-slate-500 font-medium">
+                  {group.members?.length || 0} students · 0% avg
+                </p>
+              </div>
+              <div className="flex items-center justify-between mt-4">
+                <div className="flex items-center space-x-3">
+                  <span className="bg-green-100 text-green-700 text-xs font-bold px-4 py-1.5 rounded-full">Active</span>
+                  <button 
+                    onClick={() => navigate(`/groups/${group.id}`)}
+                    className="bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold px-4 py-1.5 rounded-full transition-colors"
+                  >
+                    Open group
+                  </button>
+                  <button 
+                    onClick={() => navigator.clipboard.writeText(`${window.location.origin}/join/${group.join_token}`)}
+                    className="bg-cyan-50 hover:bg-cyan-100 text-cyan-600 text-xs font-bold px-4 py-1.5 rounded-full transition-colors"
+                  >
+                    Copy link
+                  </button>
+                </div>
+                <span className="text-[11px] font-bold text-slate-400">
+                  {new Date(group.created_at).toLocaleDateString()}
+                </span>
+              </div>
             </div>
-            <span className="text-[11px] font-bold text-slate-400">Today · 10:42</span>
-          </div>
-        </div>
-
-        {/* Card 2 */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between h-40">
-          <div>
-            <h3 className="text-base font-bold text-slate-900 mb-1">Database-201</h3>
-            <p className="text-xs text-slate-500 font-medium">28 students · 86.1% avg</p>
-          </div>
-          <div className="flex items-center justify-between mt-4">
-            <div className="flex items-center space-x-3">
-              <span className="bg-green-100 text-green-700 text-xs font-bold px-4 py-1.5 rounded-full">Active</span>
-              <button className="bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold px-4 py-1.5 rounded-full transition-colors">Open group</button>
-              <button className="bg-cyan-50 hover:bg-cyan-100 text-cyan-600 text-xs font-bold px-4 py-1.5 rounded-full transition-colors">Copy link</button>
-            </div>
-            <span className="text-[11px] font-bold text-slate-400">Today · 10:42</span>
-          </div>
-        </div>
-
-        {/* Card 3 */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between h-40">
-          <div>
-            <h3 className="text-base font-bold text-slate-900 mb-1">Web-301</h3>
-            <p className="text-xs text-slate-500 font-medium">35 students · 79.7% avg</p>
-          </div>
-          <div className="flex items-center justify-between mt-4">
-            <div className="flex items-center space-x-3">
-              <span className="bg-green-100 text-green-700 text-xs font-bold px-4 py-1.5 rounded-full">Active</span>
-              <button className="bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold px-4 py-1.5 rounded-full transition-colors">Open group</button>
-              <button className="bg-cyan-50 hover:bg-cyan-100 text-cyan-600 text-xs font-bold px-4 py-1.5 rounded-full transition-colors">Copy link</button>
-            </div>
-            <span className="text-[11px] font-bold text-slate-400">Today · 10:42</span>
-          </div>
-        </div>
-
-        {/* Card 4 */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between h-40">
-          <div>
-            <h3 className="text-base font-bold text-slate-900 mb-1">AI-401</h3>
-            <p className="text-xs text-slate-500 font-medium">24 students · 88.6% avg</p>
-          </div>
-          <div className="flex items-center justify-between mt-4">
-            <div className="flex items-center space-x-3">
-              <span className="bg-green-100 text-green-700 text-xs font-bold px-4 py-1.5 rounded-full">Active</span>
-              <button className="bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold px-4 py-1.5 rounded-full transition-colors">Open group</button>
-              <button className="bg-cyan-50 hover:bg-cyan-100 text-cyan-600 text-xs font-bold px-4 py-1.5 rounded-full transition-colors">Copy link</button>
-            </div>
-            <span className="text-[11px] font-bold text-slate-400">Today · 10:42</span>
-          </div>
-        </div>
-
+          ))
+        ) : (
+          <div className="col-span-1 md:col-span-2 text-sm text-slate-500 py-4">Hozircha guruhlar yo'q</div>
+        )}
       </div>
 
       {/* Fast Onboarding Section */}
