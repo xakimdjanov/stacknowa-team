@@ -314,19 +314,19 @@ const Plans = () => {
     <div className="min-h-full bg-slate-50">
 
       {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-100 px-8 pt-7 pb-6">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+      <div className="bg-white border-b border-slate-100 px-4 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-6">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-800 tracking-tight">
               Obuna Tariflari
             </h1>
-            <p className="text-slate-400 text-sm mt-1">
+            <p className="text-slate-400 text-xs sm:text-sm mt-1">
               O'qituvchi va talabalar uchun narxlar hamda imkoniyatlarni boshqarish.
             </p>
           </div>
           <button
             onClick={openCreateModal}
-            className="inline-flex items-center gap-2 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all self-start"
+            className="inline-flex items-center justify-center gap-2 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all w-full sm:w-auto self-start sm:self-auto"
             style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', boxShadow: '0 4px 14px rgba(99,102,241,0.4)' }}
             onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
             onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
@@ -337,7 +337,7 @@ const Plans = () => {
         </div>
 
         {/* Stat chips */}
-        <div className="max-w-7xl mx-auto flex flex-wrap gap-3 mt-5">
+        <div className="max-w-7xl mx-auto flex flex-wrap gap-2 sm:gap-3 mt-4 sm:mt-5">
           {[
             { label: 'Jami tariflar', value: plans.length, icon: CreditCard, color: '#6366f1' },
             { label: 'Teacher tariflar', value: plans.filter((p) => p.role_target === 'TEACHER').length, icon: Users, color: '#059669' },
@@ -345,13 +345,13 @@ const Plans = () => {
           ].map(({ label, value, icon: Icon, color }) => (
             <div
               key={label}
-              className="bg-white rounded-xl border border-slate-100 px-4 py-3 flex items-center gap-3 shadow-sm"
+              className="bg-white rounded-xl border border-slate-100 px-3 sm:px-4 py-2.5 sm:py-3 flex items-center gap-2.5 sm:gap-3 shadow-sm flex-1 min-w-[130px]"
             >
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${color}15` }}>
-                <Icon className="w-4 h-4" style={{ color }} />
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: `${color}15` }}>
+                <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" style={{ color }} />
               </div>
               <div>
-                <p className="text-base font-extrabold text-slate-800 leading-none">{value}</p>
+                <p className="text-sm sm:text-base font-extrabold text-slate-800 leading-none">{value}</p>
                 <p className="text-[10px] text-slate-400 mt-0.5">{label}</p>
               </div>
             </div>
@@ -360,7 +360,7 @@ const Plans = () => {
       </div>
 
       {/* ── Cards ── */}
-      <div className="max-w-7xl mx-auto px-8 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-5 sm:py-6">
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {[...Array(3)].map((_, i) => <SkeletonCard key={i} />)}

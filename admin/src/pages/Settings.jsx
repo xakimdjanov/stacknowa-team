@@ -106,13 +106,13 @@ const Settings = () => {
     <div className="min-h-full bg-slate-50">
 
       {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-100 px-8 pt-7 pb-6">
+      <div className="bg-white border-b border-slate-100 px-4 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-6">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-800 tracking-tight">
               Tizim Sozlamalari
             </h1>
-            <p className="text-slate-400 text-sm mt-1">
+            <p className="text-slate-400 text-xs sm:text-sm mt-1">
               Server konfiguratsiyasi, integratsiyalar va tizim holati.
             </p>
           </div>
@@ -129,7 +129,7 @@ const Settings = () => {
       </div>
 
       {/* ── Main Content ── */}
-      <div className="max-w-5xl mx-auto px-8 py-6 space-y-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-8 py-5 sm:py-6 space-y-6 sm:space-y-8">
 
         {/* 2-column grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
