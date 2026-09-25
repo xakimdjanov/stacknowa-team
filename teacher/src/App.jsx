@@ -8,6 +8,11 @@ import Assignments from './pages/Assignments';
 import Evaluations from './pages/Evaluations';
 import Subscription from './pages/Subscription';
 import GroupDetail from './pages/GroupDetail';
+import Submissions from './pages/Submissions';
+import StudentDetail from './pages/StudentDetail';
+import Analytics from './pages/Analytics';
+import AIAssistant from './pages/AIAssistant';
+import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
 
@@ -33,8 +38,14 @@ const ProtectedLayout = () => {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/groups" element={<Groups />} />
+          <Route path="/group-detail" element={<GroupDetail />} />
           <Route path="/groups/:groupId" element={<GroupDetail />} />
           <Route path="/assignments" element={<Assignments />} />
+          <Route path="/submissions" element={<Submissions />} />
+          <Route path="/student-detail" element={<StudentDetail />} />
+          <Route path="/analytics" element={<Analytics />} />
+          <Route path="/ai-assistant" element={<AIAssistant />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/evaluations" element={<Evaluations />} />
           <Route path="/subscription" element={<Subscription />} />
           <Route path="*" element={<Navigate to="/" replace />} />
