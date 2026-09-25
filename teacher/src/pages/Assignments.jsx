@@ -209,34 +209,37 @@ const Assignments = () => {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8">
+    <div className="p-8 max-w-[1400px] mx-auto min-h-screen bg-slate-50">
+      
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex items-center justify-between mb-10">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Amaliy Mashg'ulot Topshiriqlari</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Guruhlar uchun amaliy ish mavzulari, shablon fayllar, tahrirlash va muddatlar.
-          </p>
+          <h1 className="text-[28px] font-extrabold text-slate-900 tracking-tight">Assignments</h1>
+          <p className="text-sm text-slate-500 font-medium mt-1">Templates, rubrics and automation</p>
         </div>
-        <button
-          onClick={() => {
-            setFormData((prev) => ({ ...prev, group_id: selectedGroupId }));
-            setShowCreateModal(true);
-          }}
-          className="inline-flex items-center space-x-2 bg-[#1d58d8] hover:bg-[#1648b8] text-white font-semibold py-2.5 px-5 rounded-2xl shadow-md shadow-blue-500/20 text-sm transition-all self-start sm:self-auto"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Yangi Topshiriq</span>
-        </button>
+        
+        <div className="flex items-center space-x-4">
+          <div className="relative">
+            <input 
+              type="text" 
+              placeholder="Search anything..." 
+              className="pl-4 pr-10 py-2.5 rounded-xl border border-slate-200 text-sm w-64 focus:outline-none focus:border-blue-500 bg-white"
+            />
+          </div>
+          <div className="w-10 h-10 rounded-full border border-slate-200 bg-white flex items-center justify-center cursor-pointer">
+          </div>
+          <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm cursor-pointer">
+            T
+          </div>
+        </div>
       </div>
 
-      {/* Select Group Filter */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center space-x-3">
-        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Guruhni tanlang:</span>
+      {/* Select Group Filter (Hidden in screenshot but needed for backend logic to work, so I'll place it elegantly) */}
+      <div className="mb-6 max-w-sm">
         <select
           value={selectedGroupId}
           onChange={(e) => setSelectedGroupId(e.target.value)}
-          className="bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-[#1d58d8] font-semibold text-slate-800"
+          className="bg-white border border-slate-200 rounded-xl py-2 px-4 text-sm focus:outline-none focus:border-blue-600 font-semibold text-slate-800 shadow-sm w-full"
         >
           {groups.map((g) => (
             <option key={g.id} value={g.id}>
@@ -246,109 +249,123 @@ const Assignments = () => {
         </select>
       </div>
 
-      {/* Assignments Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {assignments.length === 0 ? (
-          <div className="col-span-3 bg-white rounded-3xl p-12 text-center border border-slate-200/80">
-            <BookOpen className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-600 font-semibold">Ushbu guruhda hozircha topshiriqlar yo'q</p>
-            <p className="text-xs text-slate-400 mt-1">Yangi topshiriq qo'shing va talabalarga e'lon qiling</p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900">Assignments & templates</h2>
+          <p className="text-xs text-slate-500 font-medium mt-1">
+            Reusable practical-work templates, rubrics and automated evaluation rules.
+          </p>
+        </div>
+        <button 
+          onClick={() => {
+            setFormData((prev) => ({ ...prev, group_id: selectedGroupId }));
+            setShowCreateModal(true);
+          }}
+          className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2.5 px-6 rounded-full shadow-sm transition-colors flex items-center space-x-1"
+        >
+          <span>+</span>
+          <span>Create assignment</span>
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        {/* Left Col - Assignments List */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div className="mb-6">
+            <h3 className="text-lg font-bold text-slate-900">Active assignments</h3>
+            <p className="text-xs text-slate-500 font-medium">{assignments.length} live</p>
           </div>
-        ) : (
-          assignments.map((a) => (
-            <div key={a.id} className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase">
-                    {a.status}
-                  </span>
-                  
-                  {/* Action tugmalari (Tahrirlash va O'chirish) */}
-                  <div className="flex items-center space-x-1">
-                    <button
-                      onClick={() => setEditingAssignment({
-                        ...a,
-                        deadline: a.deadline ? new Date(a.deadline).toISOString().slice(0, 16) : '',
-                      })}
-                      className="p-1.5 text-slate-400 hover:text-[#1d58d8] hover:bg-blue-50 rounded-lg transition-colors"
-                      title="Tahrirlash"
-                    >
-                      <Edit3 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => setDeleteConfirm(a)}
-                      className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                      title="O'chirish"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+
+          <div className="space-y-4">
+            {assignments.length === 0 ? (
+              <div className="text-sm text-slate-500 py-4">No assignments yet.</div>
+            ) : (
+              assignments.map((a, idx) => (
+                <div key={a.id} className={`border ${idx === 0 ? 'border-blue-300 bg-blue-50/50' : 'border-slate-200'} rounded-xl p-5 flex items-center justify-between cursor-pointer transition-colors hover:border-blue-400`}>
+                  <div>
+                    <h4 className="text-base font-bold text-slate-900 mb-1">{a.title}</h4>
+                    <p className="text-xs text-slate-500 font-medium">Practical Work · {a.max_score} pts</p>
+                    <p className="text-[11px] text-slate-400 font-bold mt-2">Due {new Date(a.deadline).toLocaleDateString()}</p>
+                  </div>
+                  <div>
+                    {idx === 0 ? (
+                      <span className="bg-green-100 text-green-700 text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
+                        Auto-Score ON
+                      </span>
+                    ) : (
+                      <span className="bg-blue-50 text-blue-600 text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
+                        Ready
+                      </span>
+                    )}
                   </div>
                 </div>
+              ))
+            )}
+          </div>
+        </div>
 
-                <h3 className="text-lg font-bold text-slate-900">{a.title}</h3>
-                <p className="text-xs text-slate-500 mt-1 line-clamp-2">{a.description || "Tavsif berilmagan"}</p>
+        {/* Right Col - Details Mock */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
+          <h3 className="text-lg font-bold text-slate-900 mb-1">REST API yaratish</h3>
+          <p className="text-xs text-slate-500 font-medium mb-8">Template: Practical Work v3</p>
 
-                {a.template_file_url && (
-                  <div className="mt-3 p-3 bg-blue-50/70 border border-blue-200/80 rounded-2xl flex flex-col space-y-2">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-blue-900 flex items-center space-x-1.5 truncate">
-                        <Paperclip className="w-3.5 h-3.5 text-[#1d58d8] flex-shrink-0" />
-                        <span className="truncate" title={getFileNameFromUrl(a.template_file_url)}>
-                          {getFileNameFromUrl(a.template_file_url)}
-                        </span>
-                      </span>
-                      <span className="text-[10px] uppercase font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full flex-shrink-0">
-                        {a.template_file_url.includes('amazonaws.com') ? 'AWS S3' : 'Fayl'}
-                      </span>
-                    </div>
-                    <a
-                      href={getFileUrl(a.template_file_url)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center space-x-1.5 w-full py-2 px-3 bg-white hover:bg-blue-50 text-[#1d58d8] text-xs font-semibold rounded-xl border border-blue-200 transition-colors shadow-sm"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>Shablon faylni ko'rish / ochish</span>
-                      <ExternalLink className="w-3 h-3 ml-0.5" />
-                    </a>
-                  </div>
-                )}
-
-                <div className="mt-4 pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-600">
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center space-x-1 text-slate-500">
-                      <Clock className="w-3.5 h-3.5" />
-                      <span>Deadline:</span>
-                    </span>
-                    <span className="font-semibold text-rose-600">
-                      {new Date(a.deadline).toLocaleDateString()} {new Date(a.deadline).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center space-x-1 text-slate-500">
-                      <Users className="w-3.5 h-3.5" />
-                      <span>Topshirganlar:</span>
-                    </span>
-                    <span className="font-bold text-[#1d58d8]">
-                      {a.submissions?.length || 0} nafar talaba
-                    </span>
-                  </div>
-                </div>
+          <div className="space-y-6 mb-10">
+            <div>
+              <div className="flex justify-between text-xs font-bold text-slate-900 mb-2">
+                <span>Format</span>
+                <span className="text-blue-600">20 pts</span>
               </div>
-
-              <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
-                <span className="text-[11px] font-semibold text-indigo-600 flex items-center space-x-1">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>AI baholash faol</span>
-                </span>
-                <span className="text-xs font-bold text-slate-700 bg-slate-100 px-3 py-1.5 rounded-xl">
-                  Max: {a.max_score} ball
-                </span>
+              <div className="w-full bg-slate-100 rounded-full h-2">
+                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '80%' }}></div>
               </div>
             </div>
-          ))
-        )}
+            <div>
+              <div className="flex justify-between text-xs font-bold text-slate-900 mb-2">
+                <span>Implementation</span>
+                <span className="text-blue-600">40 pts</span>
+              </div>
+              <div className="w-full bg-slate-100 rounded-full h-2">
+                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '90%' }}></div>
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between text-xs font-bold text-slate-900 mb-2">
+                <span>Explanation</span>
+                <span className="text-blue-600">20 pts</span>
+              </div>
+              <div className="w-full bg-slate-100 rounded-full h-2">
+                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '85%' }}></div>
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between text-xs font-bold text-slate-900 mb-2">
+                <span>Conclusion</span>
+                <span className="text-blue-600">20 pts</span>
+              </div>
+              <div className="w-full bg-slate-100 rounded-full h-2">
+                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '70%' }}></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-start space-y-3">
+            <span className="bg-green-50 text-green-700 text-xs font-bold px-4 py-2 rounded-full">Auto-score enabled</span>
+            <span className="bg-purple-50 text-purple-700 text-xs font-bold px-4 py-2 rounded-full">Similarity check</span>
+            <span className="bg-orange-50 text-orange-700 text-xs font-bold px-4 py-2 rounded-full">AI-writing signal</span>
+          </div>
+
+          <div className="mt-8">
+            <button className="bg-blue-50 text-blue-600 text-xs font-bold px-6 py-2.5 rounded-full transition-colors hover:bg-blue-100">
+              Save assignment
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer Info */}
+      <div className="flex items-center justify-between text-[11px] font-bold px-2">
+        <span className="text-slate-400">4 criteria · 100 points · AI evaluation + integrity checks enabled</span>
+        <span className="text-blue-500">Synced just now</span>
       </div>
 
       {/* CREATE ASSIGNMENT MODAL */}
