@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Sidebar from './components/Sidebar';
-import Navbar from './components/Navbar';
 import Modal from './components/Modal';
 import api from './api/client';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
@@ -80,9 +79,8 @@ const Layout = ({ children }) => {
   return (
     <div className="flex min-h-screen bg-[#f8fafc]">
       <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0">
-        <Navbar onOpenJoinModal={() => setShowGlobalJoinModal(true)} />
-        <main className="flex-1 pb-16">
+      <div className="flex-1 flex flex-col min-w-0 pt-[58px] md:pt-0">
+        <main className="flex-1 pb-20 md:pb-6">
           {children}
         </main>
       </div>

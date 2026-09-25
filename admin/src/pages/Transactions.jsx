@@ -111,14 +111,14 @@ const Transactions = () => {
     <div className="min-h-full bg-slate-50">
 
       {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-100 px-8 pt-7 pb-6">
+      <div className="bg-white border-b border-slate-100 px-4 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-extrabold text-slate-800 tracking-tight">
                 To'lovlar Tarixi
               </h1>
-              <p className="text-slate-400 text-sm mt-1">
+              <p className="text-slate-400 text-xs sm:text-sm mt-1">
                 Foydalanuvchilarning Pro obuna uchun amalga oshirgan barcha tranzaksiyalari.
               </p>
             </div>
@@ -126,7 +126,7 @@ const Transactions = () => {
             <button
               onClick={fetchTransactions}
               disabled={loading}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs hover:bg-slate-50 transition-all self-start sm:self-auto"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs hover:bg-slate-50 transition-all w-full sm:w-auto self-start sm:self-auto"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-indigo-500' : ''}`} />
               Yangilash
@@ -134,7 +134,7 @@ const Transactions = () => {
           </div>
 
           {/* Stats row */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
             <StatCard
               label="Jami daromad"
               value={`${totalRevenue.toLocaleString()} so'm`}
@@ -165,10 +165,10 @@ const Transactions = () => {
       </div>
 
       {/* ── Main ── */}
-      <div className="max-w-7xl mx-auto px-8 py-6 space-y-5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-5 sm:py-6 space-y-5">
 
         {/* Filter bar */}
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm px-5 py-4 flex flex-col sm:flex-row items-center gap-4">
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm px-4 sm:px-5 py-3 sm:py-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
           <div className="relative flex-1 w-full">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
@@ -181,8 +181,8 @@ const Transactions = () => {
           </div>
 
           {/* Status filter tabs */}
-          <div className="flex items-center gap-1.5 bg-slate-100 rounded-xl p-1 flex-shrink-0">
-            <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400 ml-1" />
+          <div className="flex items-center gap-1.5 bg-slate-100 rounded-xl p-1 overflow-x-auto w-full sm:w-auto flex-shrink-0">
+            <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400 ml-1 flex-shrink-0" />
             {[
               { value: '',         label: 'Hammasi',       color: '#6366f1' },
               { value: 'success',  label: "Muvaffaqiyatli", color: '#059669' },
@@ -192,7 +192,7 @@ const Transactions = () => {
               <button
                 key={opt.value}
                 onClick={() => setStatusFilter(opt.value)}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
                 style={
                   statusFilter === opt.value
                     ? { background: 'white', color: opt.color, boxShadow: '0 1px 4px rgba(0,0,0,0.1)' }

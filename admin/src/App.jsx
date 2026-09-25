@@ -27,9 +27,9 @@ const ProtectedLayout = () => {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50">
+    <div className="flex min-h-screen bg-slate-50">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto h-screen pb-12">
+      <main className="flex-1 min-w-0 pt-[58px] md:pt-0 pb-20 md:pb-12 h-auto md:h-screen md:overflow-y-auto">
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/users" element={<Users />} />

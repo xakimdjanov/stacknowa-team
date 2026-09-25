@@ -23,7 +23,7 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = "max-w-lg" }) => {
       onClick={onClose}
     >
       <div 
-        className={`bg-white rounded-3xl p-6 sm:p-8 w-full ${maxWidth} shadow-2xl relative my-auto transition-all`}
+        className={`bg-white rounded-3xl p-4 sm:p-7 w-full ${maxWidth} shadow-2xl relative my-auto transition-all`}
         style={{ margin: 'auto', maxHeight: '90vh', overflowY: 'auto' }}
         onClick={(e) => e.stopPropagation()}
       >

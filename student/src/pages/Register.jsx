@@ -43,8 +43,8 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-white">
-      {/* CHAP TOMON: KO'K BRENDING VA RASMLI ILUSTRATSIYA */}
-      <div className="lg:w-1/2 bg-[#1d58d8] p-8 lg:p-14 flex flex-col justify-between text-white relative overflow-hidden">
+      {/* CHAP TOMON: KO'K BRENDING VA RASMLI ILUSTRATSIYA (faqat desktopda ko'rinadi) */}
+      <div className="hidden lg:flex lg:w-1/2 bg-[#1d58d8] p-8 lg:p-14 flex-col justify-between text-white relative overflow-hidden">
         {/* Yuqori logotip */}
         <div className="flex items-center space-x-3 z-10">
           <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center text-white backdrop-blur-sm">
@@ -85,7 +85,7 @@ const Register = () => {
       </div>
 
       {/* O'NG TOMON: RO'YXATDAN O'TISH FORMASI */}
-      <div className="lg:w-1/2 p-8 lg:p-14 flex flex-col justify-between bg-white overflow-y-auto">
+      <div className="w-full lg:w-1/2 p-6 sm:p-8 lg:p-14 flex flex-col justify-between bg-white overflow-y-auto min-h-screen lg:min-h-0">
         <div className="max-w-md w-full mx-auto my-auto py-6">
           {/* Kichik brend sarlavhasi */}
           <div className="flex items-center space-x-2 text-[#1d58d8] font-bold text-xs uppercase tracking-wider mb-6">

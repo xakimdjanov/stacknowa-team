@@ -242,19 +242,19 @@ const Groups = () => {
     <div className="min-h-full bg-slate-50">
 
       {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-100 px-8 pt-7 pb-6">
+      <div className="bg-white border-b border-slate-100 px-4 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-6">
         <div className="max-w-7xl mx-auto">
           <div className="mb-6">
-            <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-800 tracking-tight">
               Guruhlar & QR Kodlar
             </h1>
-            <p className="text-slate-400 text-sm mt-1">
+            <p className="text-slate-400 text-xs sm:text-sm mt-1">
               O'qituvchilar tomonidan yaratilgan barcha akademik guruhlar, talabalar va topshiriqlar.
             </p>
           </div>
 
           {/* Mini stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
             <MiniStat label="Jami guruhlar"  value={groups.length}    color="#6366f1" icon={Layers}      />
             <MiniStat label="Faol guruhlar"  value={activeCount}      color="#059669" icon={Layers}      />
             <MiniStat label="Jami talabalar" value={totalMembers}     color="#8b5cf6" icon={Users}       />
@@ -264,10 +264,10 @@ const Groups = () => {
       </div>
 
       {/* ── Main ── */}
-      <div className="max-w-7xl mx-auto px-8 py-6 space-y-5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-5 sm:py-6 space-y-5">
 
         {/* Filter bar */}
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm px-5 py-4 flex flex-col sm:flex-row items-center gap-4">
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm px-4 sm:px-5 py-3 sm:py-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
           <div className="relative flex-1 w-full">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
@@ -279,8 +279,8 @@ const Groups = () => {
             />
           </div>
 
-          <div className="flex items-center gap-1.5 bg-slate-100 rounded-xl p-1 flex-shrink-0">
-            <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400 ml-1" />
+          <div className="flex items-center gap-1.5 bg-slate-100 rounded-xl p-1 overflow-x-auto w-full sm:w-auto flex-shrink-0">
+            <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400 ml-1 flex-shrink-0" />
             {[
               { value: '',       label: 'Hammasi' },
               { value: 'active', label: 'Faol'    },

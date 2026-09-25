@@ -14,6 +14,8 @@ import {
   XCircle,
   Sparkles,
   SlidersHorizontal,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 
 /* ─── Role badge ─────────────────────────── */
@@ -120,6 +122,7 @@ const Users = () => {
   const [editingUser, setEditingUser]           = useState(null);
   const [deleteConfirmUser, setDeleteConfirmUser] = useState(null);
   const [saving, setSaving]                     = useState(false);
+  const [showModalPassword, setShowModalPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '', email: '', password: '', role: 'STUDENT', plan_type: 'FREE', is_active: true,
@@ -144,12 +147,14 @@ const Users = () => {
   const openCreateModal = () => {
     setEditingUser(null);
     setFormData({ name: '', email: '', password: '', role: 'STUDENT', plan_type: 'FREE', is_active: true });
+    setShowModalPassword(false);
     setShowModal(true);
   };
 
   const openEditModal = (u) => {
     setEditingUser(u);
     setFormData({ name: u.name, email: u.email, password: '', role: u.role, plan_type: u.plan_type, is_active: u.is_active });
+    setShowModalPassword(false);
     setShowModal(true);
   };
 
@@ -199,21 +204,21 @@ const Users = () => {
     <div className="min-h-full bg-slate-50">
 
       {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-100 px-8 pt-7 pb-6">
+      <div className="bg-white border-b border-slate-100 px-4 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-6">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-extrabold text-slate-800 tracking-tight">
                 Foydalanuvchilar Boshqaruvi
               </h1>
-              <p className="text-slate-400 text-sm mt-1">
+              <p className="text-slate-400 text-xs sm:text-sm mt-1">
                 Platformadagi barcha o'qituvchilar, talabalar va administratorlar.
               </p>
             </div>
 
             <button
               onClick={openCreateModal}
-              className="inline-flex items-center gap-2 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all self-start sm:self-auto"
+              className="inline-flex items-center justify-center gap-2 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all w-full sm:w-auto self-start sm:self-auto"
               style={{
                 background: 'linear-gradient(135deg,#6366f1,#8b5cf6)',
                 boxShadow: '0 4px 14px rgba(99,102,241,0.4)',
@@ -227,7 +232,7 @@ const Users = () => {
           </div>
 
           {/* Mini stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
             <MiniStat label="Jami hisob" value={counts.all} color="linear-gradient(#6366f1,#8b5cf6)" />
             <MiniStat label="Adminlar" value={counts.admin} color="linear-gradient(#ef4444,#f97316)" />
             <MiniStat label="O'qituvchilar" value={counts.teacher} color="linear-gradient(#6366f1,#818cf8)" />
@@ -237,10 +242,10 @@ const Users = () => {
       </div>
 
       {/* ── Main Content ── */}
-      <div className="max-w-7xl mx-auto px-8 py-6 space-y-5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-5 sm:py-6 space-y-5">
 
         {/* ── Filter Bar ── */}
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm px-5 py-4 flex flex-col sm:flex-row items-center gap-4">
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm px-4 sm:px-5 py-3 sm:py-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
           {/* Search */}
           <div className="relative flex-1 w-full">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -254,8 +259,8 @@ const Users = () => {
           </div>
 
           {/* Role filter tabs */}
-          <div className="flex items-center gap-1.5 bg-slate-100 rounded-xl p-1 flex-shrink-0">
-            <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400 ml-1" />
+          <div className="flex items-center gap-1.5 bg-slate-100 rounded-xl p-1 overflow-x-auto w-full sm:w-auto flex-shrink-0">
+            <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400 ml-1 flex-shrink-0" />
             {[
               { value: '', label: 'Hammasi' },
               { value: 'ADMIN', label: 'Admin' },
@@ -265,7 +270,7 @@ const Users = () => {
               <button
                 key={opt.value}
                 onClick={() => setRoleFilter(opt.value)}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
                 style={
                   roleFilter === opt.value
                     ? { background: 'white', color: '#6366f1', boxShadow: '0 1px 4px rgba(0,0,0,0.1)' }
@@ -473,13 +478,24 @@ const Users = () => {
                 <span className="text-slate-400 font-normal">(bo'sh qoldirsangiz o'zgarmaydi)</span>
               )}
             </label>
-            <input
-              type="password" placeholder="••••••••"
-              required={!editingUser}
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className={inputCls}
-            />
+            <div className="relative">
+              <input
+                type={showModalPassword ? 'text' : 'password'}
+                placeholder="••••••••"
+                required={!editingUser}
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                className={inputCls + ' pr-10'}
+              />
+              <button
+                type="button"
+                onClick={() => setShowModalPassword(!showModalPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg hover:bg-slate-100"
+                tabIndex={-1}
+              >
+                {showModalPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">

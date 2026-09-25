@@ -39,20 +39,20 @@ const MiniBar = ({ values = [], color = '#6366f1' }) => {
 /* ─── Stat Card ──────────────────────────────────────── */
 const StatCard = ({ label, value, icon: Icon, gradient, barColor, trend, trendLabel, bars }) => (
   <div
-    className="relative overflow-hidden rounded-2xl p-6 flex flex-col justify-between"
+    className="relative overflow-hidden rounded-2xl p-4 sm:p-6 flex flex-col justify-between"
     style={{
       background: gradient,
       boxShadow: '0 4px 24px rgba(0,0,0,0.10)',
-      minHeight: '148px',
+      minHeight: '135px',
     }}
   >
     {/* Top row */}
     <div className="flex items-start justify-between">
       <div>
         <p className="text-xs font-semibold uppercase tracking-widest text-white/60 mb-1">{label}</p>
-        <p className="text-4xl font-extrabold text-white leading-none">{value}</p>
+        <p className="text-2xl sm:text-4xl font-extrabold text-white leading-none">{value}</p>
       </div>
-      <div className="w-11 h-11 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center">
+      <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center flex-shrink-0">
         <Icon className="w-5 h-5 text-white" />
       </div>
     </div>
@@ -183,22 +183,22 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-100 px-8 pt-7 pb-6">
+      <div className="bg-white border-b border-slate-100 px-4 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
               <p className="text-indigo-500 text-sm font-semibold mb-1">
                 {greeting}, Super Admin 👋
               </p>
-              <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-extrabold text-slate-800 tracking-tight">
                 Platforma Tahlili
               </h1>
-              <p className="text-slate-400 text-sm mt-1">
+              <p className="text-slate-400 text-xs sm:text-sm mt-1">
                 Barcha o'qituvchilar, talabalar va AI baholash jarayonlarini kuzating.
               </p>
             </div>
             {/* Live Indicator */}
-            <div className="flex items-center gap-2.5 bg-emerald-50 border border-emerald-100 rounded-2xl px-4 py-2.5 self-start sm:self-auto">
+            <div className="flex items-center gap-2.5 bg-emerald-50 border border-emerald-100 rounded-2xl px-4 py-2 self-start sm:self-auto">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
@@ -207,7 +207,7 @@ const Dashboard = () => {
             </div>
           </div>
           {/* Stat Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {statCards.map((c, i) => (
               <StatCard key={i} {...c} />
             ))}
@@ -216,10 +216,10 @@ const Dashboard = () => {
       </div>
 
       {/* ── Main Content ── */}
-      <div className="max-w-7xl mx-auto px-8 py-8 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-5 sm:py-8 space-y-6 sm:space-y-8">
 
         {/* ── Quick Info Row ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <QuickInfo
             icon={Users}
             label="Jami Foydalanuvchilar"
@@ -255,12 +255,12 @@ const Dashboard = () => {
 
           {/* Table — takes 2/3 */}
           <div className="xl:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-            <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+            <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h3 className="text-base font-bold text-slate-900">So'nggi Yaratilgan Guruhlar</h3>
                 <p className="text-xs text-slate-400 mt-0.5">O'qituvchilar tomonidan yaratilgan faol guruhlar</p>
               </div>
-              <span className="text-[11px] uppercase tracking-wider font-semibold bg-indigo-50 text-indigo-600 border border-indigo-100 px-3 py-1 rounded-full">
+              <span className="text-[11px] uppercase tracking-wider font-semibold bg-indigo-50 text-indigo-600 border border-indigo-100 px-3 py-1 rounded-full self-start sm:self-auto">
                 {recentGroups.length} ta guruh
               </span>
             </div>
@@ -401,7 +401,7 @@ const Dashboard = () => {
         </div>
 
         {/* ── Footer info ── */}
-        <div className="flex items-center justify-between text-xs text-slate-400 border-t border-slate-100 pt-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left text-xs text-slate-400 border-t border-slate-100 pt-4">
           <span className="flex items-center gap-1.5">
             <Clock className="w-3.5 h-3.5" />
             Oxirgi yangilanish: {now.toLocaleString('uz-UZ')}
