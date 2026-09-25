@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../api/client';
+import { signInWithGoogle } from '../firebase';
 
 const AuthContext = createContext();
 
@@ -42,6 +43,24 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const loginWithGoogle = async () => {
+    const firebaseUser = await signInWithGoogle();
+    const res = await api.post('/auth/google', {
+      email: firebaseUser.email,
+      name: firebaseUser.displayName || firebaseUser.email.split('@')[0],
+      role: 'TEACHER',
+    });
+    if (res.data.success) {
+      if (res.data.user.role !== 'TEACHER' && res.data.user.role !== 'ADMIN') {
+        throw new Error("Ushbu portal faqat o'qituvchilar uchun mo'ljallangan!");
+      }
+      localStorage.setItem('teacher_token', res.data.token);
+      localStorage.setItem('teacher_user', JSON.stringify(res.data.user));
+      setUser(res.data.user);
+      return res.data;
+    }
+  };
+
   const register = async (userData) => {
     const res = await api.post('/auth/register', {
       ...userData,
@@ -63,7 +82,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, refreshUser, loading }}>
+    <AuthContext.Provider value={{ user, login, loginWithGoogle, register, logout, refreshUser, loading }}>
       {children}
     </AuthContext.Provider>
   );
