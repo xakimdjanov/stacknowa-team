@@ -30,7 +30,6 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-
     const res = await api.post('/auth/login', { email, password });
     if (res.data.success) {
       if (res.data.user.role !== 'TEACHER' && res.data.user.role !== 'ADMIN') {

@@ -6,7 +6,7 @@ const aiService = require("../services/ai.service");
  */
 exports.saveDraft = async (req, res) => {
   try {
-    const { assignment_id, content, attached_images } = req.body || {};
+    const { assignment_id, content, attached_images } = req.body;
 
     let submission = await Submission.findOne({
       where: { assignment_id, student_id: req.user.id },
@@ -45,7 +45,7 @@ exports.saveDraft = async (req, res) => {
  */
 exports.submitWork = async (req, res) => {
   try {
-    const { assignment_id, content, attached_images } = req.body || {};
+    const { assignment_id, content, attached_images } = req.body;
 
     const assignment = await Assignment.findByPk(assignment_id, {
       include: [
@@ -185,61 +185,3 @@ exports.getAssignmentSubmissions = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
-
-/**
- * 5. O'qituvchi topshiriqni qayta topshirish uchun talabaga qaytarishi
- */
-exports.returnSubmission = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { teacher_comment } = req.body || {};
-
-    const submission = await Submission.findByPk(id, {
-      include: [
-        { 
-          model: Assignment, 
-          as: "assignment", 
-          include: [{ model: Group, as: "group" }] 
-        },
-        { model: Evaluation, as: "evaluation" },
-        { model: User, as: "student", attributes: ["id", "name", "email"] },
-      ],
-    });
-
-    if (!submission) {
-      return res.status(404).json({ success: false, message: "Topshiriq ishi topilmadi" });
-    }
-
-    // Faqat o'qituvchi yoki admin qaytara oladi
-    const isTeacher = req.user.role === "ADMIN" || submission.assignment?.group?.teacher_id === req.user.id;
-    if (!isTeacher) {
-      return res.status(403).json({ success: false, message: "Ishni qaytarishga faqat fan o'qituvchisi vakolatli" });
-    }
-
-    submission.status = "returned";
-    await submission.save();
-
-    // Agar o'qituvchi izoh yozgan bo'lsa, uni evaluation.feedback ga qo'shamiz
-    if (teacher_comment && submission.evaluation) {
-      let currentFeedback = submission.evaluation.feedback;
-      const note = `O'qituvchi eslatmasi (Qayta topshirish talabi): ${teacher_comment}`;
-      if (Array.isArray(currentFeedback)) {
-        submission.evaluation.feedback = [note, ...currentFeedback];
-      } else if (typeof currentFeedback === 'string') {
-        submission.evaluation.feedback = `${note}\n\n${currentFeedback}`;
-      } else {
-        submission.evaluation.feedback = [note];
-      }
-      await submission.evaluation.save();
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: "Amaliy ish talabaga qayta topshirish uchun muvaffaqiyatli qaytarildi",
-      submission,
-    });
-  } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
-  }
-};
-

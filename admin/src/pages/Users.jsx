@@ -1,43 +1,131 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/client';
 import Modal from '../components/Modal';
-import { 
-  Users as UsersIcon, 
-  UserPlus, 
-  Search, 
-  Filter, 
-  Edit3, 
-  Trash2, 
-  ShieldCheck, 
-  GraduationCap, 
+import {
+  Users as UsersIcon,
+  UserPlus,
+  Search,
+  Edit3,
+  Trash2,
+  ShieldCheck,
+  GraduationCap,
   BookOpen,
   CheckCircle,
-  XCircle
+  XCircle,
+  Sparkles,
+  SlidersHorizontal,
 } from 'lucide-react';
 
+/* ─── Role badge ─────────────────────────── */
+const RoleBadge = ({ role }) => {
+  const map = {
+    ADMIN: {
+      label: 'Admin',
+      icon: ShieldCheck,
+      bg: 'rgba(239,68,68,0.1)',
+      border: 'rgba(239,68,68,0.25)',
+      color: '#ef4444',
+    },
+    TEACHER: {
+      label: "O'qituvchi",
+      icon: GraduationCap,
+      bg: 'rgba(99,102,241,0.1)',
+      border: 'rgba(99,102,241,0.25)',
+      color: '#6366f1',
+    },
+    STUDENT: {
+      label: 'Talaba',
+      icon: BookOpen,
+      bg: 'rgba(5,150,105,0.1)',
+      border: 'rgba(5,150,105,0.25)',
+      color: '#059669',
+    },
+  };
+  const cfg = map[role] || map.STUDENT;
+  const Icon = cfg.icon;
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold"
+      style={{ background: cfg.bg, border: `1px solid ${cfg.border}`, color: cfg.color }}
+    >
+      <Icon className="w-3 h-3" />
+      {cfg.label}
+    </span>
+  );
+};
+
+/* ─── Plan badge ─────────────────────────── */
+const PlanBadge = ({ plan }) => {
+  const isPro = plan === 'PRO';
+  return (
+    <span
+      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold"
+      style={
+        isPro
+          ? { background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.3)', color: '#d97706' }
+          : { background: 'rgba(100,116,139,0.08)', border: '1px solid rgba(100,116,139,0.2)', color: '#64748b' }
+      }
+    >
+      {isPro && <Sparkles className="w-3 h-3" />}
+      {plan}
+    </span>
+  );
+};
+
+/* ─── Avatar ─────────────────────────────── */
+const Avatar = ({ name, role }) => {
+  const colors = {
+    ADMIN: { bg: 'linear-gradient(135deg,#ef4444,#f97316)', shadow: 'rgba(239,68,68,0.3)' },
+    TEACHER: { bg: 'linear-gradient(135deg,#6366f1,#8b5cf6)', shadow: 'rgba(99,102,241,0.3)' },
+    STUDENT: { bg: 'linear-gradient(135deg,#059669,#0d9488)', shadow: 'rgba(5,150,105,0.3)' },
+  };
+  const c = colors[role] || colors.STUDENT;
+  const initials = name?.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase() || '?';
+  return (
+    <div
+      className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
+      style={{ background: c.bg, boxShadow: `0 2px 8px ${c.shadow}` }}
+    >
+      {initials}
+    </div>
+  );
+};
+
+/* ─── Stat mini card ─────────────────────── */
+const MiniStat = ({ label, value, color }) => (
+  <div className="bg-white rounded-2xl border border-slate-100 px-5 py-4 flex items-center gap-3 shadow-sm">
+    <div className="w-2 h-8 rounded-full flex-shrink-0" style={{ background: color }} />
+    <div>
+      <p className="text-2xl font-extrabold text-slate-800 leading-none">{value}</p>
+      <p className="text-xs text-slate-400 font-medium mt-0.5">{label}</p>
+    </div>
+  </div>
+);
+
+/* ─── Input styles ───────────────────────── */
+const inputCls =
+  'w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all bg-slate-50 placeholder-slate-400';
+const labelCls = 'block text-xs font-semibold text-slate-600 mb-1.5';
+
+/* ════════════════════════════════════════════
+   MAIN COMPONENT
+════════════════════════════════════════════ */
 const Users = () => {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const [users, setUsers]           = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [search, setSearch]         = useState('');
   const [roleFilter, setRoleFilter] = useState('');
-  
-  // Modal states
-  const [showModal, setShowModal] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
+
+  const [showModal, setShowModal]               = useState(false);
+  const [editingUser, setEditingUser]           = useState(null);
   const [deleteConfirmUser, setDeleteConfirmUser] = useState(null);
+  const [saving, setSaving]                     = useState(false);
 
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    role: 'STUDENT',
-    plan_type: 'FREE',
-    is_active: true,
+    name: '', email: '', password: '', role: 'STUDENT', plan_type: 'FREE', is_active: true,
   });
 
-  useEffect(() => {
-    fetchUsers();
-  }, [roleFilter]);
+  useEffect(() => { fetchUsers(); }, [roleFilter]);
 
   const fetchUsers = async () => {
     try {
@@ -55,33 +143,20 @@ const Users = () => {
 
   const openCreateModal = () => {
     setEditingUser(null);
-    setFormData({
-      name: '',
-      email: '',
-      password: '',
-      role: 'STUDENT',
-      plan_type: 'FREE',
-      is_active: true,
-    });
+    setFormData({ name: '', email: '', password: '', role: 'STUDENT', plan_type: 'FREE', is_active: true });
     setShowModal(true);
   };
 
   const openEditModal = (u) => {
     setEditingUser(u);
-    setFormData({
-      name: u.name,
-      email: u.email,
-      password: '',
-      role: u.role,
-      plan_type: u.plan_type,
-      is_active: u.is_active,
-    });
+    setFormData({ name: u.name, email: u.email, password: '', role: u.role, plan_type: u.plan_type, is_active: u.is_active });
     setShowModal(true);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setSaving(true);
       if (editingUser) {
         await api.put(`/users/${editingUser.id}`, formData);
       } else {
@@ -90,7 +165,9 @@ const Users = () => {
       setShowModal(false);
       fetchUsers();
     } catch (err) {
-      alert(err.response?.data?.message || err.message || "Saqlashda xatolik");
+      alert(err.response?.data?.message || err.message || 'Saqlashda xatolik');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -107,225 +184,323 @@ const Users = () => {
 
   const filteredUsers = users.filter((u) => {
     const q = search.toLowerCase();
-    return u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
+    return u.name?.toLowerCase().includes(q) || u.email?.toLowerCase().includes(q);
   });
 
+  const counts = {
+    all: users.length,
+    admin: users.filter((u) => u.role === 'ADMIN').length,
+    teacher: users.filter((u) => u.role === 'TEACHER').length,
+    student: users.filter((u) => u.role === 'STUDENT').length,
+  };
+
+  /* ── Render ── */
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-6">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Foydalanuvchilar Boshqaruvi</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Platformadagi barcha o'qituvchilar, talabalar va administratorlar hisoblarini boshqarish.
-          </p>
-        </div>
-        <button
-          onClick={openCreateModal}
-          className="inline-flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 px-5 rounded-2xl shadow-md shadow-indigo-600/20 transition-all text-sm self-start sm:self-auto"
-        >
-          <UserPlus className="w-4 h-4" />
-          <span>Yangi Foydalanuvchi</span>
-        </button>
-      </div>
+    <div className="min-h-full bg-slate-50">
 
-      {/* Filters and Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            placeholder="Ism yoki email bo'yicha qidirish..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-indigo-600 transition-all"
-          />
-        </div>
+      {/* ── Header ── */}
+      <div className="bg-white border-b border-slate-100 px-8 pt-7 pb-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 mb-6">
+            <div>
+              <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+                Foydalanuvchilar Boshqaruvi
+              </h1>
+              <p className="text-slate-400 text-sm mt-1">
+                Platformadagi barcha o'qituvchilar, talabalar va administratorlar.
+              </p>
+            </div>
 
-        <div className="flex items-center space-x-2 w-full sm:w-auto">
-          <Filter className="w-4 h-4 text-slate-400" />
-          <select
-            value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
-            className="bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-sm focus:outline-none focus:border-indigo-600 font-medium text-slate-700"
-          >
-            <option value="">Barcha Rollar</option>
-            <option value="TEACHER">O'qituvchilar (TEACHER)</option>
-            <option value="STUDENT">Talabalar (STUDENT)</option>
-            <option value="ADMIN">Adminlar (ADMIN)</option>
-          </select>
+            <button
+              onClick={openCreateModal}
+              className="inline-flex items-center gap-2 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all self-start sm:self-auto"
+              style={{
+                background: 'linear-gradient(135deg,#6366f1,#8b5cf6)',
+                boxShadow: '0 4px 14px rgba(99,102,241,0.4)',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+            >
+              <UserPlus className="w-4 h-4" />
+              Yangi Foydalanuvchi
+            </button>
+          </div>
+
+          {/* Mini stats */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <MiniStat label="Jami hisob" value={counts.all} color="linear-gradient(#6366f1,#8b5cf6)" />
+            <MiniStat label="Adminlar" value={counts.admin} color="linear-gradient(#ef4444,#f97316)" />
+            <MiniStat label="O'qituvchilar" value={counts.teacher} color="linear-gradient(#6366f1,#818cf8)" />
+            <MiniStat label="Talabalar" value={counts.student} color="linear-gradient(#059669,#0d9488)" />
+          </div>
         </div>
       </div>
 
-      {/* Users Table */}
-      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50/80 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-100">
-              <tr>
-                <th className="px-6 py-4">Foydalanuvchi</th>
-                <th className="px-6 py-4">Roli</th>
-                <th className="px-6 py-4">Tarifi (Plan)</th>
-                <th className="px-6 py-4">Holati</th>
-                <th className="px-6 py-4">Ro'yxatdan o'tgan</th>
-                <th className="px-6 py-4 text-right">Amallar</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filteredUsers.length === 0 ? (
-                <tr>
-                  <td colSpan="6" className="px-6 py-12 text-center text-slate-400 text-sm">
-                    Foydalanuvchilar topilmadi
-                  </td>
+      {/* ── Main Content ── */}
+      <div className="max-w-7xl mx-auto px-8 py-6 space-y-5">
+
+        {/* ── Filter Bar ── */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm px-5 py-4 flex flex-col sm:flex-row items-center gap-4">
+          {/* Search */}
+          <div className="relative flex-1 w-full">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Ism yoki email bo'yicha qidirish..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+            />
+          </div>
+
+          {/* Role filter tabs */}
+          <div className="flex items-center gap-1.5 bg-slate-100 rounded-xl p-1 flex-shrink-0">
+            <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400 ml-1" />
+            {[
+              { value: '', label: 'Hammasi' },
+              { value: 'ADMIN', label: 'Admin' },
+              { value: 'TEACHER', label: "O'qituvchi" },
+              { value: 'STUDENT', label: 'Talaba' },
+            ].map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setRoleFilter(opt.value)}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                style={
+                  roleFilter === opt.value
+                    ? { background: 'white', color: '#6366f1', boxShadow: '0 1px 4px rgba(0,0,0,0.1)' }
+                    : { color: '#94a3b8' }
+                }
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Count badge */}
+          <span className="text-xs font-semibold text-slate-400 flex-shrink-0">
+            {filteredUsers.length} ta natija
+          </span>
+        </div>
+
+        {/* ── Table ── */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead>
+                <tr style={{ background: 'linear-gradient(90deg,#f8faff,#f1f5ff)' }}>
+                  {['Foydalanuvchi', 'Rol', 'Tarif', 'Holat', "Ro'yxatdan o'tgan", 'Amallar'].map((h, i) => (
+                    <th
+                      key={h}
+                      className={`px-6 py-3.5 text-[10px] font-bold uppercase tracking-widest text-slate-400 border-b border-slate-100 ${i === 5 ? 'text-right' : ''}`}
+                    >
+                      {h}
+                    </th>
+                  ))}
                 </tr>
-              ) : (
-                filteredUsers.map((u) => (
-                  <tr key={u.id} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center border border-indigo-100 flex-shrink-0">
-                          {u.name[0]?.toUpperCase()}
-                        </div>
-                        <div>
-                          <p className="font-semibold text-slate-900">{u.name}</p>
-                          <p className="text-xs text-slate-400">{u.email}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      {u.role === 'ADMIN' && (
-                        <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
-                          <ShieldCheck className="w-3.5 h-3.5" />
-                          <span>Admin</span>
-                        </span>
-                      )}
-                      {u.role === 'TEACHER' && (
-                        <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
-                          <GraduationCap className="w-3.5 h-3.5" />
-                          <span>O'qituvchi</span>
-                        </span>
-                      )}
-                      {u.role === 'STUDENT' && (
-                        <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          <BookOpen className="w-3.5 h-3.5" />
-                          <span>Talaba</span>
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
-                        u.plan_type === 'PRO' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-slate-100 text-slate-600'
-                      }`}>
-                        {u.plan_type}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      {u.is_active ? (
-                        <span className="inline-flex items-center space-x-1 text-emerald-600 text-xs font-medium">
-                          <CheckCircle className="w-3.5 h-3.5" />
-                          <span>Faol</span>
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center space-x-1 text-slate-400 text-xs font-medium">
-                          <XCircle className="w-3.5 h-3.5" />
-                          <span>Bloklangan</span>
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-xs text-slate-500">
-                      {new Date(u.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end space-x-2">
-                        <button
-                          onClick={() => openEditModal(u)}
-                          className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"
-                          title="Tahrirlash"
-                        >
-                          <Edit3 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => setDeleteConfirmUser(u)}
-                          className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
-                          title="O'chirish"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {loading ? (
+                  [...Array(5)].map((_, i) => (
+                    <tr key={i}>
+                      {[...Array(6)].map((__, j) => (
+                        <td key={j} className="px-6 py-4">
+                          <div
+                            className="h-4 bg-slate-100 rounded-lg animate-pulse"
+                            style={{ width: `${50 + j * 8}%` }}
+                          />
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                ) : filteredUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="px-6 py-16 text-center">
+                      <div className="flex flex-col items-center gap-3 text-slate-400">
+                        <UsersIcon className="w-10 h-10 opacity-20" />
+                        <p className="text-sm font-semibold">Foydalanuvchilar topilmadi</p>
+                        <p className="text-xs">Qidiruvni o'zgartiring yoki yangi foydalanuvchi qo'shing</p>
                       </div>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  filteredUsers.map((u) => (
+                    <tr
+                      key={u.id}
+                      className="group transition-colors"
+                      onMouseEnter={(e) => (e.currentTarget.style.background = '#f8f9ff')}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      {/* User */}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <Avatar name={u.name} role={u.role} />
+                          <div>
+                            <p className="font-semibold text-slate-800 leading-tight">{u.name}</p>
+                            <p className="text-xs text-slate-400 mt-0.5">{u.email}</p>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Role */}
+                      <td className="px-6 py-4">
+                        <RoleBadge role={u.role} />
+                      </td>
+
+                      {/* Plan */}
+                      <td className="px-6 py-4">
+                        <PlanBadge plan={u.plan_type} />
+                      </td>
+
+                      {/* Status */}
+                      <td className="px-6 py-4">
+                        {u.is_active ? (
+                          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            Faol
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                            Bloklangan
+                          </span>
+                        )}
+                      </td>
+
+                      {/* Date */}
+                      <td className="px-6 py-4 text-xs text-slate-400">
+                        {u.created_at
+                          ? new Date(u.created_at).toLocaleDateString('uz-UZ', {
+                              year: 'numeric', month: 'short', day: 'numeric',
+                            })
+                          : '—'}
+                      </td>
+
+                      {/* Actions */}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => openEditModal(u)}
+                            title="Tahrirlash"
+                            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 transition-all"
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = 'rgba(99,102,241,0.1)';
+                              e.currentTarget.style.color = '#6366f1';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = 'transparent';
+                              e.currentTarget.style.color = '#94a3b8';
+                            }}
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => setDeleteConfirmUser(u)}
+                            title="O'chirish"
+                            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 transition-all"
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = 'rgba(239,68,68,0.1)';
+                              e.currentTarget.style.color = '#ef4444';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = 'transparent';
+                              e.currentTarget.style.color = '#94a3b8';
+                            }}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Table footer */}
+          {filteredUsers.length > 0 && (
+            <div className="px-6 py-3 border-t border-slate-50 flex items-center justify-between">
+              <span className="text-xs text-slate-400">
+                Jami <span className="font-semibold text-slate-600">{filteredUsers.length}</span> ta foydalanuvchi
+              </span>
+              <span className="text-xs text-slate-400">
+                PRO:{' '}
+                <span className="font-semibold text-amber-600">
+                  {filteredUsers.filter((u) => u.plan_type === 'PRO').length}
+                </span>{' '}
+                | FREE:{' '}
+                <span className="font-semibold text-slate-600">
+                  {filteredUsers.filter((u) => u.plan_type === 'FREE').length}
+                </span>
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* CREATE / EDIT USER MODAL (PORTAL) */}
+      {/* ══ CREATE / EDIT MODAL ══ */}
       <Modal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        title={editingUser ? "Foydalanuvchini Tahrirlash" : "Yangi Foydalanuvchi Qo'shish"}
+        title={editingUser ? 'Foydalanuvchini Tahrirlash' : "Yangi Foydalanuvchi Qo'shish"}
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">To'liq Ismi (F.I.SH)</label>
+            <label className={labelCls}>To'liq Ismi (F.I.SH)</label>
             <input
-              type="text"
-              required
-              placeholder="Ali Valiyev"
+              type="text" required placeholder="Ali Valiyev"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-600"
+              className={inputCls}
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Email Manzil</label>
+            <label className={labelCls}>Email Manzil</label>
             <input
-              type="email"
-              required
-              placeholder="ali@university.uz"
+              type="email" required placeholder="ali@university.uz"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-600"
+              className={inputCls}
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Parol {editingUser && <span className="text-slate-400 font-normal">(O'zgartirmaslik uchun bo'sh qoldiring)</span>}
+            <label className={labelCls}>
+              Parol{' '}
+              {editingUser && (
+                <span className="text-slate-400 font-normal">(bo'sh qoldirsangiz o'zgarmaydi)</span>
+              )}
             </label>
             <input
-              type="password"
-              placeholder="••••••••"
+              type="password" placeholder="••••••••"
               required={!editingUser}
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-600"
+              className={inputCls}
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Tizimdagi Roli</label>
+              <label className={labelCls}>Roli</label>
               <select
                 value={formData.role}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-600 font-medium"
+                className={inputCls}
               >
-                <option value="STUDENT">Talaba (STUDENT)</option>
-                <option value="TEACHER">O'qituvchi (TEACHER)</option>
-                <option value="ADMIN">Administrator (ADMIN)</option>
+                <option value="STUDENT">Talaba</option>
+                <option value="TEACHER">O'qituvchi</option>
+                <option value="ADMIN">Administrator</option>
               </select>
             </div>
-
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Tarif (Plan)</label>
+              <label className={labelCls}>Tarif</label>
               <select
                 value={formData.plan_type}
                 onChange={(e) => setFormData({ ...formData, plan_type: e.target.value })}
-                className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-600 font-medium"
+                className={inputCls}
               >
                 <option value="FREE">FREE</option>
                 <option value="PRO">PRO</option>
@@ -333,20 +508,21 @@ const Users = () => {
             </div>
           </div>
 
-          <div className="flex items-center space-x-2 pt-2">
-            <input
-              type="checkbox"
-              id="isActiveCheck"
-              checked={formData.is_active}
-              onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-              className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300"
-            />
-            <label htmlFor="isActiveCheck" className="text-sm font-medium text-slate-700 cursor-pointer">
-              Hisob faol (Aktiv)
-            </label>
-          </div>
+          <label className="flex items-center gap-2.5 cursor-pointer pt-1">
+            <div
+              className="relative w-9 h-5 rounded-full transition-colors flex-shrink-0"
+              style={{ background: formData.is_active ? '#6366f1' : '#e2e8f0' }}
+              onClick={() => setFormData({ ...formData, is_active: !formData.is_active })}
+            >
+              <div
+                className="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform"
+                style={{ transform: formData.is_active ? 'translateX(18px)' : 'translateX(2px)' }}
+              />
+            </div>
+            <span className="text-sm font-medium text-slate-700">Hisob faol (Aktiv)</span>
+          </label>
 
-          <div className="flex justify-end space-x-3 pt-6 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
             <button
               type="button"
               onClick={() => setShowModal(false)}
@@ -356,44 +532,59 @@ const Users = () => {
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-md shadow-indigo-600/20 transition-all"
+              disabled={saving}
+              className="px-6 py-2.5 rounded-xl text-white font-semibold text-sm transition-all flex items-center gap-2"
+              style={{
+                background: 'linear-gradient(135deg,#6366f1,#8b5cf6)',
+                boxShadow: '0 4px 12px rgba(99,102,241,0.35)',
+                opacity: saving ? 0.7 : 1,
+              }}
             >
-              {editingUser ? "Yangilash" : "Yaratish"}
+              {saving && (
+                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                </svg>
+              )}
+              {saving ? 'Saqlanmoqda...' : editingUser ? 'Yangilash' : 'Yaratish'}
             </button>
           </div>
         </form>
       </Modal>
 
-      {/* DELETE CONFIRMATION MODAL (PORTAL) */}
+      {/* ══ DELETE CONFIRM MODAL ══ */}
       <Modal
         isOpen={Boolean(deleteConfirmUser)}
         onClose={() => setDeleteConfirmUser(null)}
         maxWidth="max-w-md"
       >
         <div className="text-center space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto border border-rose-100">
-            <Trash2 className="w-7 h-7" />
+          <div
+            className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto"
+            style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)' }}
+          >
+            <Trash2 className="w-7 h-7 text-rose-500" />
           </div>
-          
-          <h3 className="text-lg font-bold text-slate-900">Foydalanuvchini o'chirishni tasdiqlaysizmi?</h3>
-          <p className="text-sm text-slate-500">
-            <strong className="text-slate-800">{deleteConfirmUser?.name}</strong> ({deleteConfirmUser?.email}) hisobi tizimdan butunlay o'chiriladi.
-          </p>
-
-          <div className="flex justify-center space-x-3 pt-4">
+          <div>
+            <h3 className="text-lg font-bold text-slate-900">O'chirishni tasdiqlaysizmi?</h3>
+            <p className="text-sm text-slate-500 mt-2">
+              <span className="font-semibold text-slate-800">{deleteConfirmUser?.name}</span>{' '}
+              ({deleteConfirmUser?.email}) hisobi tizimdan butunlay o'chiriladi. Bu amalni qaytarib bo'lmaydi.
+            </p>
+          </div>
+          <div className="flex gap-3 pt-2">
             <button
-              type="button"
               onClick={() => setDeleteConfirmUser(null)}
-              className="w-1/2 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-semibold text-sm hover:bg-slate-50 transition-colors"
+              className="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-semibold text-sm hover:bg-slate-50 transition-colors"
             >
               Bekor qilish
             </button>
             <button
-              type="button"
               onClick={handleDelete}
-              className="w-1/2 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold text-sm shadow-md shadow-rose-600/20 transition-all"
+              className="flex-1 py-2.5 rounded-xl text-white font-semibold text-sm transition-all"
+              style={{ background: 'linear-gradient(135deg,#ef4444,#f97316)', boxShadow: '0 4px 12px rgba(239,68,68,0.3)' }}
             >
-              Ha, O'chirilsin
+              Ha, o'chirilsin
             </button>
           </div>
         </div>
