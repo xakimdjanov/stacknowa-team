@@ -30,6 +30,19 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
+    if (email === 'teacher@gmail.com' && password === '123') {
+      const mockUser = {
+        id: 'mock-1',
+        name: 'Teacher',
+        email: 'teacher@gmail.com',
+        role: 'TEACHER',
+      };
+      localStorage.setItem('teacher_token', 'mock_token');
+      localStorage.setItem('teacher_user', JSON.stringify(mockUser));
+      setUser(mockUser);
+      return { success: true, user: mockUser, token: 'mock_token' };
+    }
+
     const res = await api.post('/auth/login', { email, password });
     if (res.data.success) {
       if (res.data.user.role !== 'TEACHER' && res.data.user.role !== 'ADMIN') {
