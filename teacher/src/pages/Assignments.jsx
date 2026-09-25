@@ -27,7 +27,8 @@ const getFileUrl = (url) => {
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url;
   }
-  return `http://localhost:5000${url.startsWith('/') ? '' : '/'}${url}`;
+  const serverUrl = import.meta.env.VITE_SERVER_URL || import.meta.env.VITE_API_URL?.replace(/\/api\/?$/, '');
+  return `${serverUrl}${url.startsWith('/') ? '' : '/'}${url}`;
 };
 
 const getFileNameFromUrl = (url) => {

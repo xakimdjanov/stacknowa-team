@@ -297,7 +297,7 @@ const Assignments = () => {
                             <p className="font-semibold text-slate-800 truncate leading-tight">{a.title}</p>
                             {a.template_file_url && (
                               <a
-                                href={a.template_file_url.startsWith('http') ? a.template_file_url : `http://localhost:5000${a.template_file_url}`}
+                                href={a.template_file_url.startsWith('http') ? a.template_file_url : `${(import.meta.env.VITE_SERVER_URL || import.meta.env.VITE_API_URL?.replace(/\/api\/?$/, ''))}${a.template_file_url.startsWith('/') ? '' : '/'}${a.template_file_url}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1 text-[11px] font-semibold mt-1.5 px-2 py-0.5 rounded-md transition-colors"

@@ -11,8 +11,21 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+
+  const handleGoogleSignIn = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      await loginWithGoogle();
+      navigate('/');
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || "Google orqali kirishda xatolik yuz berdi!");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -184,7 +197,9 @@ const Login = () => {
           {/* Google orqali kirish */}
           <button
             type="button"
-            className="w-full border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-3 px-4 rounded-xl flex items-center justify-center space-x-2.5 transition-all text-sm"
+            onClick={handleGoogleSignIn}
+            disabled={loading}
+            className="w-full border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-3 px-4 rounded-xl flex items-center justify-center space-x-2.5 transition-all text-sm disabled:opacity-60"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path

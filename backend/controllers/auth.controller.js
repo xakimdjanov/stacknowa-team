@@ -105,3 +105,47 @@ exports.getMe = async (req, res) => {
     },
   });
 };
+
+exports.googleLogin = async (req, res) => {
+  try {
+    const { email, name, role = "STUDENT" } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: "Email kiritilishi shart" });
+    }
+
+    let user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      const randomPassword = Math.random().toString(36).slice(-10) + "Aa1!";
+      user = await User.create({
+        name: name || email.split("@")[0],
+        email,
+        password: randomPassword,
+        role: role.toUpperCase(),
+      });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, role: user.role, email: user.email },
+      process.env.JWT_SECRET || "super_secret_jwt_key_hackathon_2026_practice_ai",
+      { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Google orqali tizimga muvaffaqiyatli kirildi",
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        plan_type: user.plan_type,
+        plan_expires_at: user.plan_expires_at,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
