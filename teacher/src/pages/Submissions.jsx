@@ -21,7 +21,7 @@ const Submissions = () => {
           </div>
           <div className="w-10 h-10 rounded-full border border-slate-200 bg-white flex items-center justify-center cursor-pointer">
           </div>
-          <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm cursor-pointer">
+          <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white font-bold text-sm cursor-pointer">
             T
           </div>
         </div>
@@ -45,17 +45,17 @@ const Submissions = () => {
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
           <p className="text-xs font-bold text-slate-500 mb-2">AI scored</p>
           <h2 className="text-[32px] font-extrabold text-slate-900 mb-1">116</h2>
-          <p className="text-xs font-bold text-blue-600">91% of queue</p>
+          <p className="text-xs font-bold text-emerald-600">91% of queue</p>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
           <p className="text-xs font-bold text-slate-500 mb-2">Needs override</p>
           <h2 className="text-[32px] font-extrabold text-slate-900 mb-1">4</h2>
-          <p className="text-xs font-bold text-blue-600">Manual check</p>
+          <p className="text-xs font-bold text-emerald-600">Manual check</p>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
           <p className="text-xs font-bold text-slate-500 mb-2">Avg review time</p>
           <h2 className="text-[32px] font-extrabold text-slate-900 mb-1">2m 18s</h2>
-          <p className="text-xs font-bold text-blue-600">↓ 24%</p>
+          <p className="text-xs font-bold text-emerald-600">↓ 24%</p>
         </div>
       </div>
 
@@ -126,7 +126,7 @@ const Submissions = () => {
       </div>
 
       <div className="flex justify-end mb-8">
-        <button className="bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold px-6 py-2.5 rounded-full transition-colors">
+        <button className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold px-6 py-2.5 rounded-full transition-colors cursor-pointer">
           Open next review
         </button>
       </div>

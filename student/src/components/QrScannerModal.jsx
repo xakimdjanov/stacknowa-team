@@ -100,17 +100,20 @@ const QrScannerModal = ({ isOpen, onClose, onScan }) => {
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+            <div 
+              className="w-8 h-8 rounded-xl flex items-center justify-center shadow-xs"
+              style={{ background: 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)' }}
+            >
               <Camera className="w-4 h-4 text-white" />
             </div>
             <div>
               <h3 className="text-sm font-black text-slate-900">QR Kodni Skanerlash</h3>
-              <p className="text-[11px] text-slate-400">O'qituvchi QR kodini kameraga tutish</p>
+              <p className="text-[11px] text-slate-400 font-medium">O'qituvchi QR kodini kameraga tutish</p>
             </div>
           </div>
           <button
             onClick={() => { stopScanner(); onClose(); }}
-            className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="w-4 h-4 text-slate-500" />
           </button>
@@ -126,12 +129,12 @@ const QrScannerModal = ({ isOpen, onClose, onScan }) => {
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               {/* Corner brackets */}
               <div className="relative w-52 h-52">
-                <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-indigo-400 rounded-tl-lg" />
-                <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-indigo-400 rounded-tr-lg" />
-                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-indigo-400 rounded-bl-lg" />
-                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-indigo-400 rounded-br-lg" />
+                <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-emerald-400 rounded-tl-lg" />
+                <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-emerald-400 rounded-tr-lg" />
+                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-emerald-400 rounded-bl-lg" />
+                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-emerald-400 rounded-br-lg" />
                 {/* Scan line animation */}
-                <div className="absolute left-2 right-2 h-0.5 bg-indigo-400/70 rounded-full scan-line" />
+                <div className="absolute left-2 right-2 h-0.5 bg-emerald-400/80 rounded-full scan-line" />
               </div>
             </div>
           )}
@@ -152,7 +155,7 @@ const QrScannerModal = ({ isOpen, onClose, onScan }) => {
           {!scanning && !error && (
             <div className="absolute inset-0 flex items-center justify-center bg-slate-900">
               <div className="text-center space-y-3">
-                <div className="w-8 h-8 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin mx-auto" />
+                <div className="w-8 h-8 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin mx-auto" />
                 <p className="text-xs text-slate-400">Kamera yoqilmoqda...</p>
               </div>
             </div>

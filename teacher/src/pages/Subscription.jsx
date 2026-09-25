@@ -69,7 +69,7 @@ const Subscription = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center space-x-2 text-[#1d58d8] font-bold text-xs uppercase tracking-wider mb-2">
+          <div className="flex items-center space-x-2 text-emerald-600 font-bold text-xs uppercase tracking-wider mb-2">
             <Sparkles className="w-4 h-4" />
             <span>Obunalar & Imkoniyatlar</span>
           </div>
@@ -85,9 +85,9 @@ const Subscription = () => {
         <button
           onClick={checkLatestStatus}
           disabled={checkingStatus}
-          className="inline-flex items-center space-x-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-2xl transition-all self-start sm:self-auto"
+          className="inline-flex items-center space-x-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-2xl transition-all self-start sm:self-auto cursor-pointer"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${checkingStatus ? 'animate-spin text-[#1d58d8]' : ''}`} />
+          <RefreshCw className={`w-3.5 h-3.5 ${checkingStatus ? 'animate-spin text-emerald-600' : ''}`} />
           <span>To'lov holatini tekshirish</span>
         </button>
       </div>
@@ -118,14 +118,14 @@ const Subscription = () => {
               key={p.id}
               className={`rounded-3xl p-8 border transition-all flex flex-col justify-between ${
                 isPro
-                  ? 'bg-white border-[#1d58d8] shadow-xl shadow-blue-500/10 ring-2 ring-[#1d58d8]'
+                  ? 'bg-white border-emerald-600 shadow-xl shadow-emerald-700/10 ring-2 ring-emerald-600'
                   : 'bg-white border-slate-200/80 shadow-sm'
               }`}
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${
-                    isPro ? 'bg-blue-50 text-[#1d58d8]' : 'bg-slate-100 text-slate-600'
+                    isPro ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'
                   }`}>
                     {p.name}
                   </span>
@@ -163,7 +163,8 @@ const Subscription = () => {
                 {isPro ? (
                   <button
                     onClick={() => setSelectedPlan(p)}
-                    className="w-full py-3.5 px-4 rounded-xl bg-[#1d58d8] hover:bg-[#1648b8] text-white font-bold text-sm shadow-lg shadow-blue-500/25 flex items-center justify-center space-x-2 transition-all"
+                    style={{ background: 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)' }}
+                    className="w-full py-3.5 px-4 rounded-xl text-white font-extrabold text-sm shadow-lg shadow-emerald-700/25 flex items-center justify-center space-x-2 transition-all hover:opacity-95 cursor-pointer"
                   >
                     <span>To'lov qilish</span>
                     <ArrowRight className="w-4 h-4" />
@@ -189,7 +190,7 @@ const Subscription = () => {
           <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/80">
             <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">Tanlangan Tarif</p>
             <p className="text-lg font-bold text-slate-900 mt-0.5">{selectedPlan?.title}</p>
-            <p className="text-2xl font-black text-[#1d58d8] mt-1">
+            <p className="text-2xl font-black text-emerald-700 mt-1">
               {selectedPlan?.price_uzs?.toLocaleString()} so'm
             </p>
           </div>
@@ -204,7 +205,7 @@ const Subscription = () => {
               placeholder="998901234567"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-[#1d58d8] font-mono"
+              className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 font-mono"
             />
           </div>
 
@@ -220,7 +221,7 @@ const Subscription = () => {
                   onClick={() => setPaymentMethod(m)}
                   className={`py-3 px-3 rounded-xl border text-xs font-bold uppercase transition-all ${
                     paymentMethod === m
-                      ? 'border-[#1d58d8] bg-blue-50 text-[#1d58d8] ring-1 ring-[#1d58d8]'
+                      ? 'border-emerald-600 bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600'
                       : 'border-slate-200 hover:bg-slate-50 text-slate-600'
                   }`}
                 >
@@ -233,7 +234,8 @@ const Subscription = () => {
           <button
             type="submit"
             disabled={processing}
-            className="w-full py-3.5 bg-[#1d58d8] hover:bg-[#1648b8] text-white font-bold rounded-xl shadow-lg shadow-blue-500/25 flex items-center justify-center space-x-2 transition-all disabled:opacity-60 text-sm mt-4"
+            style={{ background: 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)' }}
+            className="w-full py-3.5 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-700/25 flex items-center justify-center space-x-2 transition-all hover:opacity-95 disabled:opacity-60 text-sm mt-4 cursor-pointer"
           >
             {processing ? (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

@@ -61,8 +61,11 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-white">
-      {/* CHAP TOMON: KO'K BRENDING VA RASMLI ILUSTRATSIYA */}
-      <div className="lg:w-1/2 bg-[#1d58d8] p-8 lg:p-14 flex flex-col justify-between text-white relative overflow-hidden">
+      {/* CHAP TOMON: EMERALD BRENDING VA RASMLI ILUSTRATSIYA */}
+      <div 
+        style={{ background: 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)' }}
+        className="lg:w-1/2 p-8 lg:p-14 flex flex-col justify-between text-white relative overflow-hidden"
+      >
         {/* Yuqori logotip */}
         <div className="flex items-center space-x-3 z-10">
           <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center text-white backdrop-blur-sm">
@@ -86,29 +89,29 @@ const Register = () => {
           <h2 className="text-2xl lg:text-3xl font-extrabold tracking-tight mb-4 text-white">
             Tezkor AI baholash va tuzilmaviy dars guruhlari
           </h2>
-          <p className="text-blue-100 text-sm leading-relaxed">
+          <p className="text-emerald-100 text-sm leading-relaxed">
             Topshiriqlar yaratish, talabalar ishlarini tekshirish va dars jarayonlarini qulay boshqarish uchun o'z ish maydoningizni sozlang.
           </p>
         </div>
 
         {/* Pastki qism */}
-        <div className="flex items-center justify-between text-xs text-blue-200/80 pt-6 border-t border-blue-400/20 z-10">
+        <div className="flex items-center justify-between text-xs text-emerald-200/80 pt-6 border-t border-emerald-400/20 z-10">
           <span>O'qituvchilarga dars maydonini boshqarish uchun yaratilgan</span>
           <div className="flex items-center space-x-1 font-bold tracking-widest uppercase">
             <span>CCO</span>
           </div>
         </div>
 
-        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-600 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-emerald-500 rounded-full blur-3xl opacity-30 pointer-events-none"></div>
       </div>
 
       {/* O'NG TOMON: RO'YXATDAN O'TISH FORMASI */}
       <div className="lg:w-1/2 p-8 lg:p-14 flex flex-col justify-between bg-white overflow-y-auto">
         <div className="max-w-md w-full mx-auto my-auto py-6">
           {/* Kichik brend sarlavhasi */}
-          <div className="flex items-center space-x-2 text-[#1d58d8] font-bold text-xs uppercase tracking-wider mb-6">
-            <div className="w-5 h-5 rounded bg-blue-100 flex items-center justify-center">
-              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+          <div className="flex items-center space-x-2 text-emerald-700 font-bold text-xs uppercase tracking-wider mb-6">
+            <div className="w-5 h-5 rounded bg-emerald-100 flex items-center justify-center">
+              <svg className="w-3.5 h-3.5 fill-current text-emerald-700" viewBox="0 0 24 24">
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
               </svg>
             </div>
@@ -142,7 +145,7 @@ const Register = () => {
                   placeholder="Ali Valiyev"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-[#1d58d8] focus:bg-white transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all font-medium"
                 />
               </div>
             </div>
@@ -160,7 +163,7 @@ const Register = () => {
                   placeholder="nom@example.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-[#1d58d8] focus:bg-white transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all font-medium"
                 />
               </div>
             </div>
@@ -179,12 +182,12 @@ const Register = () => {
                     placeholder="Kamida 8 belgi"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-9 pr-9 text-slate-900 text-xs placeholder-slate-400 focus:outline-none focus:border-[#1d58d8] focus:bg-white transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-9 pr-9 text-slate-900 text-xs placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all font-medium"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
                   >
                     {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                   </button>
@@ -203,12 +206,12 @@ const Register = () => {
                     placeholder="Parolni takrorlang"
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-9 pr-9 text-slate-900 text-xs placeholder-slate-400 focus:outline-none focus:border-[#1d58d8] focus:bg-white transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-9 pr-9 text-slate-900 text-xs placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all font-medium"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
                   >
                     {showConfirmPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                   </button>
@@ -228,7 +231,7 @@ const Register = () => {
                   placeholder="Ixtiyoriy (masalan: Dotsent Valiyev A.)"
                   value={formData.instructorName}
                   onChange={(e) => setFormData({ ...formData, instructorName: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-[#1d58d8] focus:bg-white transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all font-medium"
                 />
               </div>
             </div>
@@ -240,15 +243,15 @@ const Register = () => {
                 id="terms"
                 checked={agreeTerms}
                 onChange={(e) => setAgreeTerms(e.target.checked)}
-                className="w-4 h-4 rounded text-[#1d58d8] focus:ring-[#1d58d8] border-slate-300"
+                className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300"
               />
               <label htmlFor="terms" className="text-slate-600 cursor-pointer">
                 Men{' '}
-                <a href="#" className="text-[#1d58d8] font-semibold hover:underline">
+                <a href="#" className="text-emerald-700 font-semibold hover:underline">
                   Foydalanish shartlari
                 </a>{' '}
                 va{' '}
-                <a href="#" className="text-[#1d58d8] font-semibold hover:underline">
+                <a href="#" className="text-emerald-700 font-semibold hover:underline">
                   Maxfiylik siyosatiga
                 </a>{' '}
                 roziman
@@ -259,7 +262,8 @@ const Register = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#1d58d8] hover:bg-[#1648b8] text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-500/25 flex items-center justify-center transition-all disabled:opacity-60 text-sm"
+              style={{ background: 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)' }}
+              className="w-full text-white font-extrabold py-3.5 px-4 rounded-xl shadow-lg shadow-emerald-700/25 flex items-center justify-center transition-all hover:opacity-95 disabled:opacity-60 text-sm cursor-pointer"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -284,7 +288,7 @@ const Register = () => {
             type="button"
             onClick={handleGoogleSignIn}
             disabled={loading}
-            className="w-full border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center space-x-2.5 transition-all text-xs disabled:opacity-60"
+            className="w-full border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center space-x-2.5 transition-all text-xs disabled:opacity-60 cursor-pointer"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path
@@ -312,7 +316,7 @@ const Register = () => {
             <p className="text-[11px] text-slate-400">Keyingi qadam: Birinchi guruhingizni yaratish</p>
             <p className="text-xs text-slate-600">
               Profilingiz bormi?{' '}
-              <Link to="/login" className="text-[#1d58d8] font-bold hover:underline">
+              <Link to="/login" className="text-emerald-700 font-bold hover:underline">
                 Tizimga kirish
               </Link>
             </p>

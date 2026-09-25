@@ -18,6 +18,8 @@ import {
   EyeOff,
 } from 'lucide-react';
 
+const EMERALD_GRADIENT = 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)';
+
 /* ─── Role badge ─────────────────────────── */
 const RoleBadge = ({ role }) => {
   const map = {
@@ -31,9 +33,9 @@ const RoleBadge = ({ role }) => {
     TEACHER: {
       label: "O'qituvchi",
       icon: GraduationCap,
-      bg: 'rgba(99,102,241,0.1)',
-      border: 'rgba(99,102,241,0.25)',
-      color: '#6366f1',
+      bg: 'rgba(13,148,136,0.1)',
+      border: 'rgba(13,148,136,0.25)',
+      color: '#0d9488',
     },
     STUDENT: {
       label: 'Talaba',
@@ -77,9 +79,9 @@ const PlanBadge = ({ plan }) => {
 /* ─── Avatar ─────────────────────────────── */
 const Avatar = ({ name, role }) => {
   const colors = {
-    ADMIN: { bg: 'linear-gradient(135deg,#ef4444,#f97316)', shadow: 'rgba(239,68,68,0.3)' },
-    TEACHER: { bg: 'linear-gradient(135deg,#6366f1,#8b5cf6)', shadow: 'rgba(99,102,241,0.3)' },
-    STUDENT: { bg: 'linear-gradient(135deg,#059669,#0d9488)', shadow: 'rgba(5,150,105,0.3)' },
+    ADMIN: { bg: 'linear-gradient(135deg,#ef4444,#f97316)', shadow: 'rgba(239,68,68,0.25)' },
+    TEACHER: { bg: 'linear-gradient(135deg,#0d9488,#059669)', shadow: 'rgba(13,148,136,0.25)' },
+    STUDENT: { bg: 'linear-gradient(135deg,#059669,#047857)', shadow: 'rgba(5,150,105,0.25)' },
   };
   const c = colors[role] || colors.STUDENT;
   const initials = name?.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase() || '?';
@@ -95,10 +97,10 @@ const Avatar = ({ name, role }) => {
 
 /* ─── Stat mini card ─────────────────────── */
 const MiniStat = ({ label, value, color }) => (
-  <div className="bg-white rounded-2xl border border-slate-100 px-5 py-4 flex items-center gap-3 shadow-sm">
+  <div className="bg-white rounded-2xl border border-slate-200/80 px-5 py-4 flex items-center gap-3 shadow-xs">
     <div className="w-2 h-8 rounded-full flex-shrink-0" style={{ background: color }} />
     <div>
-      <p className="text-2xl font-extrabold text-slate-800 leading-none">{value}</p>
+      <p className="text-2xl font-black text-slate-800 leading-none">{value}</p>
       <p className="text-xs text-slate-400 font-medium mt-0.5">{label}</p>
     </div>
   </div>
@@ -106,7 +108,7 @@ const MiniStat = ({ label, value, color }) => (
 
 /* ─── Input styles ───────────────────────── */
 const inputCls =
-  'w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all bg-slate-50 placeholder-slate-400';
+  'w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-4 focus:ring-emerald-100/60 focus:border-emerald-500 transition-all bg-slate-50 placeholder-slate-400';
 const labelCls = 'block text-xs font-semibold text-slate-600 mb-1.5';
 
 /* ════════════════════════════════════════════
@@ -204,27 +206,24 @@ const Users = () => {
     <div className="min-h-full bg-slate-50">
 
       {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-100 px-4 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-6">
+      <div className="bg-white border-b border-slate-200/80 px-4 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-xl sm:text-2xl font-extrabold text-slate-800 tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">
                 Foydalanuvchilar Boshqaruvi
               </h1>
-              <p className="text-slate-400 text-xs sm:text-sm mt-1">
+              <p className="text-slate-500 text-xs sm:text-sm mt-1">
                 Platformadagi barcha o'qituvchilar, talabalar va administratorlar.
               </p>
             </div>
 
             <button
               onClick={openCreateModal}
-              className="inline-flex items-center justify-center gap-2 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all w-full sm:w-auto self-start sm:self-auto"
+              className="inline-flex items-center justify-center gap-2 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all duration-200 shadow-md shadow-emerald-700/20 hover:opacity-95 active:scale-95 w-full sm:w-auto self-start sm:self-auto"
               style={{
-                background: 'linear-gradient(135deg,#6366f1,#8b5cf6)',
-                boxShadow: '0 4px 14px rgba(99,102,241,0.4)',
+                background: EMERALD_GRADIENT,
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
             >
               <UserPlus className="w-4 h-4" />
               Yangi Foydalanuvchi
@@ -233,10 +232,10 @@ const Users = () => {
 
           {/* Mini stats */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-            <MiniStat label="Jami hisob" value={counts.all} color="linear-gradient(#6366f1,#8b5cf6)" />
+            <MiniStat label="Jami hisob" value={counts.all} color="linear-gradient(#059669,#047857)" />
             <MiniStat label="Adminlar" value={counts.admin} color="linear-gradient(#ef4444,#f97316)" />
-            <MiniStat label="O'qituvchilar" value={counts.teacher} color="linear-gradient(#6366f1,#818cf8)" />
-            <MiniStat label="Talabalar" value={counts.student} color="linear-gradient(#059669,#0d9488)" />
+            <MiniStat label="O'qituvchilar" value={counts.teacher} color="linear-gradient(#0d9488,#14b8a6)" />
+            <MiniStat label="Talabalar" value={counts.student} color="linear-gradient(#059669,#10b981)" />
           </div>
         </div>
       </div>
@@ -245,7 +244,7 @@ const Users = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-5 sm:py-6 space-y-5">
 
         {/* ── Filter Bar ── */}
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm px-4 sm:px-5 py-3 sm:py-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs px-4 sm:px-5 py-3 sm:py-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
           {/* Search */}
           <div className="relative flex-1 w-full">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -254,7 +253,7 @@ const Users = () => {
               placeholder="Ism yoki email bo'yicha qidirish..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-4 focus:ring-emerald-100/60 focus:border-emerald-500 transition-all font-medium"
             />
           </div>
 
@@ -270,11 +269,11 @@ const Users = () => {
               <button
                 key={opt.value}
                 onClick={() => setRoleFilter(opt.value)}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
+                className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap"
                 style={
                   roleFilter === opt.value
-                    ? { background: 'white', color: '#6366f1', boxShadow: '0 1px 4px rgba(0,0,0,0.1)' }
-                    : { color: '#94a3b8' }
+                    ? { background: 'white', color: '#059669', boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }
+                    : { color: '#64748b' }
                 }
               >
                 {opt.label}
@@ -289,22 +288,22 @@ const Users = () => {
         </div>
 
         {/* ── Table ── */}
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead>
-                <tr style={{ background: 'linear-gradient(90deg,#f8faff,#f1f5ff)' }}>
+                <tr className="bg-slate-50/80 border-b border-slate-100">
                   {['Foydalanuvchi', 'Rol', 'Tarif', 'Holat', "Ro'yxatdan o'tgan", 'Amallar'].map((h, i) => (
                     <th
                       key={h}
-                      className={`px-6 py-3.5 text-[10px] font-bold uppercase tracking-widest text-slate-400 border-b border-slate-100 ${i === 5 ? 'text-right' : ''}`}
+                      className={`px-6 py-3.5 text-[10px] font-bold uppercase tracking-widest text-slate-400 ${i === 5 ? 'text-right' : ''}`}
                     >
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <tbody className="divide-y divide-slate-100">
                 {loading ? (
                   [...Array(5)].map((_, i) => (
                     <tr key={i}>
@@ -332,17 +331,15 @@ const Users = () => {
                   filteredUsers.map((u) => (
                     <tr
                       key={u.id}
-                      className="group transition-colors"
-                      onMouseEnter={(e) => (e.currentTarget.style.background = '#f8f9ff')}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                      className="group hover:bg-slate-50/60 transition-colors"
                     >
                       {/* User */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <Avatar name={u.name} role={u.role} />
                           <div>
-                            <p className="font-semibold text-slate-800 leading-tight">{u.name}</p>
-                            <p className="text-xs text-slate-400 mt-0.5">{u.email}</p>
+                            <p className="font-bold text-slate-800 leading-tight">{u.name}</p>
+                            <p className="text-xs text-slate-400 mt-0.5 font-medium">{u.email}</p>
                           </div>
                         </div>
                       </td>
@@ -373,7 +370,7 @@ const Users = () => {
                       </td>
 
                       {/* Date */}
-                      <td className="px-6 py-4 text-xs text-slate-400">
+                      <td className="px-6 py-4 text-xs text-slate-400 font-medium">
                         {u.created_at
                           ? new Date(u.created_at).toLocaleDateString('uz-UZ', {
                               year: 'numeric', month: 'short', day: 'numeric',
@@ -387,30 +384,14 @@ const Users = () => {
                           <button
                             onClick={() => openEditModal(u)}
                             title="Tahrirlash"
-                            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 transition-all"
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.background = 'rgba(99,102,241,0.1)';
-                              e.currentTarget.style.color = '#6366f1';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.background = 'transparent';
-                              e.currentTarget.style.color = '#94a3b8';
-                            }}
+                            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition-all"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => setDeleteConfirmUser(u)}
                             title="O'chirish"
-                            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 transition-all"
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.background = 'rgba(239,68,68,0.1)';
-                              e.currentTarget.style.color = '#ef4444';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.background = 'transparent';
-                              e.currentTarget.style.color = '#94a3b8';
-                            }}
+                            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -425,17 +406,17 @@ const Users = () => {
 
           {/* Table footer */}
           {filteredUsers.length > 0 && (
-            <div className="px-6 py-3 border-t border-slate-50 flex items-center justify-between">
-              <span className="text-xs text-slate-400">
-                Jami <span className="font-semibold text-slate-600">{filteredUsers.length}</span> ta foydalanuvchi
+            <div className="px-6 py-3 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
+              <span className="text-xs text-slate-500">
+                Jami <span className="font-bold text-slate-700">{filteredUsers.length}</span> ta foydalanuvchi
               </span>
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-slate-500">
                 PRO:{' '}
-                <span className="font-semibold text-amber-600">
+                <span className="font-bold text-amber-600">
                   {filteredUsers.filter((u) => u.plan_type === 'PRO').length}
                 </span>{' '}
                 | FREE:{' '}
-                <span className="font-semibold text-slate-600">
+                <span className="font-bold text-slate-600">
                   {filteredUsers.filter((u) => u.plan_type === 'FREE').length}
                 </span>
               </span>
@@ -527,7 +508,7 @@ const Users = () => {
           <label className="flex items-center gap-2.5 cursor-pointer pt-1">
             <div
               className="relative w-9 h-5 rounded-full transition-colors flex-shrink-0"
-              style={{ background: formData.is_active ? '#6366f1' : '#e2e8f0' }}
+              style={{ background: formData.is_active ? '#059669' : '#e2e8f0' }}
               onClick={() => setFormData({ ...formData, is_active: !formData.is_active })}
             >
               <div
@@ -535,7 +516,7 @@ const Users = () => {
                 style={{ transform: formData.is_active ? 'translateX(18px)' : 'translateX(2px)' }}
               />
             </div>
-            <span className="text-sm font-medium text-slate-700">Hisob faol (Aktiv)</span>
+            <span className="text-sm font-semibold text-slate-700">Hisob faol (Aktiv)</span>
           </label>
 
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
@@ -549,10 +530,9 @@ const Users = () => {
             <button
               type="submit"
               disabled={saving}
-              className="px-6 py-2.5 rounded-xl text-white font-semibold text-sm transition-all flex items-center gap-2"
+              className="px-6 py-2.5 rounded-xl text-white font-bold text-sm transition-all duration-200 shadow-md shadow-emerald-700/20 hover:opacity-95 active:scale-95 flex items-center gap-2"
               style={{
-                background: 'linear-gradient(135deg,#6366f1,#8b5cf6)',
-                boxShadow: '0 4px 12px rgba(99,102,241,0.35)',
+                background: EMERALD_GRADIENT,
                 opacity: saving ? 0.7 : 1,
               }}
             >

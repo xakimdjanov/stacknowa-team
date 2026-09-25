@@ -21,7 +21,7 @@ const ProtectedRoute = ({ children }) => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="w-10 h-10 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-10 h-10 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -103,7 +103,7 @@ const Layout = ({ children }) => {
               placeholder="Masalan: abc123xy yoki taklif havolasi"
               value={joinToken}
               onChange={(e) => setJoinToken(e.target.value)}
-              className="w-full border border-slate-200 rounded-2xl p-3 text-sm focus:outline-none focus:border-indigo-600 font-medium"
+              className="w-full border border-slate-200 rounded-2xl p-3 text-sm focus:outline-none focus:border-emerald-600 font-medium"
             />
             <p className="text-[11px] text-slate-400 mt-1">
               O'qituvchingiz yuborgan taklif kodi yoki havolasini kiriting.
@@ -113,7 +113,7 @@ const Layout = ({ children }) => {
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center justify-between">
               <span>Guruh Paroli (Access Code)</span>
-              <span className={`text-[11px] ${requiresAccessCode ? 'text-indigo-600 font-bold' : 'text-slate-400 font-normal'}`}>
+              <span className={`text-[11px] ${requiresAccessCode ? 'text-emerald-600 font-bold' : 'text-slate-400 font-normal'}`}>
                 {requiresAccessCode ? "Parol kiritilishi shart" : "Ixtiyoriy"}
               </span>
             </label>
@@ -124,8 +124,8 @@ const Layout = ({ children }) => {
               onChange={(e) => setAccessCode(e.target.value)}
               className={`w-full border rounded-2xl p-3 text-sm focus:outline-none transition-all font-medium ${
                 requiresAccessCode 
-                  ? 'border-indigo-500 bg-indigo-50/40 ring-2 ring-indigo-200' 
-                  : 'border-slate-200 focus:border-indigo-600'
+                  ? 'border-emerald-500 bg-emerald-50/40 ring-2 ring-emerald-200' 
+                  : 'border-slate-200 focus:border-emerald-600'
               }`}
             />
             <p className="text-[11px] text-slate-400 mt-1">
@@ -158,7 +158,7 @@ const Layout = ({ children }) => {
             <button
               type="submit"
               disabled={joining || !joinToken.trim()}
-              className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md shadow-indigo-600/20 transition-all disabled:opacity-50"
+              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-md shadow-emerald-700/20 transition-all disabled:opacity-50"
             >
               {joining ? "Ulanmoqda..." : "Guruhga a'zo bo'lish"}
             </button>

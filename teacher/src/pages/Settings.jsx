@@ -111,12 +111,15 @@ const Settings = () => {
           {/* Bottom Actions */}
           <div className="flex items-center pt-8 border-t border-slate-100">
             <div className="sm:w-64">
-              <span className="bg-purple-50 text-purple-600 text-[11px] font-bold px-4 py-2 rounded-full uppercase tracking-wider">
+              <span className="bg-emerald-50 text-emerald-700 text-[11px] font-bold px-4 py-2 rounded-full uppercase tracking-wider border border-emerald-100">
                 PRO PLAN
               </span>
             </div>
             <div>
-              <button className="bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold px-6 py-2.5 rounded-full transition-colors">
+              <button 
+                style={{ background: 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)' }}
+                className="text-white text-xs font-bold px-6 py-2.5 rounded-full shadow-md shadow-emerald-700/20 hover:opacity-95 transition-all cursor-pointer"
+              >
                 Save changes
               </button>
             </div>

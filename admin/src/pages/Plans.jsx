@@ -16,6 +16,8 @@ import {
   BadgeCheck,
 } from 'lucide-react';
 
+const EMERALD_GRADIENT = 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)';
+
 /* ─── Plan Icon by name ──────────────────── */
 const getPlanStyle = (name = '') => {
   const n = name.toUpperCase();
@@ -30,9 +32,9 @@ const getPlanStyle = (name = '') => {
   if (n.includes('PRO') || n.includes('PREMIUM'))
     return {
       icon: Crown,
-      gradient: 'linear-gradient(135deg,#6366f1,#8b5cf6)',
-      badge: { bg: 'rgba(99,102,241,0.1)', border: 'rgba(99,102,241,0.3)', color: '#6366f1' },
-      glow: 'rgba(99,102,241,0.2)',
+      gradient: EMERALD_GRADIENT,
+      badge: { bg: 'rgba(5,150,105,0.1)', border: 'rgba(5,150,105,0.3)', color: '#059669' },
+      glow: 'rgba(5,150,105,0.25)',
       popular: true,
     };
   if (n.includes('BASIC') || n.includes('STANDART'))
@@ -62,15 +64,15 @@ const PlanCard = ({ p, onEdit }) => {
     <div
       className="bg-white rounded-2xl border overflow-hidden flex flex-col relative transition-all duration-200 hover:shadow-lg"
       style={{
-        borderColor: s.popular ? 'rgba(99,102,241,0.35)' : '#e2e8f0',
-        boxShadow: s.popular ? `0 0 0 2px rgba(99,102,241,0.15), 0 4px 24px ${s.glow}` : '0 1px 4px rgba(0,0,0,0.06)',
+        borderColor: s.popular ? 'rgba(5,150,105,0.35)' : '#e2e8f0',
+        boxShadow: s.popular ? `0 0 0 2px rgba(5,150,105,0.15), 0 4px 24px ${s.glow}` : '0 1px 4px rgba(0,0,0,0.06)',
       }}
     >
       {/* Popular badge */}
       {s.popular && (
         <div
-          className="absolute top-4 right-4 text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full text-white"
-          style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)' }}
+          className="absolute top-4 right-4 text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full text-white shadow-sm"
+          style={{ background: EMERALD_GRADIENT }}
         >
           ⭐ Mashhur
         </div>
@@ -83,10 +85,10 @@ const PlanCard = ({ p, onEdit }) => {
         {/* Icon + Plan name */}
         <div className="flex items-center gap-3 mb-4">
           <div
-            className="w-11 h-11 rounded-xl flex items-center justify-center"
+            className="w-11 h-11 rounded-xl flex items-center justify-center text-white"
             style={{ background: s.gradient, boxShadow: `0 4px 12px ${s.glow}` }}
           >
-            <Icon className="w-5 h-5 text-white" />
+            <Icon className="w-5 h-5" />
           </div>
           <div>
             <span
@@ -99,9 +101,7 @@ const PlanCard = ({ p, onEdit }) => {
           </div>
           <button
             onClick={() => onEdit(p)}
-            className="ml-auto w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-slate-400 transition-all"
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(99,102,241,0.08)'; e.currentTarget.style.color = '#6366f1'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94a3b8'; }}
+            className="ml-auto w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition-all"
           >
             <Edit2 className="w-3.5 h-3.5" />
           </button>
@@ -109,13 +109,13 @@ const PlanCard = ({ p, onEdit }) => {
 
         {/* Description */}
         {p.description && (
-          <p className="text-xs text-slate-400 mb-4 leading-relaxed">{p.description}</p>
+          <p className="text-xs text-slate-500 mb-4 leading-relaxed font-medium">{p.description}</p>
         )}
 
         {/* Price */}
         <div className="mb-5">
           <div className="flex items-baseline gap-1">
-            <span className="text-3xl font-extrabold text-slate-800">
+            <span className="text-3xl font-black text-slate-800 tracking-tight">
               {isFree ? 'Bepul' : `${Number(p.price_uzs).toLocaleString()}`}
             </span>
             {!isFree && (
@@ -126,76 +126,60 @@ const PlanCard = ({ p, onEdit }) => {
             )}
           </div>
           {isFree && (
-            <p className="text-xs text-slate-400 mt-0.5">Hech qanday to'lovsiz</p>
+            <p className="text-xs text-slate-400 mt-0.5 font-medium">Hech qanday to'lovsiz</p>
           )}
         </div>
 
         {/* Limits */}
         <div
-          className="rounded-xl p-4 mb-5 space-y-2.5"
-          style={{ background: '#f8fafc' }}
+          className="rounded-xl p-4 mb-5 space-y-2.5 bg-slate-50 border border-slate-100"
         >
           <div className="flex items-center justify-between text-xs">
-            <span className="flex items-center gap-1.5 text-slate-500">
-              <Layers className="w-3.5 h-3.5" />
-              Guruhlar limiti
+            <span className="flex items-center gap-1.5 text-slate-500 font-medium">
+              <Layers className="w-3.5 h-3.5 text-slate-400" />
+              Guruhlar limiti:
             </span>
-            <span className="font-bold text-slate-700">
-              {p.max_groups >= 9000 ? '∞ Cheksiz' : `${p.max_groups} ta`}
-            </span>
-          </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="flex items-center gap-1.5 text-slate-500">
-              <Sparkles className="w-3.5 h-3.5" />
-              AI baholash krediti
-            </span>
-            <span className="font-bold text-slate-700">
-              {p.ai_credits >= 9000 ? '∞ Cheksiz' : `${p.ai_credits} kredit`}
+            <span className="font-bold text-slate-800">
+              {p.max_groups >= 999 ? 'Cheksiz' : `${p.max_groups} ta`}
             </span>
           </div>
           <div className="flex items-center justify-between text-xs">
-            <span className="flex items-center gap-1.5 text-slate-500">
-              <Calendar className="w-3.5 h-3.5" />
-              Davomiyligi
+            <span className="flex items-center gap-1.5 text-slate-500 font-medium">
+              <Sparkles className="w-3.5 h-3.5 text-slate-400" />
+              AI Kreditlari:
             </span>
-            <span className="font-bold text-slate-700">{p.duration_days} kun</span>
+            <span className="font-bold text-slate-800">
+              {p.ai_credits >= 9999 ? 'Cheksiz' : `${p.ai_credits} ta`}
+            </span>
           </div>
           <div className="flex items-center justify-between text-xs">
-            <span className="flex items-center gap-1.5 text-slate-500">
-              <Users className="w-3.5 h-3.5" />
-              Maqsadli rol
+            <span className="flex items-center gap-1.5 text-slate-500 font-medium">
+              <Calendar className="w-3.5 h-3.5 text-slate-400" />
+              Amal qilish:
             </span>
-            <span
-              className="font-bold px-2 py-0.5 rounded-md text-[10px]"
-              style={s.badge}
-            >
-              {p.role_target}
-            </span>
+            <span className="font-bold text-slate-800">{p.duration_days} kun</span>
           </div>
         </div>
 
-        {/* Features */}
-        {Array.isArray(p.features) && p.features.length > 0 && (
-          <div className="space-y-2 flex-1">
-            {p.features.map((f, idx) => (
-              <div key={idx} className="flex items-start gap-2 text-xs text-slate-600">
-                <div
-                  className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-                  style={{ background: s.gradient }}
-                >
-                  <Check className="w-2.5 h-2.5 text-white" />
-                </div>
-                {f}
+        {/* Features list */}
+        <div className="space-y-2 mb-6 flex-1">
+          {(Array.isArray(p.features) ? p.features : []).map((f, i) => (
+            <div key={i} className="flex items-center gap-2 text-xs text-slate-600">
+              <div
+                className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{ background: 'rgba(5,150,105,0.1)', color: '#059669' }}
+              >
+                <Check className="w-2.5 h-2.5" />
               </div>
-            ))}
-          </div>
-        )}
+              <span>{f}</span>
+            </div>
+          ))}
+        </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between mt-5 pt-4 border-t border-slate-100">
-          <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Faol
+        {/* Target role & ID footer */}
+        <div className="flex items-center justify-between pt-3 border-t border-slate-100 mt-auto">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            {p.role_target} UCHUN
           </span>
           <span className="text-[10px] text-slate-400 font-mono">ID: {p.id}</span>
         </div>
@@ -206,7 +190,7 @@ const PlanCard = ({ p, onEdit }) => {
 
 /* ─── Skeleton ───────────────────────────── */
 const SkeletonCard = () => (
-  <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden animate-pulse">
+  <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden animate-pulse">
     <div className="h-1.5 bg-slate-100" />
     <div className="p-6 space-y-4">
       <div className="flex items-center gap-3">
@@ -226,7 +210,7 @@ const SkeletonCard = () => (
 );
 
 /* ─── Input / Label styles ───────────────── */
-const inputCls = 'w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all bg-slate-50';
+const inputCls = 'w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-4 focus:ring-emerald-100/60 focus:border-emerald-500 transition-all bg-slate-50 font-medium';
 const labelCls = 'block text-xs font-semibold text-slate-600 mb-1.5';
 
 /* ════════════════════════════════════════════
@@ -308,28 +292,24 @@ const Plans = () => {
     }
   };
 
-  const totalRevenue = plans.reduce((s, p) => s + (p.price_uzs || 0), 0);
-
   return (
     <div className="min-h-full bg-slate-50">
 
       {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-100 px-4 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-6">
+      <div className="bg-white border-b border-slate-200/80 px-4 sm:px-8 pt-5 sm:pt-7 pb-5 sm:pb-6">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-800 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">
               Obuna Tariflari
             </h1>
-            <p className="text-slate-400 text-xs sm:text-sm mt-1">
+            <p className="text-slate-500 text-xs sm:text-sm mt-1">
               O'qituvchi va talabalar uchun narxlar hamda imkoniyatlarni boshqarish.
             </p>
           </div>
           <button
             onClick={openCreateModal}
-            className="inline-flex items-center justify-center gap-2 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all w-full sm:w-auto self-start sm:self-auto"
-            style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', boxShadow: '0 4px 14px rgba(99,102,241,0.4)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+            className="inline-flex items-center justify-center gap-2 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all duration-200 shadow-md shadow-emerald-700/20 hover:opacity-95 active:scale-95 w-full sm:w-auto self-start sm:self-auto"
+            style={{ background: EMERALD_GRADIENT }}
           >
             <Plus className="w-4 h-4" />
             Yangi Tarif
@@ -339,20 +319,20 @@ const Plans = () => {
         {/* Stat chips */}
         <div className="max-w-7xl mx-auto flex flex-wrap gap-2 sm:gap-3 mt-4 sm:mt-5">
           {[
-            { label: 'Jami tariflar', value: plans.length, icon: CreditCard, color: '#6366f1' },
-            { label: 'Teacher tariflar', value: plans.filter((p) => p.role_target === 'TEACHER').length, icon: Users, color: '#059669' },
+            { label: 'Jami tariflar', value: plans.length, icon: CreditCard, color: '#059669' },
+            { label: 'Teacher tariflar', value: plans.filter((p) => p.role_target === 'TEACHER').length, icon: Users, color: '#0d9488' },
             { label: 'Student tariflar', value: plans.filter((p) => p.role_target === 'STUDENT').length, icon: BadgeCheck, color: '#d97706' },
           ].map(({ label, value, icon: Icon, color }) => (
             <div
               key={label}
-              className="bg-white rounded-xl border border-slate-100 px-3 sm:px-4 py-2.5 sm:py-3 flex items-center gap-2.5 sm:gap-3 shadow-sm flex-1 min-w-[130px]"
+              className="bg-white rounded-xl border border-slate-200/80 px-3 sm:px-4 py-2.5 sm:py-3 flex items-center gap-2.5 sm:gap-3 shadow-xs flex-1 min-w-[130px]"
             >
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: `${color}15` }}>
                 <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" style={{ color }} />
               </div>
               <div>
-                <p className="text-sm sm:text-base font-extrabold text-slate-800 leading-none">{value}</p>
-                <p className="text-[10px] text-slate-400 mt-0.5">{label}</p>
+                <p className="text-sm sm:text-base font-black text-slate-800 leading-none">{value}</p>
+                <p className="text-[10px] text-slate-400 mt-0.5 font-medium">{label}</p>
               </div>
             </div>
           ))}
@@ -366,12 +346,12 @@ const Plans = () => {
             {[...Array(3)].map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : plans.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center justify-center py-20 gap-3 text-slate-400">
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs flex flex-col items-center justify-center py-20 gap-3 text-slate-400">
             <CreditCard className="w-12 h-12 opacity-20" />
             <p className="text-sm font-semibold">Hali tariflar qo'shilmagan</p>
             <button
               onClick={openCreateModal}
-              className="text-xs font-semibold text-indigo-600 hover:underline"
+              className="text-xs font-bold text-emerald-600 hover:underline"
             >
               Birinchi tarifni qo'shing →
             </button>
@@ -455,7 +435,7 @@ const Plans = () => {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className={labelCls}>AI Kreditlar</label>
+              <label className={labelCls}>AI Kreditlari</label>
               <input
                 type="number" required min="0"
                 value={formData.ai_credits}
@@ -464,7 +444,7 @@ const Plans = () => {
               />
             </div>
             <div>
-              <label className={labelCls}>Maqsadli Rol</label>
+              <label className={labelCls}>Mo'ljallangan Rol</label>
               <select
                 value={formData.role_target}
                 onChange={(e) => setFormData({ ...formData, role_target: e.target.value })}
@@ -477,38 +457,34 @@ const Plans = () => {
           </div>
 
           <div>
-            <label className={labelCls}>Imkoniyatlar (vergul bilan)</label>
+            <label className={labelCls}>Xususiyatlar (vergul bilan ajrating)</label>
             <textarea
-              rows="2"
+              rows={3}
               placeholder="Cheksiz guruhlar, AI baholash, Plagiat tahlili"
               value={formData.features}
               onChange={(e) => setFormData({ ...formData, features: e.target.value })}
               className={inputCls}
             />
-            <p className="text-[10px] text-slate-400 mt-1">Har bir imkoniyatni vergul bilan ajrating</p>
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
             <button
               type="button"
               onClick={() => setShowModal(false)}
-              className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-sm hover:bg-slate-50"
+              className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-sm hover:bg-slate-50 transition-colors"
             >
               Bekor qilish
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-6 py-2.5 rounded-xl text-white font-semibold text-sm flex items-center gap-2"
-              style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', boxShadow: '0 4px 12px rgba(99,102,241,0.35)', opacity: saving ? 0.7 : 1 }}
+              className="px-6 py-2.5 rounded-xl text-white font-bold text-sm transition-all duration-200 shadow-md shadow-emerald-700/20 hover:opacity-95 active:scale-95"
+              style={{
+                background: EMERALD_GRADIENT,
+                opacity: saving ? 0.7 : 1,
+              }}
             >
-              {saving && (
-                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                </svg>
-              )}
-              {saving ? 'Saqlanmoqda...' : editingPlan ? 'Yangilash' : "Qo'shish"}
+              {saving ? 'Saqlanmoqda...' : editingPlan ? 'Yangilash' : 'Yaratish'}
             </button>
           </div>
         </form>

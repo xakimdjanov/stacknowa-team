@@ -9,18 +9,25 @@ import {
   Users, 
   UploadCloud, 
   Sparkles,
-  BookOpen,
-  Paperclip,
-  CheckCircle,
-  CheckCircle2,
-  FileText,
-  Edit3,
-  Trash2,
-  ExternalLink,
-  Eye,
-  Download
+  BookOpen, 
+  Paperclip, 
+  CheckCircle2, 
+  FileText, 
+  Edit3, 
+  Trash2, 
+  ExternalLink, 
+  Eye, 
+  Download,
+  Search,
+  Filter,
+  ArrowRight,
+  AlertCircle,
+  Layers,
+  Award,
+  Check,
+  ChevronRight
 } from 'lucide-react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 
 const getFileUrl = (url) => {
   if (!url) return '';
@@ -32,7 +39,7 @@ const getFileUrl = (url) => {
 };
 
 const getFileNameFromUrl = (url) => {
-  if (!url) return 'Fayl';
+  if (!url) return 'Shablon fayl';
   try {
     const parts = url.split('/');
     const fullName = parts[parts.length - 1];
@@ -42,15 +49,52 @@ const getFileNameFromUrl = (url) => {
   }
 };
 
+const formatDate = (dateStr) => {
+  if (!dateStr) return 'Belgilanmagan';
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleString('uz-UZ', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  } catch {
+    return dateStr;
+  }
+};
+
+const isDeadlinePassed = (deadlineStr) => {
+  if (!deadlineStr) return false;
+  return new Date(deadlineStr) < new Date();
+};
+
+const getRemainingTime = (deadlineStr) => {
+  if (!deadlineStr) return '';
+  const diff = new Date(deadlineStr) - new Date();
+  if (diff <= 0) return 'Muddati tugagan';
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  if (days > 0) return `${days} kun ${hours} soat qoldi`;
+  return `${hours} soat qoldi`;
+};
+
 const Assignments = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const initialGroupId = searchParams.get('groupId') || '';
 
   const [groups, setGroups] = useState([]);
   const [assignments, setAssignments] = useState([]);
   const [selectedGroupId, setSelectedGroupId] = useState(initialGroupId);
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState(null);
   const [loading, setLoading] = useState(true);
   
+  // Search & filter state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL'); // 'ALL', 'ACTIVE', 'EXPIRED'
+
   // Modallar
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingAssignment, setEditingAssignment] = useState(null);
@@ -87,8 +131,9 @@ const Assignments = () => {
       setGroups(grps);
 
       if (grps.length > 0 && !selectedGroupId) {
-        setSelectedGroupId(String(grps[0].id));
-        setFormData((prev) => ({ ...prev, group_id: grps[0].id }));
+        const firstId = String(grps[0].id);
+        setSelectedGroupId(firstId);
+        setFormData((prev) => ({ ...prev, group_id: firstId }));
       }
     } catch (err) {
       console.error(err);
@@ -100,7 +145,13 @@ const Assignments = () => {
   const fetchAssignments = async (groupId) => {
     try {
       const res = await api.get(`/assignments/group/${groupId}`);
-      setAssignments(res.data.assignments || []);
+      const list = res.data.assignments || [];
+      setAssignments(list);
+      if (list.length > 0) {
+        setSelectedAssignmentId(list[0].id);
+      } else {
+        setSelectedAssignmentId(null);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -180,7 +231,6 @@ const Assignments = () => {
     }
   };
 
-
   const handleUpdateAssignment = async (e) => {
     e.preventDefault();
     try {
@@ -209,248 +259,613 @@ const Assignments = () => {
     }
   };
 
+  // Filtered assignments
+  const filteredAssignments = assignments.filter((a) => {
+    const matchesSearch = 
+      a.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      a.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const passed = isDeadlinePassed(a.deadline);
+    const matchesStatus = 
+      statusFilter === 'ALL' ? true :
+      statusFilter === 'ACTIVE' ? !passed :
+      statusFilter === 'EXPIRED' ? passed : true;
+
+    return matchesSearch && matchesStatus;
+  });
+
+  const selectedGroup = groups.find((g) => String(g.id) === String(selectedGroupId));
+  const activeAssignment = assignments.find((a) => a.id === selectedAssignmentId) || assignments[0] || null;
+
+  // Stats calculation
+  const totalAssignmentsCount = assignments.length;
+  const activeCount = assignments.filter((a) => !isDeadlinePassed(a.deadline)).length;
+  const expiredCount = assignments.filter((a) => isDeadlinePassed(a.deadline)).length;
+  const totalSubmissionsCount = assignments.reduce((acc, a) => acc + (a.submissions?.length || 0), 0);
+
   return (
-    <div className="p-8 max-w-[1400px] mx-auto min-h-screen bg-slate-50">
+    <div className="min-h-full bg-slate-50">
       
-      {/* Header */}
-      <div className="flex items-center justify-between mb-10">
-        <div>
-          <h1 className="text-[28px] font-extrabold text-slate-900 tracking-tight">Assignments</h1>
-          <p className="text-sm text-slate-500 font-medium mt-1">Templates, rubrics and automation</p>
-        </div>
-        
-        <div className="flex items-center space-x-4">
-          <div className="relative">
-            <input 
-              type="text" 
-              placeholder="Search anything..." 
-              className="pl-4 pr-10 py-2.5 rounded-xl border border-slate-200 text-sm w-64 focus:outline-none focus:border-blue-500 bg-white"
-            />
-          </div>
-          <div className="w-10 h-10 rounded-full border border-slate-200 bg-white flex items-center justify-center cursor-pointer">
-          </div>
-          <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm cursor-pointer">
-            T
-          </div>
-        </div>
-      </div>
-
-      {/* Select Group Filter (Hidden in screenshot but needed for backend logic to work, so I'll place it elegantly) */}
-      <div className="mb-6 max-w-sm">
-        <select
-          value={selectedGroupId}
-          onChange={(e) => setSelectedGroupId(e.target.value)}
-          className="bg-white border border-slate-200 rounded-xl py-2 px-4 text-sm focus:outline-none focus:border-blue-600 font-semibold text-slate-800 shadow-sm w-full"
-        >
-          {groups.map((g) => (
-            <option key={g.id} value={g.id}>
-              {g.name} ({g.subject})
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900">Assignments & templates</h2>
-          <p className="text-xs text-slate-500 font-medium mt-1">
-            Reusable practical-work templates, rubrics and automated evaluation rules.
-          </p>
-        </div>
-        <button 
-          onClick={() => {
-            setFormData((prev) => ({ ...prev, group_id: selectedGroupId }));
-            setShowCreateModal(true);
-          }}
-          className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2.5 px-6 rounded-full shadow-sm transition-colors flex items-center space-x-1"
-        >
-          <span>+</span>
-          <span>Create assignment</span>
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        {/* Left Col - Assignments List */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-          <div className="mb-6">
-            <h3 className="text-lg font-bold text-slate-900">Active assignments</h3>
-            <p className="text-xs text-slate-500 font-medium">{assignments.length} live</p>
-          </div>
-
-          <div className="space-y-4">
-            {assignments.length === 0 ? (
-              <div className="text-sm text-slate-500 py-4">No assignments yet.</div>
-            ) : (
-              assignments.map((a, idx) => (
-                <div key={a.id} className={`border ${idx === 0 ? 'border-blue-300 bg-blue-50/50' : 'border-slate-200'} rounded-xl p-5 flex items-center justify-between cursor-pointer transition-colors hover:border-blue-400`}>
-                  <div>
-                    <h4 className="text-base font-bold text-slate-900 mb-1">{a.title}</h4>
-                    <p className="text-xs text-slate-500 font-medium">Practical Work · {a.max_score} pts</p>
-                    <p className="text-[11px] text-slate-400 font-bold mt-2">Due {new Date(a.deadline).toLocaleDateString()}</p>
-                  </div>
-                  <div>
-                    {idx === 0 ? (
-                      <span className="bg-green-100 text-green-700 text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
-                        Auto-Score ON
-                      </span>
-                    ) : (
-                      <span className="bg-blue-50 text-blue-600 text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
-                        Ready
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* Right Col - Details Mock */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
-          <h3 className="text-lg font-bold text-slate-900 mb-1">REST API yaratish</h3>
-          <p className="text-xs text-slate-500 font-medium mb-8">Template: Practical Work v3</p>
-
-          <div className="space-y-6 mb-10">
+      {/* ══════════════════════════════════════════════
+          HERO HEADER SECTION
+      ══════════════════════════════════════════════ */}
+      <div className="bg-white border-b border-slate-200/80 px-4 sm:px-8 pt-6 sm:pt-8 pb-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-6">
             <div>
-              <div className="flex justify-between text-xs font-bold text-slate-900 mb-2">
-                <span>Format</span>
-                <span className="text-blue-600">20 pts</span>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-wider">
+                  <FileCheck2 className="w-3.5 h-3.5 text-emerald-600" />
+                  Topshiriqlar Boshqaruvi
+                </span>
+                {selectedGroup && (
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
+                    {selectedGroup.name}
+                  </span>
+                )}
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
-                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '80%' }}></div>
-              </div>
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                Amaliy Topshiriqlar
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
+                Laboratoriya ishlari, shablon fayllar, mezonlar va avtomatlashtirilgan AI baholash
+              </p>
             </div>
-            <div>
-              <div className="flex justify-between text-xs font-bold text-slate-900 mb-2">
-                <span>Implementation</span>
-                <span className="text-blue-600">40 pts</span>
-              </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
-                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '90%' }}></div>
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between text-xs font-bold text-slate-900 mb-2">
-                <span>Explanation</span>
-                <span className="text-blue-600">20 pts</span>
-              </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
-                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '85%' }}></div>
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between text-xs font-bold text-slate-900 mb-2">
-                <span>Conclusion</span>
-                <span className="text-blue-600">20 pts</span>
-              </div>
-              <div className="w-full bg-slate-100 rounded-full h-2">
-                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '70%' }}></div>
-              </div>
-            </div>
-          </div>
 
-          <div className="flex flex-col items-start space-y-3">
-            <span className="bg-green-50 text-green-700 text-xs font-bold px-4 py-2 rounded-full">Auto-score enabled</span>
-            <span className="bg-purple-50 text-purple-700 text-xs font-bold px-4 py-2 rounded-full">Similarity check</span>
-            <span className="bg-orange-50 text-orange-700 text-xs font-bold px-4 py-2 rounded-full">AI-writing signal</span>
-          </div>
-
-          <div className="mt-8">
-            <button className="bg-blue-50 text-blue-600 text-xs font-bold px-6 py-2.5 rounded-full transition-colors hover:bg-blue-100">
-              Save assignment
+            <button
+              onClick={() => {
+                setFormData((prev) => ({ ...prev, group_id: selectedGroupId || (groups[0]?.id ? String(groups[0].id) : '') }));
+                setShowCreateModal(true);
+              }}
+              style={{ background: 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)' }}
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-white font-extrabold text-sm shadow-lg shadow-emerald-700/25 hover:opacity-95 transition-all active:scale-95 flex-shrink-0 cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Yangi Topshiriq Yaratish</span>
             </button>
           </div>
+
+          {/* 4 STATS CARDS */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 pt-2">
+            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 sm:p-4">
+              <div className="flex items-center justify-between text-slate-500 text-xs font-bold mb-1">
+                <span>Jami Topshiriqlar</span>
+                <Layers className="w-4 h-4 text-emerald-600" />
+              </div>
+              <div className="text-xl sm:text-2xl font-black text-slate-900">
+                {totalAssignmentsCount}
+              </div>
+              <p className="text-[11px] text-slate-400 font-medium mt-0.5">Joriy guruhda e'lon qilingan</p>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 sm:p-4">
+              <div className="flex items-center justify-between text-slate-500 text-xs font-bold mb-1">
+                <span>Faol Qabul</span>
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+              </div>
+              <div className="text-xl sm:text-2xl font-black text-emerald-600">
+                {activeCount}
+              </div>
+              <p className="text-[11px] text-emerald-700/80 font-medium mt-0.5">Talabalar ish topshirishi mumkin</p>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 sm:p-4">
+              <div className="flex items-center justify-between text-slate-500 text-xs font-bold mb-1">
+                <span>Muddati Tugagan</span>
+                <Clock className="w-4 h-4 text-amber-500" />
+              </div>
+              <div className="text-xl sm:text-2xl font-black text-slate-700">
+                {expiredCount}
+              </div>
+              <p className="text-[11px] text-slate-400 font-medium mt-0.5">Qabul vaqti yakunlangan</p>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 sm:p-4">
+              <div className="flex items-center justify-between text-slate-500 text-xs font-bold mb-1">
+                <span>Topshirilgan Ishlar</span>
+                <Sparkles className="w-4 h-4 text-violet-500" />
+              </div>
+              <div className="text-xl sm:text-2xl font-black text-violet-600">
+                {totalSubmissionsCount}
+              </div>
+              <p className="text-[11px] text-slate-400 font-medium mt-0.5">Talabalar javoblari</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Footer Info */}
-      <div className="flex items-center justify-between text-[11px] font-bold px-2">
-        <span className="text-slate-400">4 criteria · 100 points · AI evaluation + integrity checks enabled</span>
-        <span className="text-blue-500">Synced just now</span>
+      {/* ══════════════════════════════════════════════
+          CONTROLS & GROUP SELECTOR
+      ══════════════════════════════════════════════ */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-6">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+          
+          {/* Group Selector Dropdown */}
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-slate-400 whitespace-nowrap hidden sm:inline">
+              Guruh:
+            </span>
+            <div className="relative flex-1 sm:w-72">
+              <select
+                value={selectedGroupId}
+                onChange={(e) => {
+                  setSelectedGroupId(e.target.value);
+                  setFormData((prev) => ({ ...prev, group_id: e.target.value }));
+                }}
+                className="w-full bg-slate-50 hover:bg-slate-100/80 border border-slate-200 rounded-xl py-2.5 pl-3.5 pr-8 text-xs sm:text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all cursor-pointer shadow-xs"
+              >
+                {groups.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.name} — {g.subject} ({g.members?.length || 0} talaba)
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Search & Status Filters */}
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+            <div className="relative w-full sm:w-64">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Topshiriq qidirish..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3.5 py-2 text-xs font-semibold text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+              />
+            </div>
+
+            {/* Filter Tabs */}
+            <div className="flex items-center p-1 bg-slate-100 rounded-xl w-full sm:w-auto justify-center">
+              <button
+                onClick={() => setStatusFilter('ALL')}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                  statusFilter === 'ALL'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                Barchasi
+              </button>
+              <button
+                onClick={() => setStatusFilter('ACTIVE')}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                  statusFilter === 'ACTIVE'
+                    ? 'bg-white text-emerald-600 shadow-xs'
+                    : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                Faol
+              </button>
+              <button
+                onClick={() => setStatusFilter('EXPIRED')}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                  statusFilter === 'EXPIRED'
+                    ? 'bg-white text-slate-700 shadow-xs'
+                    : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                Muddati o'tgan
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* CREATE ASSIGNMENT MODAL */}
+      {/* ══════════════════════════════════════════════
+          MAIN CONTENT AREA (2 COLUMN)
+      ══════════════════════════════════════════════ */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6">
+        {loading ? (
+          <div className="bg-white rounded-3xl border border-slate-200/80 p-12 text-center text-slate-500 font-semibold shadow-xs">
+            <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            Topshiriqlar yuklanmoqda...
+          </div>
+        ) : filteredAssignments.length === 0 ? (
+          <div className="bg-white rounded-3xl border border-slate-200/80 p-12 text-center shadow-xs">
+            <div className="w-16 h-16 rounded-3xl bg-emerald-50 border border-emerald-100 flex items-center justify-center mx-auto mb-4 text-emerald-600">
+              <FileCheck2 className="w-8 h-8" />
+            </div>
+            <h3 className="text-lg font-black text-slate-900">
+              {assignments.length === 0 ? "Topshiriqlar mavjud emas" : "Qidiruv natijasida hech narsa topilmadi"}
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto mt-1 mb-6">
+              {assignments.length === 0 
+                ? "Ushbu guruh talabalari uchun yangi amaliy ish yoki topshiriq e'lon qiling."
+                : "Qidiruv so'zini o'zgartiring yoki filtrlarni tozalang."}
+            </p>
+            {assignments.length === 0 ? (
+              <button
+                onClick={() => {
+                  setFormData((prev) => ({ ...prev, group_id: selectedGroupId }));
+                  setShowCreateModal(true);
+                }}
+                style={{ background: 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)' }}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-700/20 hover:opacity-95 transition-all active:scale-95 cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Birinchi topshiriqni yaratish</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setStatusFilter('ALL');
+                }}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors"
+              >
+                Filtrlarni tozalash
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            {/* LEFT COLUMN: ASSIGNMENT CARDS LIST (5 cols) */}
+            <div className="lg:col-span-5 space-y-3">
+              <div className="flex items-center justify-between px-1">
+                <span className="text-xs font-black uppercase tracking-wider text-slate-400">
+                  Topshiriqlar ({filteredAssignments.length})
+                </span>
+                <span className="text-[11px] font-bold text-slate-400">
+                  Tanlash uchun bosing
+                </span>
+              </div>
+
+              {filteredAssignments.map((a) => {
+                const isSelected = activeAssignment?.id === a.id;
+                const passed = isDeadlinePassed(a.deadline);
+                const submissionCount = a.submissions?.length || 0;
+
+                return (
+                  <div
+                    key={a.id}
+                    onClick={() => setSelectedAssignmentId(a.id)}
+                    className={`group relative rounded-2xl p-4 sm:p-5 transition-all cursor-pointer border ${
+                      isSelected
+                        ? 'bg-white border-emerald-600 shadow-md ring-2 ring-emerald-600/10'
+                        : 'bg-white border-slate-200/80 hover:border-slate-300 hover:shadow-xs'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          {passed ? (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-extrabold uppercase tracking-wide">
+                              Muddati o'tgan
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-extrabold uppercase tracking-wide border border-emerald-200/50">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                              Faol Qabul
+                            </span>
+                          )}
+                          <span className="text-[11px] font-bold text-slate-400">
+                            {a.max_score} ball
+                          </span>
+                        </div>
+                        <h3 className="text-sm sm:text-base font-extrabold text-slate-900 group-hover:text-emerald-700 transition-colors line-clamp-1">
+                          {a.title}
+                        </h3>
+                      </div>
+                      <ChevronRight className={`w-5 h-5 transition-transform flex-shrink-0 ${isSelected ? 'text-emerald-600 translate-x-0.5' : 'text-slate-300 group-hover:text-slate-400'}`} />
+                    </div>
+
+                    {a.description && (
+                      <p className="text-xs text-slate-500 line-clamp-2 mb-3">
+                        {a.description}
+                      </p>
+                    )}
+
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-100 text-xs font-semibold">
+                      <div className="flex items-center gap-1.5 text-slate-500">
+                        <Clock className="w-3.5 h-3.5 text-slate-400" />
+                        <span className={passed ? "text-slate-400" : "text-emerald-700 font-bold"}>
+                          {getRemainingTime(a.deadline)}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {a.template_file_url && (
+                          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">
+                            <Paperclip className="w-3 h-3" />
+                            Shablon bor
+                          </span>
+                        )}
+                        <span className="text-[11px] text-slate-600 font-bold bg-slate-100 px-2 py-0.5 rounded-md">
+                          {submissionCount} topshirdi
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* RIGHT COLUMN: ASSIGNMENT DETAIL & ACTIONS INSPECTOR (7 cols) */}
+            <div className="lg:col-span-7">
+              {activeAssignment ? (
+                <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-5 sm:p-7 sticky top-6">
+                  
+                  {/* Top Bar with Status and Actions */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 pb-5 border-b border-slate-100">
+                    <div className="flex items-center gap-2">
+                      {isDeadlinePassed(activeAssignment.deadline) ? (
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">
+                          Yakunlangan
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
+                          <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                          Qabul jarayoni faol
+                        </span>
+                      )}
+                      <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-extrabold border border-emerald-100">
+                        {activeAssignment.max_score} Maksimal Ball
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setEditingAssignment(activeAssignment)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-xs transition-colors shadow-xs"
+                      >
+                        <Edit3 className="w-3.5 h-3.5 text-slate-500" />
+                        <span>Tahrirlash</span>
+                      </button>
+                      <button
+                        onClick={() => setDeleteConfirm(activeAssignment)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 font-bold text-xs transition-colors shadow-xs"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-rose-500" />
+                        <span>O'chirish</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Title & Description */}
+                  <div className="py-5">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mb-2">
+                      {activeAssignment.title}
+                    </h2>
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
+                      {activeAssignment.description || "Ushbu topshiriq uchun qo'shimcha tavsif berilmagan."}
+                    </p>
+                  </div>
+
+                  {/* Timeline Cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                    <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 flex-shrink-0">
+                        <Calendar className="w-5 h-5 text-emerald-600" />
+                      </div>
+                      <div>
+                        <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                          Boshlanish Sanasi
+                        </span>
+                        <span className="text-xs sm:text-sm font-extrabold text-slate-800">
+                          {formatDate(activeAssignment.start_date || activeAssignment.created_at)}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 flex-shrink-0">
+                        <Clock className="w-5 h-5 text-amber-500" />
+                      </div>
+                      <div>
+                        <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                          Tugash (Deadline)
+                        </span>
+                        <span className="text-xs sm:text-sm font-extrabold text-slate-800">
+                          {formatDate(activeAssignment.deadline)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Attached Template File (AWS S3) */}
+                  {activeAssignment.template_file_url ? (
+                    <div className="mb-6 p-4 rounded-2xl bg-emerald-50/60 border border-emerald-100 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                            <FileText className="w-5 h-5" />
+                          </div>
+                          <div className="min-w-0">
+                            <span className="block text-xs font-black text-emerald-950 truncate">
+                              {getFileNameFromUrl(activeAssignment.template_file_url)}
+                            </span>
+                            <span className="text-[11px] text-emerald-700 font-medium">
+                              Topshiriq uchun biriktirilgan shablon fayl
+                            </span>
+                          </div>
+                        </div>
+
+                        <a
+                          href={getFileUrl(activeAssignment.template_file_url)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-emerald-200 hover:border-emerald-300 text-emerald-700 rounded-xl font-bold text-xs shadow-xs transition-colors flex-shrink-0"
+                        >
+                          <Eye className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Ochish</span>
+                          <ExternalLink className="w-3 h-3 text-emerald-500" />
+                        </a>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {/* Rubric Criteria Distribution */}
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-xs font-black uppercase tracking-wider text-slate-400">
+                        Baholash Mezonlari (Rubric)
+                      </span>
+                      <span className="text-xs font-bold text-slate-600">
+                        Jami: {activeAssignment.max_score} ball
+                      </span>
+                    </div>
+
+                    <div className="space-y-3 p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                      <div>
+                        <div className="flex justify-between text-xs font-bold text-slate-700 mb-1.5">
+                          <span>1. Mavzu va Maqsadni bayon etish</span>
+                          <span className="text-emerald-700">15 ball</span>
+                        </div>
+                        <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                          <div className="bg-emerald-600 h-1.5 rounded-full" style={{ width: '15%' }}></div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="flex justify-between text-xs font-bold text-slate-700 mb-1.5">
+                          <span>2. Nazariy tushunchalar va asoslar</span>
+                          <span className="text-emerald-700">25 ball</span>
+                        </div>
+                        <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                          <div className="bg-emerald-600 h-1.5 rounded-full" style={{ width: '25%' }}></div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="flex justify-between text-xs font-bold text-slate-700 mb-1.5">
+                          <span>3. Amaliy qism (Kod yoki hisobotlar)</span>
+                          <span className="text-emerald-700">40 ball</span>
+                        </div>
+                        <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                          <div className="bg-emerald-600 h-1.5 rounded-full" style={{ width: '40%' }}></div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="flex justify-between text-xs font-bold text-slate-700 mb-1.5">
+                          <span>4. Xulosa va tahlil</span>
+                          <span className="text-emerald-700">20 ball</span>
+                        </div>
+                        <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                          <div className="bg-emerald-600 h-1.5 rounded-full" style={{ width: '20%' }}></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* AI Features & Bottom Action Button */}
+                  <div className="space-y-4 pt-4 border-t border-slate-100">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-100">
+                        <Check className="w-3.5 h-3.5" />
+                        AI avtomatik tekshiruv
+                      </span>
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-purple-50 text-purple-700 text-xs font-bold border border-purple-100">
+                        <Sparkles className="w-3.5 h-3.5" />
+                        Plagiat tahlili yoqilgan
+                      </span>
+                    </div>
+
+                    <Link
+                      to="/evaluations"
+                      style={{ background: 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)' }}
+                      className="w-full py-3.5 px-5 rounded-2xl text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-md shadow-emerald-700/20 hover:opacity-95 transition-all active:scale-98"
+                    >
+                      <FileCheck2 className="w-4 h-4" />
+                      <span>Topshirilgan Ishlarni Tekshirish ({activeAssignment.submissions?.length || 0})</span>
+                      <ArrowRight className="w-4 h-4 ml-1" />
+                    </Link>
+                  </div>
+
+                </div>
+              ) : null}
+            </div>
+
+          </div>
+        )}
+      </div>
+
+      {/* ══════════════════════════════════════════════
+          CREATE ASSIGNMENT MODAL
+      ══════════════════════════════════════════════ */}
       <Modal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         title="Yangi Amaliy Topshiriq Yaratish"
+        maxWidth="max-w-2xl"
       >
-        <form onSubmit={handleCreateAssignment} className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Topshiriq Guruhi</label>
-            <select
-              value={formData.group_id}
-              onChange={(e) => setFormData({ ...formData, group_id: e.target.value })}
-              className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-[#1d58d8] font-medium"
-            >
-              {groups.map((g) => (
-                <option key={g.id} value={g.id}>
-                  {g.name} ({g.subject})
-                </option>
-              ))}
-            </select>
+        <form onSubmit={handleCreateAssignment} className="space-y-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Topshiriq Guruhi</label>
+              <select
+                value={formData.group_id}
+                onChange={(e) => setFormData({ ...formData, group_id: e.target.value })}
+                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 bg-white"
+              >
+                {groups.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.name} ({g.subject})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Topshiriq / Mavzu Nomi</label>
+              <input
+                type="text"
+                required
+                placeholder="Masalan: 3-Amaliy ish. RESTful API"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
+              />
+            </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Topshiriq / Amaliy ish Mavzusi</label>
-            <input
-              type="text"
-              required
-              placeholder="Masalan: 3-Amaliy ish. RESTful API arxitekturasi"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-[#1d58d8]"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Topshiriq Tavsifi va Talablar</label>
+            <label className="block text-xs font-bold text-slate-700 mb-1">Topshiriq Tavsifi va Talablar</label>
             <textarea
-              rows="3"
+              rows="2"
               placeholder="Talabalar nimalarga e'tibor qaratishi kerak..."
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-[#1d58d8]"
+              className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className="block text-xs font-bold text-slate-700 mb-1">
               Topshiriq Shablon Fayli (PDF, DOCX yoki Rasm)
             </label>
             {formData.template_file_url ? (
-              <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2 text-emerald-900 text-xs font-semibold truncate pr-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                    <span className="truncate">{formData.template_file_name || getFileNameFromUrl(formData.template_file_url)}</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, template_file_url: '', template_file_name: '' }))}
-                    className="text-[11px] text-rose-600 hover:text-rose-800 font-semibold flex-shrink-0"
-                  >
-                    O'chirish
-                  </button>
+              <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2 text-emerald-900 font-semibold truncate pr-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                  <span className="truncate">{formData.template_file_name || getFileNameFromUrl(formData.template_file_url)}</span>
                 </div>
-                <div className="flex items-center space-x-2 pt-1 border-t border-emerald-100">
+                <div className="flex items-center gap-2 flex-shrink-0">
                   <a
                     href={getFileUrl(formData.template_file_url)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center space-x-1.5 py-1.5 px-3 bg-white border border-emerald-300 text-emerald-700 text-xs font-semibold rounded-xl hover:bg-emerald-100/60 transition-colors shadow-sm"
+                    className="py-1 px-2.5 bg-white border border-emerald-300 text-emerald-700 text-xs font-bold rounded-lg hover:bg-emerald-100/60 shadow-xs"
                   >
-                    <Eye className="w-3.5 h-3.5" />
-                    <span>Yuklangan faylni tekshirish (Ochish)</span>
-                    <ExternalLink className="w-3 h-3 ml-0.5" />
+                    Ochish
                   </a>
-                  <span className="text-[11px] text-emerald-700 font-medium">
-                    ✓ AWS S3 ga muvaffaqiyatli yuklandi
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, template_file_url: '', template_file_name: '' }))}
+                    className="text-xs text-rose-600 hover:text-rose-800 font-bold cursor-pointer"
+                  >
+                    O'chirish
+                  </button>
                 </div>
               </div>
             ) : (
-              <div className="border-2 border-dashed border-slate-200 rounded-2xl p-4 text-center hover:border-[#1d58d8] transition-colors relative bg-slate-50/50">
+              <div className="border-2 border-dashed border-slate-200 hover:border-emerald-500 rounded-xl p-2.5 text-center transition-colors relative bg-slate-50/50 cursor-pointer">
                 <input
                   type="file"
                   onChange={(e) => handleFileUpload(e, false)}
@@ -458,56 +873,67 @@ const Assignments = () => {
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
                 {uploadingFile ? (
-                  <div className="py-2 text-xs font-semibold text-[#1d58d8] flex items-center justify-center space-x-2">
-                    <div className="w-4 h-4 border-2 border-[#1d58d8] border-t-transparent rounded-full animate-spin"></div>
-                    <span>Fayl AWS S3 ga yuklanmoqda...</span>
+                  <div className="py-1 text-xs font-bold text-emerald-600 flex items-center justify-center space-x-2">
+                    <div className="w-3.5 h-3.5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+                    <span>Fayl yuklanmoqda...</span>
                   </div>
                 ) : (
-                  <div className="space-y-1">
-                    <UploadCloud className="w-6 h-6 text-slate-400 mx-auto" />
-                    <p className="text-xs font-semibold text-slate-700">Shablon faylni yuklang</p>
-                    <p className="text-[11px] text-slate-400">PDF, DOCX yoki rasm (AWS S3 ai/)</p>
+                  <div className="flex items-center justify-center gap-2 text-slate-500 text-xs font-semibold py-1">
+                    <UploadCloud className="w-4 h-4 text-emerald-600" />
+                    <span>Shablon faylni yuklang (PDF, DOCX yoki rasm)</span>
                   </div>
                 )}
               </div>
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Boshlanish Sanasi</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Boshlanish Sanasi</label>
               <input
                 type="date"
                 required
                 value={formData.start_date}
                 onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-[#1d58d8]"
+                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Deadline (Tugash sanasi)</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Deadline (Tugash vaqti)</label>
               <input
                 type="datetime-local"
                 required
                 value={formData.deadline}
                 onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-[#1d58d8]"
+                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Maksimal Ball</label>
+              <input
+                type="number"
+                required
+                value={formData.max_score}
+                onChange={(e) => setFormData({ ...formData, max_score: e.target.value })}
+                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
               />
             </div>
           </div>
 
-          <div className="flex justify-end space-x-3 pt-6 border-t border-slate-100">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
             <button
               type="button"
               onClick={() => setShowCreateModal(false)}
-              className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-sm hover:bg-slate-50 transition-colors"
+              className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs sm:text-sm hover:bg-slate-50 transition-colors"
             >
               Bekor qilish
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-[#1d58d8] hover:bg-[#1648b8] text-white font-semibold text-sm shadow-md shadow-blue-500/20 transition-all"
+              style={{ background: 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)' }}
+              className="px-6 py-2.5 rounded-xl text-white font-extrabold text-sm shadow-md shadow-emerald-700/20 hover:opacity-95 transition-all cursor-pointer"
             >
               Topshiriqni E'lon Qilish
             </button>
@@ -515,127 +941,124 @@ const Assignments = () => {
         </form>
       </Modal>
 
-      {/* EDIT ASSIGNMENT MODAL (TAHRIRLASH) */}
+      {/* ══════════════════════════════════════════════
+          EDIT ASSIGNMENT MODAL
+      ══════════════════════════════════════════════ */}
       <Modal
         isOpen={Boolean(editingAssignment)}
         onClose={() => setEditingAssignment(null)}
         title="Topshiriqni Tahrirlash"
+        maxWidth="max-w-2xl"
       >
         {editingAssignment && (
-          <form onSubmit={handleUpdateAssignment} className="space-y-4">
+          <form onSubmit={handleUpdateAssignment} className="space-y-3.5">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Topshiriq Mavzusi</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Topshiriq Mavzusi</label>
               <input
                 type="text"
                 required
                 value={editingAssignment.title}
                 onChange={(e) => setEditingAssignment({ ...editingAssignment, title: e.target.value })}
-                className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-[#1d58d8]"
+                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Topshiriq Tavsifi</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Topshiriq Tavsifi</label>
               <textarea
-                rows="3"
+                rows="2"
                 value={editingAssignment.description || ''}
                 onChange={(e) => setEditingAssignment({ ...editingAssignment, description: e.target.value })}
-                className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-[#1d58d8]"
+                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Deadline (Tugash sanasi)</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Deadline (Tugash sanasi)</label>
                 <input
                   type="datetime-local"
                   required
-                  value={editingAssignment.deadline}
+                  value={editingAssignment.deadline ? new Date(editingAssignment.deadline).toISOString().slice(0, 16) : ''}
                   onChange={(e) => setEditingAssignment({ ...editingAssignment, deadline: e.target.value })}
-                  className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-[#1d58d8]"
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Maksimal Ball</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Maksimal Ball</label>
                 <input
                   type="number"
                   required
                   value={editingAssignment.max_score}
                   onChange={(e) => setEditingAssignment({ ...editingAssignment, max_score: e.target.value })}
-                  className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-[#1d58d8]"
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
                 />
               </div>
             </div>
 
-            {/* Fayl yangilash / tekshirish */}
+            {/* Fayl yangilash */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Shablon Fayl (AWS S3)
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Shablon Fayl
               </label>
 
               {editingAssignment.template_file_url ? (
-                <div className="p-3 bg-blue-50/70 border border-blue-200 rounded-xl space-y-2 mb-2">
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center space-x-2 text-blue-900 font-semibold truncate pr-2">
-                      <Paperclip className="w-4 h-4 text-[#1d58d8] flex-shrink-0" />
-                      <span className="truncate">{getFileNameFromUrl(editingAssignment.template_file_url)}</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setEditingAssignment(prev => ({ ...prev, template_file_url: '' }))}
-                      className="text-[11px] text-rose-600 hover:text-rose-800 font-semibold flex-shrink-0"
-                    >
-                      O'chirish
-                    </button>
+                <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs mb-2">
+                  <div className="flex items-center gap-2 text-emerald-900 font-semibold truncate pr-2">
+                    <Paperclip className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                    <span className="truncate">{getFileNameFromUrl(editingAssignment.template_file_url)}</span>
                   </div>
-                  <div className="flex items-center space-x-2 pt-1 border-t border-blue-100">
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     <a
                       href={getFileUrl(editingAssignment.template_file_url)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center space-x-1.5 py-1 px-2.5 bg-white border border-blue-200 text-[#1d58d8] text-xs font-semibold rounded-lg hover:bg-blue-50 transition-colors shadow-sm"
+                      className="py-1 px-2.5 bg-white border border-emerald-300 text-emerald-700 text-xs font-bold rounded-lg hover:bg-emerald-100/60 shadow-xs"
                     >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>Faylni tekshirish (Ochish)</span>
-                      <ExternalLink className="w-3 h-3 ml-0.5" />
+                      Ochish
                     </a>
-                    <span className="text-[11px] text-slate-500">
-                      Joriy biriktirilgan shablon
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setEditingAssignment(prev => ({ ...prev, template_file_url: '' }))}
+                      className="text-xs text-rose-600 hover:text-rose-800 font-bold cursor-pointer"
+                    >
+                      O'chirish
+                    </button>
                   </div>
                 </div>
               ) : null}
 
-              <div className="border border-dashed border-slate-200 rounded-xl p-3 text-center relative bg-slate-50/50 hover:border-[#1d58d8] transition-colors">
+              <div className="border border-dashed border-slate-200 rounded-xl p-2.5 text-center relative bg-slate-50/50 hover:border-emerald-500 transition-colors cursor-pointer">
                 <input
                   type="file"
                   onChange={(e) => handleFileUpload(e, true)}
                   accept=".pdf,.docx,.doc,.png,.jpg,.jpeg"
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
-                <span className="text-xs text-[#1d58d8] font-semibold flex items-center justify-center space-x-1.5">
-                  <UploadCloud className="w-4 h-4" />
+                <span className="text-xs text-emerald-700 font-bold flex items-center justify-center gap-1.5 py-1">
+                  <UploadCloud className="w-4 h-4 text-emerald-600" />
                   <span>
                     {uploadingFile 
-                      ? "Fayl AWS S3 ga yuklanmoqda..." 
+                      ? "Fayl yuklanmoqda..." 
                       : (editingAssignment.template_file_url ? "Boshqa fayl yuklash" : "Yangi shablon fayl tanlash")}
                   </span>
                 </span>
               </div>
             </div>
 
-            <div className="flex justify-end space-x-3 pt-6 border-t border-slate-100">
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
               <button
                 type="button"
                 onClick={() => setEditingAssignment(null)}
-                className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-sm hover:bg-slate-50 transition-colors"
+                className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs sm:text-sm hover:bg-slate-50 transition-colors"
               >
                 Bekor qilish
               </button>
               <button
                 type="submit"
-                className="px-6 py-2.5 rounded-xl bg-[#1d58d8] hover:bg-[#1648b8] text-white font-semibold text-sm shadow-md shadow-blue-500/20 transition-all"
+                style={{ background: 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)' }}
+                className="px-6 py-2.5 rounded-xl text-white font-extrabold text-sm shadow-md shadow-emerald-700/20 hover:opacity-95 transition-all cursor-pointer"
               >
                 O'zgarishlarni Saqlash
               </button>
@@ -644,7 +1067,9 @@ const Assignments = () => {
         )}
       </Modal>
 
-      {/* DELETE ASSIGNMENT MODAL (O'CHIRISH) */}
+      {/* ══════════════════════════════════════════════
+          DELETE ASSIGNMENT MODAL
+      ══════════════════════════════════════════════ */}
       <Modal
         isOpen={Boolean(deleteConfirm)}
         onClose={() => setDeleteConfirm(null)}
@@ -655,29 +1080,30 @@ const Assignments = () => {
             <Trash2 className="w-7 h-7" />
           </div>
           
-          <h3 className="text-lg font-bold text-slate-900">Topshiriqni o'chirishni tasdiqlaysizmi?</h3>
-          <p className="text-sm text-slate-500">
-            <strong className="text-slate-800">{deleteConfirm?.title}</strong> topshirig'i va unga topshirilgan barcha talabalar ishlari tizimdan o'chiriladi.
+          <h3 className="text-lg font-black text-slate-900">Topshiriqni o'chirishni tasdiqlaysizmi?</h3>
+          <p className="text-xs sm:text-sm text-slate-500 font-medium">
+            <strong className="text-slate-800">{deleteConfirm?.title}</strong> topshirig'i va unga biriktirilgan talabalar ishlari tizimdan butunlay o'chiriladi.
           </p>
 
           <div className="flex justify-center space-x-3 pt-4">
             <button
               type="button"
               onClick={() => setDeleteConfirm(null)}
-              className="w-1/2 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-semibold text-sm hover:bg-slate-50 transition-colors"
+              className="w-1/2 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs sm:text-sm hover:bg-slate-50 transition-colors"
             >
               Bekor qilish
             </button>
             <button
               type="button"
               onClick={handleDeleteAssignment}
-              className="w-1/2 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold text-sm shadow-md shadow-rose-600/20 transition-all"
+              className="w-1/2 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs sm:text-sm shadow-md shadow-rose-600/20 transition-all"
             >
               Ha, O'chirilsin
             </button>
           </div>
         </div>
       </Modal>
+
     </div>
   );
 };
