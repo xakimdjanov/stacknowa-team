@@ -575,15 +575,26 @@ const GroupDetail = () => {
                           <tr key={member.id} className="hover:bg-slate-50/80 transition-colors group">
                             <td className="px-6 py-4 text-slate-400 font-bold">{idx + 1}</td>
                             <td className="px-6 py-4">
-                              <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-800 font-black text-sm flex items-center justify-center uppercase shrink-0 border border-emerald-200">
+                              <Link
+                                to={`/students/${stId || 'st-001'}?group=${id}`}
+                                className="flex items-center gap-3 group/item hover:opacity-90 transition-opacity cursor-pointer"
+                                title="Talaba shaxsiy tahliliga o'tish (User Detail)"
+                              >
+                                <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-800 font-black text-sm flex items-center justify-center uppercase shrink-0 border border-emerald-200 group-hover/item:scale-105 transition-transform">
                                   {student.name ? student.name.charAt(0) : 'T'}
                                 </div>
                                 <div>
-                                  <p className="font-bold text-slate-900 text-sm">{student.name || 'Talaba'}</p>
+                                  <div className="flex items-center gap-1.5">
+                                    <p className="font-bold text-slate-900 text-sm group-hover/item:text-emerald-600 transition-colors">
+                                      {student.name || 'Talaba'}
+                                    </p>
+                                    <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.2 rounded border border-indigo-100 opacity-0 group-hover/item:opacity-100 transition-opacity">
+                                      Detail →
+                                    </span>
+                                  </div>
                                   <p className="text-[11px] text-slate-400 font-mono">{student.email || '-'}</p>
                                 </div>
-                              </div>
+                              </Link>
                             </td>
 
                             {/* Davomat Buttons */}
@@ -660,13 +671,24 @@ const GroupDetail = () => {
 
                             {/* Actions */}
                             <td className="px-6 py-4 text-right">
-                              <button
-                                onClick={() => handleRemoveStudent(stId, student.name)}
-                                className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all cursor-pointer"
-                                title="Talabani guruhdan chiqarish"
-                              >
-                                <UserX className="w-4 h-4" />
-                              </button>
+                              <div className="flex items-center justify-end gap-1">
+                                <Link
+                                  to={`/students/${stId || 'st-001'}?group=${id}`}
+                                  className="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+                                  title="Talabaning qiynalayotgan fani va mavzularini ko'rish"
+                                >
+                                  <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+                                  <span>Tahlil</span>
+                                </Link>
+
+                                <button
+                                  onClick={() => handleRemoveStudent(stId, student.name)}
+                                  className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all cursor-pointer"
+                                  title="Talabani guruhdan chiqarish"
+                                >
+                                  <UserX className="w-4 h-4" />
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         );
