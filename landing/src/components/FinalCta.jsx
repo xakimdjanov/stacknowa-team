@@ -5,23 +5,23 @@ export default function FinalCta({ onOpenDemo }) {
   return (
     <section style={{
       backgroundColor: '#FFFFFF',
-      padding: '80px 0 100px',
+      padding: '70px 0 90px',
       position: 'relative',
     }}>
       <div className="container">
         
-        {/* Sleek SaaS Banner Card Container */}
-        <div style={{
+        {/* Banner Card */}
+        <div className="final-cta-card" style={{
           backgroundColor: '#F8FAFC',
           border: '1px solid #E2E8F0',
-          borderRadius: '32px',
-          padding: '64px 32px',
+          borderRadius: '28px',
+          padding: '56px 28px',
           textAlign: 'center',
           position: 'relative',
           overflow: 'hidden',
           boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.04)',
         }}>
-          {/* Subtle Ambient Radial Glow */}
+          {/* Glow */}
           <div style={{
             position: 'absolute',
             top: '50%',
@@ -34,21 +34,21 @@ export default function FinalCta({ onOpenDemo }) {
             filter: 'blur(50px)'
           }} />
 
-          <div style={{ position: 'relative', zIndex: 2, maxWidth: '800px', margin: '0 auto' }}>
+          <div style={{ position: 'relative', zIndex: 2, maxWidth: '760px', margin: '0 auto' }}>
             {/* Eyebrow */}
-            <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
+            <div style={{ marginBottom: '18px', display: 'flex', justifyContent: 'center' }}>
               <span className="eyebrow-badge">
-                <Sparkles size={14} color="#059669" /> RAQAMLI TA'LIM KELAJAGI
+                <Sparkles size={13} color="#059669" /> RAQAMLI TA'LIM KELAJAGI
               </span>
             </div>
 
             {/* Heading */}
             <h2 style={{
-              fontSize: 'clamp(30px, 4.2vw, 48px)',
+              fontSize: 'clamp(22px, 4.5vw, 46px)',
               fontWeight: '800',
               lineHeight: '1.2',
               letterSpacing: '-0.02em',
-              margin: '0 auto 18px',
+              margin: '0 auto 16px',
               color: '#0F172A'
             }}>
               Universitetingizni yanada aqlli boshqarishga tayyormisiz?
@@ -56,29 +56,34 @@ export default function FinalCta({ onOpenDemo }) {
 
             {/* Subheading */}
             <p style={{
-              fontSize: 'clamp(16px, 1.8vw, 18px)',
+              fontSize: 'clamp(14px, 1.8vw, 17px)',
               color: '#475569',
-              maxWidth: '600px',
-              margin: '0 auto 36px',
+              maxWidth: '560px',
+              margin: '0 auto 32px',
               lineHeight: '1.6'
             }}>
-              EduMind AI bilan barcha dekanatlar, o‘qituvchilar va talabalarni yagona raqamli ekotizimga birlashtiring.
+              EduMind AI bilan barcha dekanatlar, o'qituvchilar va talabalarni yagona raqamli ekotizimga birlashtiring.
             </p>
 
-            {/* Action Buttons */}
-            <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '16px' }}>
-              <button onClick={onOpenDemo} className="btn-primary" style={{ padding: '16px 34px', fontSize: '15px' }}>
-                Universitet uchun demo olish <ArrowRight size={18} />
+            {/* Buttons */}
+            <div className="final-cta-btns" style={{
+              display: 'flex',
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+              gap: '14px'
+            }}>
+              <button onClick={onOpenDemo} className="btn-primary" style={{ padding: '15px 30px', fontSize: '15px' }}>
+                Universitet uchun demo olish <ArrowRight size={17} />
               </button>
               <a
                 href="#faq"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '8px',
-                  padding: '16px 28px',
+                  gap: '7px',
+                  padding: '15px 26px',
                   borderRadius: '12px',
-                  fontSize: '15px',
+                  fontSize: '14px',
                   fontWeight: '600',
                   color: '#0F172A',
                   backgroundColor: '#FFFFFF',
@@ -96,7 +101,7 @@ export default function FinalCta({ onOpenDemo }) {
                   e.currentTarget.style.borderColor = '#CBD5E1';
                 }}
               >
-                <MessageSquare size={18} /> Mutaxassis bilan bog‘lanish
+                <MessageSquare size={17} /> Mutaxassis bilan bog'lanish
               </a>
             </div>
           </div>
@@ -104,6 +109,17 @@ export default function FinalCta({ onOpenDemo }) {
         </div>
 
       </div>
+
+      <style>{`
+        @media (max-width: 640px) {
+          .final-cta-card { padding: 40px 20px !important; border-radius: 22px !important; }
+          .final-cta-btns { flex-direction: column !important; align-items: stretch !important; }
+          .final-cta-btns a { justify-content: center !important; }
+        }
+        @media (max-width: 400px) {
+          .final-cta-card { padding: 32px 14px !important; border-radius: 18px !important; }
+        }
+      `}</style>
     </section>
   );
 }

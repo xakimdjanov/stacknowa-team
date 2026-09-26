@@ -1,24 +1,24 @@
 import React from 'react';
-import { ArrowRight, ChevronDown, CheckCircle, Users, GraduationCap, Building2, Layers, Activity, TrendingUp, Sparkles, BookOpen, Check } from 'lucide-react';
+import { ArrowRight, ChevronDown, CheckCircle, Users, GraduationCap, Building2, Layers, Activity, Sparkles } from 'lucide-react';
 
 export default function Hero({ onOpenDemo }) {
   return (
-    <section style={{
+    <section className="hero-section" style={{
       backgroundColor: '#FFFFFF',
       color: '#0F172A',
-      paddingTop: '140px',
-      paddingBottom: '90px',
+      paddingTop: '120px',
+      paddingBottom: '70px',
       position: 'relative',
       overflow: 'hidden',
       borderBottom: '1px solid #E2E8F0'
     }}>
-      {/* Background Subtle Ambient Glow */}
+      {/* Background Glow */}
       <div style={{
         position: 'absolute',
         top: '0',
         right: '0',
-        width: '600px',
-        height: '600px',
+        width: '500px',
+        height: '500px',
         borderRadius: '50%',
         background: 'radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(255, 255, 255, 0) 70%)',
         pointerEvents: 'none',
@@ -29,8 +29,8 @@ export default function Hero({ onOpenDemo }) {
         position: 'absolute',
         bottom: '0',
         left: '0',
-        width: '500px',
-        height: '500px',
+        width: '400px',
+        height: '400px',
         borderRadius: '50%',
         background: 'radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, rgba(255, 255, 255, 0) 70%)',
         pointerEvents: 'none',
@@ -38,25 +38,26 @@ export default function Hero({ onOpenDemo }) {
       }} />
 
       <div className="container" style={{ position: 'relative', zIndex: 2 }}>
-        <div style={{
+        <div className="hero-grid" style={{
           display: 'grid',
           gridTemplateColumns: '1fr',
-          gap: '50px',
+          gap: '40px',
           alignItems: 'center'
-        }} className="hero-grid">
+        }}>
 
           {/* LEFT CONTENT */}
           <div>
             {/* Eyebrow */}
-            <div style={{ marginBottom: '20px' }}>
+            <div style={{ marginBottom: '16px' }}>
               <span className="eyebrow-badge">
-                <Sparkles size={14} color="#059669" /> EDUMIND AI • OTM SAAS PLATFORMASI
+                <Sparkles size={13} color="#059669" /> EDUMIND AI • OTM SAAS PLATFORMASI
               </span>
             </div>
 
             {/* Main Headline */}
-            <h1 className="hero-heading" style={{ marginBottom: '22px' }}>
-              Universitetingiz uchun yagona <span style={{
+            <h1 className="hero-heading" style={{ marginBottom: '18px' }}>
+              Universitetingiz uchun yagona{' '}
+              <span style={{
                 background: 'linear-gradient(135deg, #059669 0%, #10B981 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent'
@@ -64,223 +65,200 @@ export default function Hero({ onOpenDemo }) {
             </h1>
 
             {/* Supporting Line */}
-            <p style={{
-              fontSize: 'clamp(17px, 2vw, 19px)',
+            <p className="hero-desc" style={{
+              fontSize: 'clamp(14px, 2vw, 18px)',
               lineHeight: '1.65',
               color: '#475569',
-              marginBottom: '34px',
-              maxWidth: '620px'
+              marginBottom: '28px',
+              maxWidth: '600px'
             }}>
-              O‘qitish, topshiriqlar, davomat, live darslar, AI baholash va universitet boshqaruvi analitikasi — barchasi bitta professional B2B platformada.
+              O'qitish, topshiriqlar, davomat, live darslar, AI baholash va universitet boshqaruvi analitikasi — barchasi bitta professional B2B platformada.
             </p>
 
             {/* CTAs */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', alignItems: 'center', marginBottom: '36px' }}>
+            <div className="hero-cta-group" style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '12px',
+              alignItems: 'center',
+              marginBottom: '24px'
+            }}>
               <button onClick={onOpenDemo} className="btn-primary">
-                Demo olish <ArrowRight size={18} />
+                Demo olish <ArrowRight size={17} />
               </button>
               <a href="#narxlar" className="btn-secondary-dark">
-                Biznes modeli va narxlar <ChevronDown size={18} />
+                Biznes modeli <ChevronDown size={17} />
               </a>
             </div>
 
             {/* Trust Bar */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', color: '#64748B', fontSize: '14px', fontWeight: '600' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#0F172A' }}>
-                <CheckCircle size={16} color="#059669" /> Rektorat & Dekanat
+            <div className="hero-trust-bar" style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              gap: '8px 12px',
+              color: '#64748B',
+              fontSize: '13px',
+              fontWeight: '600'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#0F172A' }}>
+                <CheckCircle size={14} color="#059669" /> Rektorat & Dekanat
               </div>
               <span style={{ color: '#CBD5E1' }}>•</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#0F172A' }}>
-                <CheckCircle size={16} color="#059669" /> O‘qituvchilar
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#0F172A' }}>
+                <CheckCircle size={14} color="#059669" /> O'qituvchilar
               </div>
               <span style={{ color: '#CBD5E1' }}>•</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#0F172A' }}>
-                <CheckCircle size={16} color="#059669" /> Talabalar
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#0F172A' }}>
+                <CheckCircle size={14} color="#059669" /> Talabalar
               </div>
             </div>
           </div>
 
-          {/* RIGHT SIDE: REALISTIC LIGHT DASHBOARD MOCKUP */}
+          {/* RIGHT: Dashboard Mockup */}
           <div style={{ position: 'relative' }}>
-            {/* Dashboard Mockup Frame */}
-            <div style={{
+            <div className="hero-mockup-frame" style={{
               background: '#FFFFFF',
-              borderRadius: '24px',
+              borderRadius: '20px',
               border: '1px solid #E2E8F0',
-              padding: '24px',
+              padding: '20px',
               boxShadow: '0 25px 60px -15px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(226, 232, 240, 0.8)',
               position: 'relative'
             }}>
-              {/* Mockup Header Controls */}
+              {/* Mockup Header */}
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                paddingBottom: '16px',
+                paddingBottom: '12px',
                 borderBottom: '1px solid #F1F5F9',
-                marginBottom: '18px'
+                marginBottom: '14px',
+                gap: '8px'
               }}>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <div style={{ width: '11px', height: '11px', borderRadius: '50%', background: '#EF4444' }} />
-                  <div style={{ width: '11px', height: '11px', borderRadius: '50%', background: '#F59E0B' }} />
-                  <div style={{ width: '11px', height: '11px', borderRadius: '50%', background: '#10B981' }} />
+                <div style={{ display: 'flex', gap: '5px', flexShrink: 0 }}>
+                  <div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#EF4444' }} />
+                  <div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#F59E0B' }} />
+                  <div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#10B981' }} />
                 </div>
-                <div style={{
-                  fontSize: '12px',
+                <div className="hero-control-url" style={{
+                  fontSize: '10px',
                   color: '#64748B',
                   fontFamily: 'monospace',
                   background: '#F8FAFC',
                   border: '1px solid #E2E8F0',
-                  padding: '4px 14px',
-                  borderRadius: '8px',
-                  fontWeight: '500'
+                  padding: '2px 8px',
+                  borderRadius: '5px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  flex: 1,
+                  minWidth: 0
                 }}>
                   edumind.uz / admin / dashboard
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#059669', fontWeight: '600' }}>
-                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#059669', display: 'inline-block' }} /> Live Tizim
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '10px', color: '#059669', fontWeight: '700', flexShrink: 0 }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#059669', display: 'inline-block' }} />
+                  Live
                 </div>
               </div>
 
-              {/* DASHBOARD TOP METRICS (5 Cards) */}
-              <div style={{
+              {/* Metrics Grid */}
+              <div className="hero-metrics-grid" style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(95px, 1fr))',
-                gap: '10px',
-                marginBottom: '18px'
+                gridTemplateColumns: 'repeat(auto-fit, minmax(85px, 1fr))',
+                gap: '8px',
+                marginBottom: '14px'
               }}>
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '14px', padding: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#64748B', fontSize: '11px', fontWeight: '600' }}>
-                    <span>Talabalar</span>
-                    <Users size={14} color="#059669" />
-                  </div>
-                  <div style={{ fontSize: '18px', fontWeight: '800', color: '#0F172A', marginTop: '4px' }}>24,500</div>
-                  <div style={{ fontSize: '10px', color: '#059669', fontWeight: '600', marginTop: '2px' }}>+12% semestr</div>
-                </div>
-
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '14px', padding: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#64748B', fontSize: '11px', fontWeight: '600' }}>
-                    <span>O‘qituvchilar</span>
-                    <GraduationCap size={14} color="#2563EB" />
-                  </div>
-                  <div style={{ fontSize: '18px', fontWeight: '800', color: '#0F172A', marginTop: '4px' }}>1,240</div>
-                  <div style={{ fontSize: '10px', color: '#64748B', marginTop: '2px' }}>Tasdiqlangan</div>
-                </div>
-
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '14px', padding: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#64748B', fontSize: '11px', fontWeight: '600' }}>
-                    <span>Davomat</span>
-                    <Activity size={14} color="#059669" />
-                  </div>
-                  <div style={{ fontSize: '18px', fontWeight: '800', color: '#059669', marginTop: '4px' }}>92%</div>
-                  <div style={{ fontSize: '10px', color: '#059669', fontWeight: '600', marginTop: '2px' }}>Yuqori faollik</div>
-                </div>
-
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '14px', padding: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#64748B', fontSize: '11px', fontWeight: '600' }}>
-                    <span>Fakultetlar</span>
-                    <Building2 size={14} color="#D97706" />
-                  </div>
-                  <div style={{ fontSize: '18px', fontWeight: '800', color: '#0F172A', marginTop: '4px' }}>12</div>
-                  <div style={{ fontSize: '10px', color: '#64748B', marginTop: '2px' }}>Tizimda faol</div>
-                </div>
-
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '14px', padding: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#64748B', fontSize: '11px', fontWeight: '600' }}>
-                    <span>Kafedralar</span>
-                    <Layers size={14} color="#7C3AED" />
-                  </div>
-                  <div style={{ fontSize: '18px', fontWeight: '800', color: '#0F172A', marginTop: '4px' }}>48</div>
-                  <div style={{ fontSize: '10px', color: '#64748B', marginTop: '2px' }}>Boshqaruvda</div>
-                </div>
+                {[
+                  { label: 'Talabalar', val: '24,500', sub: '+12% semestr', icon: Users, iconColor: '#059669', subColor: '#059669' },
+                  { label: 'O\'qituvchilar', val: '1,240', sub: 'Tasdiqlangan', icon: GraduationCap, iconColor: '#2563EB', subColor: '#64748B' },
+                  { label: 'Davomat', val: '92%', sub: 'Yuqori faollik', icon: Activity, iconColor: '#059669', subColor: '#059669', valColor: '#059669' },
+                  { label: 'Fakultetlar', val: '12', sub: 'Tizimda faol', icon: Building2, iconColor: '#D97706', subColor: '#64748B' },
+                  { label: 'Kafedralar', val: '48', sub: 'Boshqaruvda', icon: Layers, iconColor: '#7C3AED', subColor: '#64748B' },
+                ].map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <div key={item.label} style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '10px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#64748B', fontSize: '10px', fontWeight: '600' }}>
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label}</span>
+                        <Icon size={12} color={item.iconColor} style={{ flexShrink: 0 }} />
+                      </div>
+                      <div style={{ fontSize: '16px', fontWeight: '800', color: item.valColor || '#0F172A', marginTop: '3px' }}>{item.val}</div>
+                      <div style={{ fontSize: '9px', color: item.subColor, fontWeight: '600', marginTop: '1px' }}>{item.sub}</div>
+                    </div>
+                  );
+                })}
               </div>
 
-              {/* INNER CONTENT GRID */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '14px' }}>
-                {/* Faculty Performance Chart */}
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '16px', padding: '16px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                    <h4 style={{ fontSize: '13px', fontWeight: '700', color: '#0F172A' }}>Fakultetlar Ko‘rsatkichi</h4>
-                    <span style={{ fontSize: '11px', color: '#047857', background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '2px 8px', borderRadius: '6px', fontWeight: '600' }}>AI Reyting</span>
+              {/* Inner Content */}
+              <div className="hero-inner-grid" style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '12px' }}>
+                {/* Faculty Chart */}
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '14px', padding: '14px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', gap: '6px' }}>
+                    <h4 style={{ fontSize: '11px', fontWeight: '700', color: '#0F172A' }}>Fakultetlar Ko'rsatkichi</h4>
+                    <span style={{ fontSize: '9px', color: '#047857', background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '2px 6px', borderRadius: '5px', fontWeight: '600', flexShrink: 0 }}>AI Reyting</span>
                   </div>
-
-                  {/* Progress bars */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#334155', marginBottom: '4px', fontWeight: '500' }}>
-                        <span>Axborot Texnologiyalari</span>
-                        <span style={{ fontWeight: '700', color: '#059669' }}>96%</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {[
+                      { name: 'Axborot Texnologiyalari', pct: 96, color: '#059669' },
+                      { name: 'Iqtisodiyot va Moliya', pct: 91, color: '#059669' },
+                      { name: 'Muhandislik va Fizika', pct: 88, color: '#2563EB' },
+                    ].map((row) => (
+                      <div key={row.name}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: '#334155', marginBottom: '3px', fontWeight: '500' }}>
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginRight: '4px' }}>{row.name}</span>
+                          <span style={{ fontWeight: '700', color: row.color, flexShrink: 0 }}>{row.pct}%</span>
+                        </div>
+                        <div style={{ height: '5px', background: '#E2E8F0', borderRadius: '3px', overflow: 'hidden' }}>
+                          <div style={{ width: `${row.pct}%`, height: '100%', background: row.color, borderRadius: '3px' }} />
+                        </div>
                       </div>
-                      <div style={{ height: '6px', background: '#E2E8F0', borderRadius: '3px', overflow: 'hidden' }}>
-                        <div style={{ width: '96%', height: '100%', background: '#059669', borderRadius: '3px' }} />
-                      </div>
-                    </div>
-
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#334155', marginBottom: '4px', fontWeight: '500' }}>
-                        <span>Iqtisodiyot va Moliya</span>
-                        <span style={{ fontWeight: '700', color: '#059669' }}>91%</span>
-                      </div>
-                      <div style={{ height: '6px', background: '#E2E8F0', borderRadius: '3px', overflow: 'hidden' }}>
-                        <div style={{ width: '91%', height: '100%', background: '#059669', borderRadius: '3px' }} />
-                      </div>
-                    </div>
-
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#334155', marginBottom: '4px', fontWeight: '500' }}>
-                        <span>Muhandislik va Fizika</span>
-                        <span style={{ fontWeight: '700', color: '#2563EB' }}>88%</span>
-                      </div>
-                      <div style={{ height: '6px', background: '#E2E8F0', borderRadius: '3px', overflow: 'hidden' }}>
-                        <div style={{ width: '88%', height: '100%', background: '#2563EB', borderRadius: '3px' }} />
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
 
-                {/* Assignment & Active Classes Feed */}
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '16px', padding: '16px' }}>
-                  <h4 style={{ fontSize: '13px', fontWeight: '700', color: '#0F172A', marginBottom: '12px' }}>Real-time Faollik</h4>
-                  
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '12px', background: '#FFFFFF', border: '1px solid #E2E8F0', padding: '10px', borderRadius: '10px' }}>
-                      <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: '#ECFDF5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '800' }}>AI</div>
-                      <div>
-                        <div style={{ color: '#0F172A', fontWeight: '700' }}>Topshiriq baholandi</div>
-                        <div style={{ color: '#64748B', fontSize: '11px' }}>Gemini AI • Ball: 94/100</div>
+                {/* Activity Feed */}
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '14px', padding: '14px' }}>
+                  <h4 style={{ fontSize: '11px', fontWeight: '700', color: '#0F172A', marginBottom: '10px' }}>Real-time Faollik</h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', background: '#FFFFFF', border: '1px solid #E2E8F0', padding: '8px', borderRadius: '9px' }}>
+                      <div style={{ width: '24px', height: '24px', borderRadius: '7px', background: '#ECFDF5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: '800', flexShrink: 0 }}>AI</div>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ color: '#0F172A', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Topshiriq baholandi</div>
+                        <div style={{ color: '#64748B', fontSize: '10px' }}>Gemini AI • 94/100</div>
                       </div>
                     </div>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '12px', background: '#FFFFFF', border: '1px solid #E2E8F0', padding: '10px', borderRadius: '10px' }}>
-                      <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '800' }}>PIN</div>
-                      <div>
-                        <div style={{ color: '#0F172A', fontWeight: '700' }}>Live Quiz boshlandi</div>
-                        <div style={{ color: '#64748B', fontSize: '11px' }}>Guruh 210-20 • 42 talaba</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', background: '#FFFFFF', border: '1px solid #E2E8F0', padding: '8px', borderRadius: '9px' }}>
+                      <div style={{ width: '24px', height: '24px', borderRadius: '7px', background: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: '800', flexShrink: 0 }}>PIN</div>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ color: '#0F172A', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Live Quiz boshlandi</div>
+                        <div style={{ color: '#64748B', fontSize: '10px' }}>210-20 • 42 talaba</div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Floating Badge overlay */}
-              <div style={{
+              {/* Floating Badge */}
+              <div className="hero-floating-badge" style={{
                 position: 'absolute',
-                bottom: '-16px',
-                right: '24px',
+                bottom: '-14px',
+                right: '20px',
                 background: '#FFFFFF',
                 border: '1px solid #A7F3D0',
                 boxShadow: '0 12px 25px -4px rgba(5, 150, 105, 0.2)',
-                borderRadius: '12px',
-                padding: '10px 18px',
+                borderRadius: '10px',
+                padding: '8px 14px',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px',
-                fontSize: '13px',
+                gap: '8px',
+                fontSize: '12px',
                 fontWeight: '700',
-                color: '#065F46'
+                color: '#065F46',
+                whiteSpace: 'nowrap'
               }}>
-                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10B981' }} />
-                AI Integrity Check: 99.8% Aniq
+                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', flexShrink: 0 }} />
+                AI Integrity: 99.8% Aniq
               </div>
             </div>
           </div>
@@ -291,6 +269,28 @@ export default function Hero({ onOpenDemo }) {
       <style>{`
         @media (min-width: 992px) {
           .hero-grid { grid-template-columns: 1fr 1.15fr !important; }
+        }
+        @media (max-width: 768px) {
+          .hero-section { padding-top: 90px !important; padding-bottom: 50px !important; }
+          .hero-mockup-frame { padding: 14px !important; border-radius: 16px !important; }
+          .hero-inner-grid { grid-template-columns: 1fr !important; }
+          .hero-floating-badge { display: none !important; }
+          .hero-desc { max-width: 100% !important; }
+        }
+        @media (max-width: 480px) {
+          .hero-section { padding-top: 80px !important; padding-bottom: 40px !important; }
+          .hero-metrics-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 6px !important;
+          }
+          .hero-cta-group { flex-direction: column !important; }
+          .hero-trust-bar { font-size: 12px !important; gap: 6px 10px !important; }
+          .hero-control-url { display: none !important; }
+        }
+        @media (max-width: 400px) {
+          .hero-section { padding-top: 76px !important; }
+          .hero-mockup-frame { padding: 10px !important; }
+          .hero-metrics-grid { gap: 5px !important; }
         }
       `}</style>
     </section>
