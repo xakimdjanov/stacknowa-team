@@ -5,6 +5,7 @@ import Sidebar from './components/Sidebar';
 import UniversityCodeModal from './components/UniversityCodeModal';
 import Dashboard from './pages/Dashboard';
 import Groups from './pages/Groups';
+import GroupDetail from './pages/GroupDetail';
 import Assignments from './pages/Assignments';
 import Evaluations from './pages/Evaluations';
 import LiveEvents from './pages/LiveEvents';
@@ -37,6 +38,7 @@ const ProtectedLayout = () => {
           <Route path="/materials" element={<Materials />} />
           <Route path="/live-events" element={<LiveEvents />} />
           <Route path="/groups" element={<Groups />} />
+          <Route path="/groups/:id" element={<GroupDetail />} />
           <Route path="/assignments" element={<Assignments />} />
           <Route path="/evaluations" element={<Evaluations />} />
           <Route path="*" element={<Navigate to="/" replace />} />

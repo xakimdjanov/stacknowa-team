@@ -607,9 +607,12 @@ const Groups = () => {
                           )}
                         </div>
 
-                        <h3 className="text-base sm:text-lg font-black text-slate-900 group-hover:text-emerald-700 transition-colors truncate">
-                          {group.name}
-                        </h3>
+                        <Link to={`/groups/${group.id}`} className="block group-hover:text-emerald-700 transition-colors">
+                          <h3 className="text-base sm:text-lg font-black text-slate-900 hover:text-emerald-600 truncate flex items-center gap-2">
+                            <span>{group.name}</span>
+                            <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity text-emerald-600 shrink-0" />
+                          </h3>
+                        </Link>
                       </div>
 
                       {/* Doimiy ko'rinib turadigan amallar: Tahrirlash, O'chirish */}
@@ -638,21 +641,21 @@ const Groups = () => {
 
                     {/* Stats pills */}
                     <div className="grid grid-cols-2 gap-2 mb-4">
-                      <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-100 flex items-center gap-2">
+                      <Link to={`/groups/${group.id}`} className="bg-slate-50 hover:bg-emerald-50/50 transition-colors rounded-xl p-2.5 border border-slate-100 flex items-center gap-2 cursor-pointer group/pill">
                         <Users className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                         <div>
                           <p className="text-xs font-bold text-slate-900 leading-none">{studentCount}</p>
-                          <p className="text-[10px] text-slate-400 font-medium mt-0.5">Talabalar</p>
+                          <p className="text-[10px] text-slate-400 font-medium mt-0.5 group-hover/pill:text-emerald-700">Talabalar & Davomat →</p>
                         </div>
-                      </div>
+                      </Link>
 
-                      <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-100 flex items-center gap-2">
-                        <FileCheck2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                      <Link to={`/assignments?groupId=${group.id}`} className="bg-slate-50 hover:bg-purple-50/50 transition-colors rounded-xl p-2.5 border border-slate-100 flex items-center gap-2 cursor-pointer group/pill">
+                        <FileCheck2 className="w-4 h-4 text-purple-600 flex-shrink-0" />
                         <div>
                           <p className="text-xs font-bold text-slate-900 leading-none">{assignCount}</p>
-                          <p className="text-[10px] text-slate-400 font-medium mt-0.5">Topshiriqlar</p>
+                          <p className="text-[10px] text-slate-400 font-medium mt-0.5 group-hover/pill:text-purple-700">Topshiriqlar →</p>
                         </div>
-                      </div>
+                      </Link>
                     </div>
 
                     {/* Join Token Box */}
@@ -677,21 +680,22 @@ const Groups = () => {
 
                   {/* Card Actions */}
                   <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
+                    <Link
+                      to={`/groups/${group.id}`}
+                      style={{ background: 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)' }}
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-white font-extrabold text-xs transition-all active:scale-98 shadow-md shadow-emerald-700/20 hover:opacity-95"
+                    >
+                      <Users className="w-3.5 h-3.5" />
+                      <span>Guruhga Kirish</span>
+                    </Link>
+
                     <button
                       onClick={() => showQr(group.id)}
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs transition-colors active:scale-98 cursor-pointer"
+                      className="inline-flex items-center justify-center p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs transition-colors active:scale-98 cursor-pointer"
+                      title="QR Kodni ko'rsatish"
                     >
-                      <QrCode className="w-3.5 h-3.5" />
-                      <span>QR Kod</span>
+                      <QrCode className="w-4 h-4" />
                     </button>
-
-                    <Link
-                      to={`/assignments?groupId=${group.id}`}
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors active:scale-98 shadow-xs"
-                    >
-                      <span>Vazifalar</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
                   </div>
                 </div>
               );
