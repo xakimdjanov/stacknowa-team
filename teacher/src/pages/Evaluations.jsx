@@ -583,9 +583,14 @@ const Evaluations = () => {
                               {initials}
                             </div>
                             <div className="min-w-0">
-                              <p className="font-bold text-slate-900 text-xs sm:text-sm group-hover:text-emerald-700 transition-colors truncate">
+                              <Link
+                                to={`/students/${sub.student_id || 'st-001'}`}
+                                onClick={(e) => e.stopPropagation()}
+                                className="font-bold text-slate-900 text-xs sm:text-sm hover:text-emerald-700 hover:underline transition-colors truncate block"
+                                title="Talabaning qiynalayotgan fani va mavzularini ko'rish (User Detail)"
+                              >
                                 {studentName}
-                              </p>
+                              </Link>
                               <p className="text-[11px] text-slate-400 truncate">
                                 {sub.student?.email || "talaba@platform.uz"}
                               </p>

@@ -13,6 +13,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 
 import Materials from './pages/Materials';
+import StudentDetail from './pages/StudentDetail';
 
 const ProtectedLayout = () => {
   const { user, loading } = useAuth();
@@ -41,6 +42,8 @@ const ProtectedLayout = () => {
           <Route path="/groups/:id" element={<GroupDetail />} />
           <Route path="/assignments" element={<Assignments />} />
           <Route path="/evaluations" element={<Evaluations />} />
+          <Route path="/students" element={<StudentDetail />} />
+          <Route path="/students/:id" element={<StudentDetail />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <UniversityCodeModal />
