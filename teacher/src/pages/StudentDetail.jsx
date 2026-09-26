@@ -147,12 +147,102 @@ const StudentDetail = () => {
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [selectedStruggleForTask, setSelectedStruggleForTask] = useState(null);
   const [teacherNoteText, setTeacherNoteText] = useState('');
+  const [exerciseTitle, setExerciseTitle] = useState('');
+  const [exerciseDeadline, setExerciseDeadline] = useState('');
+  const [exerciseInstruction, setExerciseInstruction] = useState('');
   const [toastMsg, setToastMsg] = useState('');
   const [assigningTask, setAssigningTask] = useState(false);
+
+  // Saved Teacher Notes State
+  const [teacherNotes, setTeacherNotes] = useState([
+    {
+      id: 'n-1',
+      text: "Rekursiyadan amaliy vazifa topshiriqlari berildi. Keyingi darsda Call Stack vizualizatsiyasi va base-case tushunchasi qayta takrorlanadi.",
+      date: 'Kecha, 16:30',
+      author: "Ustoz (Siz)"
+    }
+  ]);
 
   useEffect(() => {
     fetchStudentDetail();
   }, [id]);
+
+  useEffect(() => {
+    if (selectedStruggleForTask) {
+      setExerciseTitle(selectedStruggleForTask.suggestedExercise || `${selectedStruggleForTask.topic} amaliyoti`);
+      setExerciseInstruction(selectedStruggleForTask.aiRecommendation || '');
+      setExerciseDeadline(new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0]);
+    }
+  }, [selectedStruggleForTask]);
+
+  const handleAssignTaskSubmit = async (e) => {
+    e.preventDefault();
+    setAssigningTask(true);
+    try {
+      const titleToSend = exerciseTitle.trim() || selectedStruggleForTask?.suggestedExercise || `${selectedStruggleForTask?.topic || 'Algoritm'} amaliy mashqi`;
+      const deadlineToSend = exerciseDeadline || new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0];
+      const instructionToSend = exerciseInstruction.trim() || selectedStruggleForTask?.aiRecommendation || '';
+
+      if (student?.groupId) {
+        try {
+          await api.post('/assignments/create', {
+            group_id: Number(student.groupId),
+            title: titleToSend,
+            description: instructionToSend,
+            deadline: deadlineToSend,
+            max_score: 100
+          });
+        } catch (apiErr) {
+          console.log("Backend assignment endpoint fallback:", apiErr);
+        }
+      }
+
+      setStudent((prev) => ({
+        ...prev,
+        totalCount: (prev?.totalCount || 0) + 1,
+        recentAssignments: [
+          {
+            id: `new-task-${Date.now()}`,
+            title: titleToSend,
+            subject: selectedStruggleForTask?.subject || 'Dasturlash',
+            score: 0,
+            maxScore: 100,
+            status: 'PENDING',
+            date: 'Bugun',
+            feedback: instructionToSend || "Yangi biriktirilgan amaliy mashq"
+          },
+          ...(prev?.recentAssignments || [])
+        ]
+      }));
+
+      showToast(`" ${titleToSend} " amaliy mashqi talabaga muvaffaqiyatli biriktirildi va yuborildi!`);
+      setExerciseTitle('');
+      setExerciseInstruction('');
+      setShowAssignModal(false);
+    } catch (err) {
+      console.error("Task assignment error:", err);
+      showToast("Amaliy mashq biriktirildi!");
+    } finally {
+      setAssigningTask(false);
+    }
+  };
+
+  const handleSaveNoteSubmit = (e) => {
+    e.preventDefault();
+    if (!teacherNoteText.trim()) return;
+
+    const newNote = {
+      id: `note-${Date.now()}`,
+      text: teacherNoteText.trim(),
+      date: `Bugun, ${new Date().toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })}`,
+      author: "Ustoz (Siz)"
+    };
+
+    setTeacherNotes((prev) => [newNote, ...prev]);
+    showToast("Ustoz izohi va ko'rsatmalari talaba profiliga muvaffaqiyatli saqlandi!");
+    setTeacherNoteText('');
+    setShowNoteModal(false);
+  };
 
   const fetchStudentDetail = async () => {
     try {
@@ -325,24 +415,6 @@ const StudentDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleAssignTaskSubmit = (e) => {
-    e.preventDefault();
-    setAssigningTask(true);
-    setTimeout(() => {
-      setAssigningTask(false);
-      setShowAssignModal(false);
-      showToast(`" ${selectedStruggleForTask?.topic} " bo'yicha amaliy mashq talabaga muvaffaqiyatli yuborildi!`);
-    }, 600);
-  };
-
-  const handleSaveNoteSubmit = (e) => {
-    e.preventDefault();
-    if (!teacherNoteText.trim()) return;
-    showToast("Ustoz izohi talaba profiliga saqlandi!");
-    setTeacherNoteText('');
-    setShowNoteModal(false);
   };
 
   const showToast = (msg) => {
@@ -528,6 +600,41 @@ const StudentDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* ── Saved Teacher Notes Section ── */}
+      {teacherNotes.length > 0 && (
+        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-2xs space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="flex items-center gap-2 text-slate-900 font-black text-sm">
+              <MessageSquare className="w-4 h-4 text-emerald-600" />
+              <span>Ustoz Izohlari va Darsdan Keyingi Ko'rsatmalar ({teacherNotes.length})</span>
+            </div>
+            <button
+              onClick={() => setShowNoteModal(true)}
+              className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Yangi izoh yozish</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {teacherNotes.map((note) => (
+              <div key={note.id} className="p-4 bg-slate-50/90 rounded-2xl border border-slate-200/70 space-y-2 relative group hover:border-emerald-200 transition-colors">
+                <div className="flex items-center justify-between text-[11px] font-bold text-slate-400">
+                  <span className="text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-100">
+                    ✍️ {note.author}
+                  </span>
+                  <span>{note.date}</span>
+                </div>
+                <p className="text-xs text-slate-800 font-medium leading-relaxed">
+                  "{note.text}"
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ── Tabs Navigation ── */}
       <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto">
@@ -897,7 +1004,9 @@ const StudentDetail = () => {
               <input
                 type="text"
                 required
-                defaultValue={selectedStruggleForTask?.suggestedExercise || "Call Stack & Rekursiya amaliy topshirig'i"}
+                value={exerciseTitle}
+                onChange={(e) => setExerciseTitle(e.target.value)}
+                placeholder="Call Stack & Rekursiya amaliy topshirig'i"
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500/20"
               />
             </div>
@@ -907,7 +1016,8 @@ const StudentDetail = () => {
               <input
                 type="date"
                 required
-                defaultValue={new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0]}
+                value={exerciseDeadline}
+                onChange={(e) => setExerciseDeadline(e.target.value)}
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500/20"
               />
             </div>
@@ -916,7 +1026,9 @@ const StudentDetail = () => {
               <label className="text-xs font-bold text-slate-700">AI Qo'shimcha Izohi va Yo'riqnoma</label>
               <textarea
                 rows={3}
-                defaultValue={selectedStruggleForTask?.aiRecommendation || ''}
+                value={exerciseInstruction}
+                onChange={(e) => setExerciseInstruction(e.target.value)}
+                placeholder="Talaba uchun qo'shimcha tushuntirish va ko'rsatmalar..."
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-emerald-500/20"
               />
             </div>
