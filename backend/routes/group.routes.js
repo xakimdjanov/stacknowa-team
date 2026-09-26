@@ -10,6 +10,9 @@ router.get("/:id", authenticate, groupController.getGroupDetail);
 router.post("/join/:token", authenticate, groupController.joinGroup);
 router.post("/:id/add-student", authenticate, authorize("TEACHER", "ADMIN"), groupController.addStudentToGroup);
 router.post("/:id/regenerate-link", authenticate, authorize("TEACHER", "ADMIN"), groupController.regenerateJoinLink);
+router.get("/:id/attendance", authenticate, groupController.getGroupAttendance);
+router.post("/:id/attendance", authenticate, authorize("TEACHER", "ADMIN"), groupController.saveGroupAttendance);
+router.delete("/:id/members/:studentId", authenticate, authorize("TEACHER", "ADMIN"), groupController.removeStudentFromGroup);
 router.put("/:id", authenticate, authorize("TEACHER", "ADMIN"), groupController.updateGroup);
 router.delete("/:id", authenticate, authorize("TEACHER", "ADMIN"), groupController.deleteGroup);
 

@@ -1,4 +1,4 @@
-const { Group, GroupMember, User, University, Assignment, Submission, Event } = require("../models");
+const { Group, GroupMember, Attendance, User, University, Assignment, Submission, Event } = require("../models");
 const { nanoid } = require("nanoid");
 const QRCode = require("qrcode");
 const Joi = require("joi");
@@ -392,4 +392,127 @@ exports.deleteGroup = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+/**
+ * 10. Guruh davomati (Attendance) ni olish
+ */
+exports.getGroupAttendance = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { date } = req.query;
+
+    const group = await Group.findByPk(id);
+    if (!group) return res.status(404).json({ success: false, message: "Guruh topilmadi" });
+
+    const whereCondition = { group_id: id };
+    if (date) {
+      whereCondition.date = date;
+    }
+
+    const records = await Attendance.findAll({
+      where: whereCondition,
+      include: [{ model: User, as: "student", attributes: ["id", "name", "email"] }],
+      order: [["date", "DESC"]],
+    });
+
+    // Barcha sanalarni olish
+    const allRecords = await Attendance.findAll({
+      where: { group_id: id },
+      attributes: ["student_id", "status", "date"],
+    });
+
+    // Talabalar bo'yicha davomat statistikasi
+    const statsByStudent = {};
+    const totalDates = new Set();
+
+    allRecords.forEach((rec) => {
+      totalDates.add(rec.date);
+      if (!statsByStudent[rec.student_id]) {
+        statsByStudent[rec.student_id] = { present: 0, absent: 0, late: 0, excused: 0, total: 0 };
+      }
+      statsByStudent[rec.student_id].total += 1;
+      const statusKey = (rec.status || "PRESENT").toLowerCase();
+      if (statsByStudent[rec.student_id][statusKey] !== undefined) {
+        statsByStudent[rec.student_id][statusKey] += 1;
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      date: date || null,
+      total_days: totalDates.size,
+      records,
+      statsByStudent,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * 11. Guruh davomatini saqlash / yangilash (Batch update)
+ */
+exports.saveGroupAttendance = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { date, records } = req.body;
+
+    if (!date || !Array.isArray(records)) {
+      return res.status(400).json({ success: false, message: "Sana va talabalar davomat ro'yxati berilishi shart" });
+    }
+
+    const group = await Group.findByPk(id);
+    if (!group) return res.status(404).json({ success: false, message: "Guruh topilmadi" });
+
+    // Sanalar va har bir talaba uchun davomatni yozish
+    const upsertPromises = records.map((rec) => {
+      return Attendance.upsert({
+        group_id: Number(id),
+        student_id: rec.student_id,
+        date: date,
+        status: rec.status || "PRESENT",
+        note: rec.note || null,
+      });
+    });
+
+    await Promise.all(upsertPromises);
+
+    const updatedRecords = await Attendance.findAll({
+      where: { group_id: id, date },
+      include: [{ model: User, as: "student", attributes: ["id", "name", "email"] }],
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: `${date} sana uchun davomat muvaffaqiyatli saqlandi! ✅`,
+      records: updatedRecords,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * 12. Guruhdan talabani o'chirish (Remove student from group)
+ */
+exports.removeStudentFromGroup = async (req, res) => {
+  try {
+    const { id, studentId } = req.params;
+
+    const member = await GroupMember.findOne({ where: { group_id: id, student_id: studentId } });
+    if (!member) {
+      return res.status(404).json({ success: false, message: "Talaba ushbu guruhda topilmadi" });
+    }
+
+    await member.destroy();
+
+    return res.status(200).json({
+      success: true,
+      message: "Talaba guruhdan muvaffaqiyatli chiqarildi",
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 

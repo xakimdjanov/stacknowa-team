@@ -4,6 +4,7 @@ const sequelize = require("../config/database");
 const User = require("./user.model")(sequelize, Sequelize.DataTypes);
 const Group = require("./group.model")(sequelize, Sequelize.DataTypes);
 const GroupMember = require("./groupMember.model")(sequelize, Sequelize.DataTypes);
+const Attendance = require("./attendance.model")(sequelize, Sequelize.DataTypes);
 const Assignment = require("./assignment.model")(sequelize, Sequelize.DataTypes);
 const Submission = require("./submission.model")(sequelize, Sequelize.DataTypes);
 const Evaluation = require("./evaluation.model")(sequelize, Sequelize.DataTypes);
@@ -20,6 +21,7 @@ const db = {
   User,
   Group,
   GroupMember,
+  Attendance,
   Assignment,
   Submission,
   Evaluation,
