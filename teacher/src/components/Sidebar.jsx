@@ -13,7 +13,8 @@ import {
   Menu,
   X,
   Zap,
-  ShieldCheck
+  ShieldCheck,
+  FileText
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -22,6 +23,8 @@ const navGroups = [
     title: "ASOSIY BO'LIMLAR",
     items: [
       { to: '/', label: 'Dashboard & Tahlil', shortLabel: 'Dashboard', icon: LayoutDashboard, end: true },
+      { to: '/materials', label: 'Materiallar & AI Savollar', shortLabel: 'Materiallar', icon: FileText },
+      { to: '/live-events', label: 'Live Events & Game PIN', shortLabel: 'Live Events', icon: Zap },
       { to: '/groups', label: 'Guruhlarim', shortLabel: 'Guruhlar', icon: Layers },
       { to: '/assignments', label: 'Amaliy Topshiriqlar', shortLabel: 'Topshiriqlar', icon: FileCheck2 },
       { to: '/evaluations', label: 'AI Baholash Natijalari', shortLabel: 'AI Baholar', icon: Sparkles },
@@ -37,9 +40,9 @@ const navGroups = [
 
 const bottomNavItems = [
   { to: '/', label: 'Dashboard', shortLabel: 'Asosiy', icon: LayoutDashboard, end: true },
+  { to: '/materials', label: 'Materiallar', shortLabel: 'Materiallar', icon: FileText },
+  { to: '/live-events', label: 'Live Events', shortLabel: 'Live Events', icon: Zap },
   { to: '/groups', label: 'Guruhlar', shortLabel: 'Guruhlar', icon: Layers },
-  { to: '/assignments', label: 'Topshiriqlar', shortLabel: 'Topshiriqlar', icon: FileCheck2 },
-  { to: '/evaluations', label: 'AI Baholash', shortLabel: 'AI Baholar', icon: Sparkles },
 ];
 
 const EMERALD_GRADIENT = 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)';
@@ -197,6 +200,24 @@ const Sidebar = () => {
               {user?.plan_type || 'FREE'}
             </span>
           </div>
+
+          {user?.university_code && (
+            <div className="bg-emerald-50/80 border border-emerald-200/80 rounded-xl p-2.5 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] font-black uppercase text-emerald-800 tracking-wider">
+                  🏛️ {user?.university_name || "OTM / Universitet"}
+                </span>
+                <span className={`text-[9px] font-black px-1.5 py-0.5 rounded text-white ${
+                  user?.approval_status === 'APPROVED' ? 'bg-emerald-600' : 'bg-amber-500'
+                }`}>
+                  {user?.approval_status === 'APPROVED' ? 'Tasdiqlangan' : 'Kutilmoqda'}
+                </span>
+              </div>
+              <div className="text-[10px] text-emerald-900 font-mono font-bold">
+                Code: {user?.university_code}
+              </div>
+            </div>
+          )}
 
           <button
             onClick={handleLogout}

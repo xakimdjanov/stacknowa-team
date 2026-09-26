@@ -14,6 +14,7 @@ import Groups from './pages/Groups';
 import Assignments from './pages/Assignments';
 import WhitePaper from './pages/WhitePaper';
 import EvaluationDetail from './pages/EvaluationDetail';
+import LiveEvent from './pages/LiveEvent';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -185,6 +186,16 @@ const App = () => {
               <ProtectedRoute>
                 <Layout>
                   <Dashboard />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/live-event"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <LiveEvent />
                 </Layout>
               </ProtectedRoute>
             }

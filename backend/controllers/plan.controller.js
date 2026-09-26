@@ -225,11 +225,17 @@ exports.checkMyPaymentStatus = async (req, res) => {
 };
 
 /**
- * 7. Admin uchun barcha to'lovlar (Tranzaksiyalar) ro'yxati
+ * 7. To'lovlar (Tranzaksiyalar) ro'yxati
  */
 exports.getAllTransactions = async (req, res) => {
   try {
+    let where = {};
+    if (req.user.role !== "ADMIN" && req.user.role !== "UNIVERSITY_ADMIN") {
+      where = { user_id: req.user.id };
+    }
+
     const transactions = await Transaction.findAll({
+      where,
       include: [
         { model: User, as: "user", attributes: ["id", "name", "email"] },
         { model: Plan, as: "plan", attributes: ["id", "name", "title"] },

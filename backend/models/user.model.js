@@ -26,9 +26,29 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       role: {
-        type: DataTypes.ENUM("ADMIN", "TEACHER", "STUDENT"),
+        type: DataTypes.ENUM("ADMIN", "UNIVERSITY_ADMIN", "TEACHER", "STUDENT"),
         allowNull: false,
         defaultValue: "STUDENT",
+      },
+      approval_status: {
+        type: DataTypes.ENUM("PENDING", "APPROVED", "REJECTED"),
+        defaultValue: "APPROVED",
+      },
+      university_code: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      university_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      faculty_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      department_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
       },
       avatar_url: {
         type: DataTypes.STRING,
