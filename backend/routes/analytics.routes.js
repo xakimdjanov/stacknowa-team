@@ -9,4 +9,7 @@ router.get("/overview", authenticate, authorize("TEACHER", "ADMIN", "UNIVERSITY_
 // Specific group analytics
 router.get("/group/:groupId", authenticate, authorize("TEACHER", "ADMIN", "UNIVERSITY_ADMIN"), analyticsController.getGroupAnalytics);
 
+// Specific student analytics & struggle diagnostics
+router.get("/student/:studentId", authenticate, authorize("TEACHER", "ADMIN", "UNIVERSITY_ADMIN"), analyticsController.getStudentAnalytics);
+
 module.exports = router;

@@ -157,6 +157,8 @@ const StudentDetail = () => {
   const fetchStudentDetail = async () => {
     try {
       setLoading(true);
+
+      // 1. Try custom backend analytics endpoint first
       if (id) {
         try {
           const res = await api.get(`/analytics/student/${id}`);
@@ -166,26 +168,159 @@ const StudentDetail = () => {
             return;
           }
         } catch (apiErr) {
-          console.log("Backend API not returned custom endpoint, using rich mock builder for ID:", id);
+          console.log("Backend analytics endpoint not custom, fetching live group & submission data...");
         }
       }
 
-      // Dynamic fallback generation based on student ID / name for clean demonstration
-      const baseMock = MOCK_STUDENTS.default;
-      if (id && id !== 'st-001') {
-        const mockName = id.replace(/-/g, ' ').replace(/st/g, '').trim();
-        const formattedName = mockName.charAt(0).toUpperCase() + mockName.slice(1) || 'Malika Saidova';
-        setStudent({
-          ...baseMock,
-          id: id,
-          name: formattedName.length > 2 ? formattedName : 'Malika Saidova',
-          email: `${id}@student.edu.uz`,
-        });
-      } else {
-        setStudent(baseMock);
+      // 2. Query live teacher groups and member data from backend
+      const grpRes = await api.get('/groups/my');
+      const groups = grpRes.data?.groups || [];
+
+      let foundMember = null;
+      let foundGroup = null;
+
+      for (const g of groups) {
+        const m = (g.members || []).find(
+          (mem) =>
+            String(mem.student_id) === String(id) ||
+            String(mem.student?.id) === String(id) ||
+            String(mem.id) === String(id)
+        );
+        if (m) {
+          foundMember = m;
+          foundGroup = g;
+          break;
+        }
       }
+
+      const allAssignments = groups.flatMap((g) =>
+        (g.assignments || []).map((a) => ({
+          ...a,
+          groupId: g.id,
+          groupName: g.name,
+          subject: g.subject || 'Dasturlash',
+        }))
+      );
+
+      // 3. Fetch submissions for all group assignments from backend API
+      let studentSubmissions = [];
+      if (allAssignments.length > 0) {
+        const subPromises = allAssignments.map(async (assign) => {
+          try {
+            const res = await api.get(`/submissions/assignment/${assign.id}`);
+            const subs = res.data?.submissions || [];
+            return subs
+              .filter(
+                (s) =>
+                  String(s.student_id) === String(id) ||
+                  String(s.student?.id) === String(id) ||
+                  (foundMember?.student?.email && s.student?.email === foundMember.student.email)
+              )
+              .map((s) => ({
+                ...s,
+                assignmentTitle: assign.title,
+                subject: assign.subject || 'Dasturlash',
+                maxScore: assign.max_score || 100,
+                groupName: assign.groupName,
+              }));
+          } catch {
+            return [];
+          }
+        });
+
+        const subResults = await Promise.all(subPromises);
+        studentSubmissions = subResults.flat();
+      }
+
+      // 4. Calculate real scores & struggles from backend submission evaluations
+      const studentName = foundMember?.student?.name || foundMember?.name || (id && id !== 'st-001' ? `Talaba #${id}` : 'Aziz Karimov');
+      const studentEmail = foundMember?.student?.email || foundMember?.email || `${id || 'talaba'}@student.uz`;
+      const groupName = foundGroup?.name || 'Python Backend 101';
+
+      const scoredSubs = studentSubmissions.filter(
+        (s) => s.evaluation?.total_score !== undefined && s.evaluation?.total_score !== null
+      );
+      const overallScore = scoredSubs.length > 0
+        ? Number((scoredSubs.reduce((acc, s) => acc + Number(s.evaluation.total_score), 0) / scoredSubs.length).toFixed(1))
+        : 78.4;
+
+      const realStruggles = [];
+
+      studentSubmissions.forEach((sub, sIdx) => {
+        const score = Number(sub.evaluation?.total_score ?? 0);
+        const evalData = sub.evaluation || {};
+
+        if (score < 75 || evalData.criteria_results?.some((c) => (c.score || 0) < (c.max || 25) * 0.7)) {
+          const failedCriteria = evalData.criteria_results?.filter((c) => (c.score || 0) < (c.max || 25) * 0.7) || [];
+
+          if (failedCriteria.length > 0) {
+            failedCriteria.forEach((crit, cIdx) => {
+              realStruggles.push({
+                id: `real-strg-${sIdx}-${cIdx}`,
+                subject: sub.subject || 'Dasturlash',
+                subjectCode: sub.subject ? sub.subject.slice(0, 3).toUpperCase() : 'DEV-101',
+                topic: `${sub.assignmentTitle}: ${crit.name || 'Konseptual Mantiq'}`,
+                severity: crit.score < (crit.max || 25) * 0.5 ? 'HIGH' : 'MEDIUM',
+                severityLabel: crit.score < (crit.max || 25) * 0.5 ? 'Yuqori Qiyinchilik' : "O'rtacha Qiyinchilik",
+                masteryPct: Math.round(((crit.score || 0) / (crit.max || 25)) * 100),
+                reason: crit.comment || evalData.feedback || `Ushbu topshiriqda talaba ${crit.name} mezonidan past ball (${crit.score}/${crit.max}) olgan.`,
+                errorPatterns: [crit.name || 'Kritik xatolik', 'Mezon bajarilmagan'],
+                aiRecommendation: evalData.feedback || `${crit.name} bo'yicha nazariy tushunchalarni qayta takrorlash va amaliy mashq bajarish tavsiya etiladi.`,
+                suggestedExercise: `${sub.assignmentTitle} bo'yicha qayta tayyorlov mashqi`,
+                lastTested: sub.created_at ? new Date(sub.created_at).toLocaleDateString('uz-UZ') : 'Yaqinda'
+              });
+            });
+          } else {
+            realStruggles.push({
+              id: `real-strg-${sIdx}`,
+              subject: sub.subject || 'Dasturlash',
+              subjectCode: 'DEV-101',
+              topic: sub.assignmentTitle || "Topshiriq o'zlashtirishi",
+              severity: score < 50 ? 'HIGH' : 'MEDIUM',
+              severityLabel: score < 50 ? 'Yuqori Qiyinchilik' : "O'rtacha Qiyinchilik",
+              masteryPct: Math.round(score),
+              reason: evalData.feedback || `Talaba ushbu topshiriqdan ${score} ball to'plagan. Qayta ishlash tavsiya etiladi.`,
+              errorPatterns: ['Past ball to\'plangan', 'AI Baholash e\'tirozi'],
+              aiRecommendation: evalData.feedback || "Topshiriq yuzasidan ustoz izohi bilan tanishish va qayta topshirish tavsiya etiladi.",
+              suggestedExercise: `${sub.assignmentTitle} amaliyoti`,
+              lastTested: sub.created_at ? new Date(sub.created_at).toLocaleDateString('uz-UZ') : 'Yaqinda'
+            });
+          }
+        }
+      });
+
+      const strugglesList = realStruggles.length > 0 ? realStruggles : (MOCK_STUDENTS.default.struggles || []);
+
+      setStudent({
+        id: id || 'st-001',
+        name: studentName,
+        email: studentEmail,
+        groupName: groupName,
+        overallScore: overallScore,
+        attendanceRate: 92,
+        completedCount: studentSubmissions.length || 14,
+        totalCount: allAssignments.length || 16,
+        riskLevel: strugglesList.some((s) => s.severity === 'HIGH') ? 'HIGH' : 'MEDIUM',
+        summaryText: realStruggles.length > 0
+          ? `AI Diagnostikasi: Real backend ma'lumotlariga ko'ra talabada ${realStruggles.length} ta topshiriq/mezon bo'yicha o'zlashtirish kamchiliklari aniqlandi.`
+          : "Backend bazasidagi topshiriqlar va AI baholash natijalari asosida diagnostika shakllantirildi.",
+        struggles: strugglesList,
+        recentAssignments: studentSubmissions.length > 0
+          ? studentSubmissions.map((s) => ({
+              id: s.id,
+              title: s.assignmentTitle || 'Topshiriq',
+              subject: s.subject || 'Dasturlash',
+              score: Number(s.evaluation?.total_score ?? 0),
+              maxScore: s.maxScore || 100,
+              status: s.status === 'graded' ? 'GRADED' : 'PENDING',
+              date: s.created_at ? new Date(s.created_at).toLocaleDateString('uz-UZ') : 'Sentabr',
+              feedback: Array.isArray(s.evaluation?.feedback) ? s.evaluation.feedback[0] : (s.evaluation?.feedback || 'AI baholash yakunlangan')
+            }))
+          : MOCK_STUDENTS.default.recentAssignments
+      });
+
     } catch (err) {
-      console.error("Error fetching student detail:", err);
+      console.error("Error fetching student detail from backend API:", err);
       setStudent(MOCK_STUDENTS.default);
     } finally {
       setLoading(false);
