@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   BookOpen,
   HelpCircle,
+  Zap,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -21,6 +22,7 @@ const navGroups = [
     title: "ASOSIY BO'LIMLAR",
     items: [
       { to: '/', label: 'Boshqaruv Paneli', shortLabel: 'Boshqaruv', icon: LayoutDashboard, end: true },
+      { to: '/live-event', label: 'Live Event & Game PIN', shortLabel: 'Live Event', icon: Zap },
       { to: '/groups', label: 'Mening Guruhlarim', shortLabel: 'Guruhlar', icon: Layers },
       { to: '/assignments', label: 'Amaliy Topshiriqlar', shortLabel: 'Topshiriqlar', icon: FileCheck2 },
     ],
@@ -29,6 +31,7 @@ const navGroups = [
 
 const bottomNavItems = [
   { to: '/', label: 'Dashboard', shortLabel: 'Asosiy', icon: LayoutDashboard, end: true },
+  { to: '/live-event', label: 'Live Event', shortLabel: 'Live Event', icon: Zap },
   { to: '/groups', label: 'Guruhlar', shortLabel: 'Guruhlar', icon: Layers },
   { to: '/assignments', label: 'Topshiriqlar', shortLabel: 'Topshiriqlar', icon: FileCheck2 },
 ];

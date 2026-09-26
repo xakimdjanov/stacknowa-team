@@ -15,6 +15,8 @@ import {
   Menu,
   X,
   Shield,
+  Building2,
+  UserCheck,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -28,6 +30,13 @@ const navGroups = [
     ],
   },
   {
+    title: 'UNIVERSITET & TIZIM',
+    items: [
+      { to: '/universities', label: 'Universitetlar', shortLabel: 'Universitetlar', icon: Building2 },
+      { to: '/teacher-approvals', label: 'O\'qituvchilar Tasdig\'i', shortLabel: 'Tasdiqlash', icon: UserCheck },
+    ],
+  },
+  {
     title: 'BOSHQARUV',
     items: [
       { to: '/users', label: 'Foydalanuvchilar', shortLabel: 'Foydalanuvchilar', icon: Users },
@@ -36,9 +45,9 @@ const navGroups = [
     ],
   },
   {
-    title: 'MOLIYA',
+    title: 'MOLIYA & TARIFLAR',
     items: [
-      { to: '/plans', label: 'Tariflar', shortLabel: 'Tariflar', icon: CreditCard },
+      { to: '/plans', label: 'Tariflar (Plans)', shortLabel: 'Tariflar', icon: CreditCard },
       { to: '/transactions', label: "To'lovlar Tarixi", shortLabel: "To'lovlar", icon: BookOpen },
     ],
   },

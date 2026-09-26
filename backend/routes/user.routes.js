@@ -5,6 +5,7 @@ const { authenticate, authorize } = require("../middlewares/auth");
 
 router.get("/", authenticate, authorize("ADMIN"), userController.getAllUsers);
 router.post("/", authenticate, authorize("ADMIN"), userController.createUser);
+router.put("/link-university", authenticate, userController.linkUniversityCode);
 router.put("/:id", authenticate, authorize("ADMIN"), userController.updateUser);
 router.delete("/:id", authenticate, authorize("ADMIN"), userController.deleteUser);
 

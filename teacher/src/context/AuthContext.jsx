@@ -10,13 +10,14 @@ export const AuthProvider = ({ children }) => {
 
   const refreshUser = async () => {
     try {
-      const res = await api.get('/plans/my-status');
+      const res = await api.get('/auth/me');
       if (res.data?.user) {
         localStorage.setItem('teacher_user', JSON.stringify(res.data.user));
         setUser(res.data.user);
+        return res.data.user;
       }
     } catch (e) {
-      // Offline or network error
+      console.log("Refresh user error:", e.message);
     }
   };
 

@@ -14,6 +14,8 @@ const submissionRoutes = require("./routes/submission.routes");
 const planRoutes = require("./routes/plan.routes");
 const analyticsRoutes = require("./routes/analytics.routes");
 const uploadRoutes = require("./routes/upload.routes");
+const universityRoutes = require("./routes/university.routes");
+const eventRoutes = require("./routes/event.routes");
 const setupSwagger = require("./swagger/swagger");
 
 dotenv.config();
@@ -38,6 +40,8 @@ app.use("/api/submissions", submissionRoutes);
 app.use("/api/plans", planRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/universities", universityRoutes);
+app.use("/api/events", eventRoutes);
 
 // Swagger Docs
 setupSwagger(app);

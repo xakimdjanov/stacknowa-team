@@ -10,8 +10,8 @@ router.get("/", planController.getPlans);
 router.post("/", authenticate, authorize("ADMIN"), planController.createPlan);
 router.put("/:id", authenticate, authorize("ADMIN"), planController.updatePlan);
 
-// Admin uchun barcha to'lov tranzaksiyalari ro'yxati
-router.get("/transactions", authenticate, authorize("ADMIN"), planController.getAllTransactions);
+// Barcha to'lov tranzaksiyalari (Admin va OTM uchun barchasi, O'qituvchilar uchun o'ziningki)
+router.get("/transactions", authenticate, planController.getAllTransactions);
 
 // To'lov boshlash (Authenticated)
 router.post("/subscribe", authenticate, planController.subscribeWithInPay);

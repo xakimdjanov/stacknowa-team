@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
+import Universities from './pages/Universities';
+import TeacherApprovals from './pages/TeacherApprovals';
 import Users from './pages/Users';
 import Assignments from './pages/Assignments';
 import Plans from './pages/Plans';
@@ -25,7 +27,7 @@ const ProtectedLayout = () => {
     );
   }
 
-  if (!user || user.role !== 'ADMIN') {
+  if (!user || (user.role !== 'ADMIN' && user.role !== 'UNIVERSITY_ADMIN')) {
     return <Navigate to="/login" replace />;
   }
 
@@ -35,6 +37,8 @@ const ProtectedLayout = () => {
       <main className="flex-1 min-w-0 pt-[58px] md:pt-0 pb-20 md:pb-12 h-auto md:h-screen md:overflow-y-auto">
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/universities" element={<Universities />} />
+          <Route path="/teacher-approvals" element={<TeacherApprovals />} />
           <Route path="/users" element={<Users />} />
           <Route path="/assignments" element={<Assignments />} />
           <Route path="/groups" element={<Groups />} />

@@ -204,6 +204,29 @@ const Dashboard = () => {
                 Guruhlaringiz faolligi, amaliy topshiriqlar va AI baholash jarayonlari.
               </p>
             </div>
+
+            {user?.university_code && (
+              <div className="flex items-center gap-3 bg-slate-900 text-white p-3.5 rounded-2xl shadow-md flex-shrink-0 border border-slate-800">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black text-lg">
+                  🏛️
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black text-white">
+                      {user?.university_name || "Biriktirilgan Universitet"}
+                    </span>
+                    <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
+                      user?.approval_status === 'APPROVED' ? 'bg-emerald-500 text-slate-900' : 'bg-amber-400 text-slate-900'
+                    }`}>
+                      {user?.approval_status === 'APPROVED' ? 'Tasdiqlangan ✅' : 'Kutilmoqda ⏳'}
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-slate-400 font-mono font-bold mt-0.5">
+                    Unique Code: {user?.university_code}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

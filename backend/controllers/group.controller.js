@@ -62,7 +62,11 @@ exports.getMyGroups = async (req, res) => {
       where,
       include: [
         { model: User, as: "teacher", attributes: ["id", "name", "email"] },
-        { model: GroupMember, as: "members" },
+        {
+          model: GroupMember,
+          as: "members",
+          include: [{ model: User, as: "student", attributes: ["id", "name", "email"] }],
+        },
         { model: Assignment, as: "assignments" },
       ],
       order: [["created_at", "DESC"]],
@@ -77,6 +81,9 @@ exports.getMyGroups = async (req, res) => {
 /**
  * 3. Talaba a'zo bo'lgan guruhlar ro'yxati
  */
+/**
+ * 3. Talaba a'zo bo'lgan guruhlar ro'yxati
+ */
 exports.getStudentGroups = async (req, res) => {
   try {
     const memberships = await GroupMember.findAll({
@@ -87,6 +94,11 @@ exports.getStudentGroups = async (req, res) => {
           as: "group",
           include: [
             { model: User, as: "teacher", attributes: ["id", "name", "email"] },
+            {
+              model: GroupMember,
+              as: "members",
+              include: [{ model: User, as: "student", attributes: ["id", "name", "email"] }],
+            },
             { model: Assignment, as: "assignments" },
           ],
         },
@@ -145,15 +157,27 @@ exports.getGroupDetail = async (req, res) => {
 exports.joinGroup = async (req, res) => {
   try {
     const { token } = req.params;
-    const { access_code } = req.body;
+    const { access_code } = req.body || {};
 
-    const group = await Group.findOne({ where: { join_token: token, status: "active" } });
+    const group = await Group.findOne({ 
+      where: { join_token: token, status: "active" },
+      include: [{ model: User, as: "teacher", attributes: ["id", "university_id"] }]
+    });
+
     if (!group) {
       return res.status(404).json({ success: false, message: "Havola eskirgan yoki guruh topilmadi" });
     }
 
+    // Faqat talabalar guruhga a'zo bo'lishi mumkin!
+    if (req.user.role && req.user.role !== "STUDENT") {
+      return res.status(403).json({
+        success: false,
+        message: "Faqat talabalar guruhga a'zo bo'lishi mumkin! O'qituvchi yoki Admin guruhga talaba sifatida qo'shila olmaydi.",
+      });
+    }
+
     // Email domen cheklovi bo'lsa tekshirish
-    if (group.allowed_email_domain) {
+    if (group.allowed_email_domain && group.allowed_email_domain.trim() !== "") {
       if (!req.user.email.endsWith(`@${group.allowed_email_domain}`)) {
         return res.status(403).json({
           success: false,
@@ -164,10 +188,11 @@ exports.joinGroup = async (req, res) => {
 
     // Agar o'qituvchi guruhga kirish paroli (access_code) o'rnatgan bo'lsa
     if (group.access_code && group.access_code.trim() !== "") {
-      if (group.access_code !== access_code) {
+      if (!access_code || group.access_code.trim() !== access_code.trim()) {
         return res.status(400).json({
           success: false,
-          message: "Guruhga kirish paroli (access_code) noto'g'ri",
+          requires_access_code: true,
+          message: !access_code ? "Ushbu guruhga kirish uchun parol kiritishingiz kerak" : "Guruhga kirish paroli (access_code) noto'g'ri",
         });
       }
     }
@@ -189,6 +214,11 @@ exports.joinGroup = async (req, res) => {
       group_id: group.id,
       student_id: req.user.id,
     });
+
+    // Link student to university if teacher belongs to a university
+    if (group.teacher?.university_id && !req.user.university_id) {
+      await User.update({ university_id: group.teacher.university_id }, { where: { id: req.user.id } });
+    }
 
     return res.status(201).json({
       success: true,
@@ -220,6 +250,51 @@ exports.regenerateJoinLink = async (req, res) => {
       success: true,
       message: "Guruh havolasi yangilandi",
       join_token: group.join_token,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * 7. O'qituvchi yoki Admin guruhga talabani bevosita qo'shishi
+ */
+exports.addStudentToGroup = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { email, name } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: "Talaba emaili kiritilishi shart" });
+    }
+
+    const group = await Group.findByPk(id);
+    if (!group) {
+      return res.status(404).json({ success: false, message: "Guruh topilmadi" });
+    }
+
+    let student = await User.findOne({ where: { email } });
+    if (!student) {
+      const randomPass = Math.random().toString(36).slice(-8) + "Aa1!";
+      student = await User.create({
+        name: name || email.split("@")[0],
+        email,
+        password: randomPass,
+        role: "STUDENT",
+        approval_status: "APPROVED",
+      });
+    }
+
+    const [member, created] = await GroupMember.findOrCreate({
+      where: { group_id: group.id, student_id: student.id },
+      defaults: { group_id: group.id, student_id: student.id },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: created ? "Talaba guruhga qo'shildi! ✅" : "Talaba allaqachon guruhda bor",
+      member,
+      student: { id: student.id, name: student.name, email: student.email },
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

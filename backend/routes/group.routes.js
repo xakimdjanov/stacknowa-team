@@ -7,7 +7,8 @@ router.post("/", authenticate, authorize("TEACHER", "ADMIN"), groupController.cr
 router.get("/my", authenticate, authorize("TEACHER", "ADMIN"), groupController.getMyGroups);
 router.get("/student", authenticate, authorize("STUDENT"), groupController.getStudentGroups);
 router.get("/:id", authenticate, groupController.getGroupDetail);
-router.post("/join/:token", authenticate, authorize("STUDENT"), groupController.joinGroup);
+router.post("/join/:token", authenticate, groupController.joinGroup);
+router.post("/:id/add-student", authenticate, authorize("TEACHER", "ADMIN"), groupController.addStudentToGroup);
 router.post("/:id/regenerate-link", authenticate, authorize("TEACHER", "ADMIN"), groupController.regenerateJoinLink);
 
 module.exports = router;

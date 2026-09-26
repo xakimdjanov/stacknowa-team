@@ -1,4 +1,4 @@
-const { User, Group, Submission, Plan } = require("../models");
+const { User, University, Group, Submission, Plan } = require("../models");
 const Joi = require("joi");
 const bcrypt = require("bcryptjs");
 
@@ -10,6 +10,46 @@ const updateUserSchema = Joi.object({
   is_active: Joi.boolean(),
   password: Joi.string().min(6).allow(null, ""),
 });
+
+/**
+ * Universitet Unique Code bilan bog'lanish va arizani PENDING holatiga o'tkazish
+ */
+exports.linkUniversityCode = async (req, res) => {
+  try {
+    const { university_code } = req.body;
+    const userId = req.user?.id;
+
+    if (!university_code) {
+      return res.status(400).json({ success: false, message: "Universitet unique kodi kiritilishi shart" });
+    }
+
+    const university = await University.findOne({ where: { unique_code: university_code, status: "ACTIVE" } });
+    if (!university) {
+      return res.status(404).json({ success: false, message: "Ushbu unique kodga ega universitet topilmadi!" });
+    }
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Foydalanuvchi topilmadi" });
+    }
+
+    user.university_code = university_code;
+    user.university_id = university.id;
+    user.approval_status = "PENDING"; // Approval pending by University Admin
+    await user.save();
+
+    const userObj = user.toJSON();
+    delete userObj.password;
+
+    return res.status(200).json({
+      success: true,
+      message: `Arizangiz ${university.name} Adminiga yuborildi! (Kutilmoqda)`,
+      user: userObj,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 /**
  * 1. Barcha foydalanuvchilar ro'yxati (Search va Filter bilan)
@@ -87,7 +127,7 @@ exports.updateUser = async (req, res) => {
     }
 
     if (value.password && value.password.trim() !== "") {
-      user.password = value.password; // Model beforeSave da hash qilinadi
+      user.password = value.password;
     }
     delete value.password;
 

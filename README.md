@@ -19,7 +19,8 @@ stacknowa-team/
 ├── backend/          # Node.js + Express + PostgreSQL + Gemini AI + AWS S3 + InPay API (Port 5000)
 ├── teacher/          # O'qituvchi portali (React + Vite + Tailwind CSS) (Port 3001)
 ├── student/          # Talaba portali (React + Vite + Tailwind CSS) (Port 3002)
-├── admin/            # Platforma boshqaruv paneli (React + Vite) (Port 3000)
+├── admin/            # Super Admin Platforma boshqaruv paneli (React + Vite) (Port 3000)
+├── university/       # Universitet Admin Portali & Billing (React + Vite + Tailwind CSS) (Port 3003)
 └── README.md
 ```
 
