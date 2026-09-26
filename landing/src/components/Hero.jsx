@@ -1,7 +1,13 @@
 import React from 'react';
 import { ArrowRight, ChevronDown, CheckCircle, Users, GraduationCap, Building2, Layers, Activity, Sparkles } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Hero({ onOpenDemo }) {
+  const { t } = useLanguage();
+  const icons = [Users, GraduationCap, Activity, Building2, Layers];
+  const iconColors = ['#059669', '#2563EB', '#059669', '#D97706', '#7C3AED'];
+  const chartColors = ['#059669', '#059669', '#2563EB'];
+
   return (
     <section className="hero-section" style={{
       backgroundColor: '#FFFFFF',
@@ -50,18 +56,20 @@ export default function Hero({ onOpenDemo }) {
             {/* Eyebrow */}
             <div style={{ marginBottom: '16px' }}>
               <span className="eyebrow-badge">
-                <Sparkles size={13} color="#059669" /> EDUMIND AI • OTM SAAS PLATFORMASI
+                <Sparkles size={13} color="#059669" /> {t.hero.eyebrow}
               </span>
             </div>
 
             {/* Main Headline */}
             <h1 className="hero-heading" style={{ marginBottom: '18px' }}>
-              Universitetingiz uchun yagona{' '}
+              {t.hero.title1}{' '}
               <span style={{
                 background: 'linear-gradient(135deg, #059669 0%, #10B981 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent'
-              }}>AI ekotizim.</span>
+              }}>
+                {t.hero.titleAccent}
+              </span>
             </h1>
 
             {/* Supporting Line */}
@@ -72,7 +80,7 @@ export default function Hero({ onOpenDemo }) {
               marginBottom: '28px',
               maxWidth: '600px'
             }}>
-              O'qitish, topshiriqlar, davomat, live darslar, AI baholash va universitet boshqaruvi analitikasi — barchasi bitta professional B2B platformada.
+              {t.hero.desc}
             </p>
 
             {/* CTAs */}
@@ -84,10 +92,10 @@ export default function Hero({ onOpenDemo }) {
               marginBottom: '24px'
             }}>
               <button onClick={onOpenDemo} className="btn-primary">
-                Demo olish <ArrowRight size={17} />
+                {t.hero.cta1} <ArrowRight size={17} />
               </button>
               <a href="#narxlar" className="btn-secondary-dark">
-                Biznes modeli <ChevronDown size={17} />
+                {t.hero.cta2} <ChevronDown size={17} />
               </a>
             </div>
 
@@ -101,17 +109,14 @@ export default function Hero({ onOpenDemo }) {
               fontSize: '13px',
               fontWeight: '600'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#0F172A' }}>
-                <CheckCircle size={14} color="#059669" /> Rektorat & Dekanat
-              </div>
-              <span style={{ color: '#CBD5E1' }}>•</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#0F172A' }}>
-                <CheckCircle size={14} color="#059669" /> O'qituvchilar
-              </div>
-              <span style={{ color: '#CBD5E1' }}>•</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#0F172A' }}>
-                <CheckCircle size={14} color="#059669" /> Talabalar
-              </div>
+              {t.hero.trust.map((item, index) => (
+                <React.Fragment key={item}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#0F172A' }}>
+                    <CheckCircle size={14} color="#059669" /> {item}
+                  </div>
+                  {index < t.hero.trust.length - 1 && <span style={{ color: '#CBD5E1' }}>•</span>}
+                </React.Fragment>
+              ))}
             </div>
           </div>
 
@@ -154,11 +159,11 @@ export default function Hero({ onOpenDemo }) {
                   flex: 1,
                   minWidth: 0
                 }}>
-                  edumind.uz / admin / dashboard
+                  {t.hero.mock.url}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '10px', color: '#059669', fontWeight: '700', flexShrink: 0 }}>
                   <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#059669', display: 'inline-block' }} />
-                  Live
+                  {t.hero.mock.live}
                 </div>
               </div>
 
@@ -169,22 +174,17 @@ export default function Hero({ onOpenDemo }) {
                 gap: '8px',
                 marginBottom: '14px'
               }}>
-                {[
-                  { label: 'Talabalar', val: '24,500', sub: '+12% semestr', icon: Users, iconColor: '#059669', subColor: '#059669' },
-                  { label: 'O\'qituvchilar', val: '1,240', sub: 'Tasdiqlangan', icon: GraduationCap, iconColor: '#2563EB', subColor: '#64748B' },
-                  { label: 'Davomat', val: '92%', sub: 'Yuqori faollik', icon: Activity, iconColor: '#059669', subColor: '#059669', valColor: '#059669' },
-                  { label: 'Fakultetlar', val: '12', sub: 'Tizimda faol', icon: Building2, iconColor: '#D97706', subColor: '#64748B' },
-                  { label: 'Kafedralar', val: '48', sub: 'Boshqaruvda', icon: Layers, iconColor: '#7C3AED', subColor: '#64748B' },
-                ].map((item) => {
-                  const Icon = item.icon;
+                {t.hero.mock.metrics.map((item, idx) => {
+                  const Icon = icons[idx] || Users;
+                  const color = iconColors[idx] || '#059669';
                   return (
                     <div key={item.label} style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '10px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#64748B', fontSize: '10px', fontWeight: '600' }}>
                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label}</span>
-                        <Icon size={12} color={item.iconColor} style={{ flexShrink: 0 }} />
+                        <Icon size={12} color={color} style={{ flexShrink: 0 }} />
                       </div>
-                      <div style={{ fontSize: '16px', fontWeight: '800', color: item.valColor || '#0F172A', marginTop: '3px' }}>{item.val}</div>
-                      <div style={{ fontSize: '9px', color: item.subColor, fontWeight: '600', marginTop: '1px' }}>{item.sub}</div>
+                      <div style={{ fontSize: '16px', fontWeight: '800', color: idx === 2 ? '#059669' : '#0F172A', marginTop: '3px' }}>{item.val}</div>
+                      <div style={{ fontSize: '9px', color: idx === 0 || idx === 2 ? '#059669' : '#64748B', fontWeight: '600', marginTop: '1px' }}>{item.sub}</div>
                     </div>
                   );
                 })}
@@ -195,46 +195,48 @@ export default function Hero({ onOpenDemo }) {
                 {/* Faculty Chart */}
                 <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '14px', padding: '14px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', gap: '6px' }}>
-                    <h4 style={{ fontSize: '11px', fontWeight: '700', color: '#0F172A' }}>Fakultetlar Ko'rsatkichi</h4>
-                    <span style={{ fontSize: '9px', color: '#047857', background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '2px 6px', borderRadius: '5px', fontWeight: '600', flexShrink: 0 }}>AI Reyting</span>
+                    <h4 style={{ fontSize: '11px', fontWeight: '700', color: '#0F172A' }}>{t.hero.mock.chartTitle}</h4>
+                    <span style={{ fontSize: '9px', color: '#047857', background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '2px 6px', borderRadius: '5px', fontWeight: '600', flexShrink: 0 }}>{t.hero.mock.chartBadge}</span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {[
-                      { name: 'Axborot Texnologiyalari', pct: 96, color: '#059669' },
-                      { name: 'Iqtisodiyot va Moliya', pct: 91, color: '#059669' },
-                      { name: 'Muhandislik va Fizika', pct: 88, color: '#2563EB' },
-                    ].map((row) => (
-                      <div key={row.name}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: '#334155', marginBottom: '3px', fontWeight: '500' }}>
-                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginRight: '4px' }}>{row.name}</span>
-                          <span style={{ fontWeight: '700', color: row.color, flexShrink: 0 }}>{row.pct}%</span>
+                    {t.hero.mock.chartRows.map((row, idx) => {
+                      const color = chartColors[idx] || '#059669';
+                      return (
+                        <div key={row.name}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: '#334155', marginBottom: '3px', fontWeight: '500' }}>
+                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginRight: '4px' }}>{row.name}</span>
+                            <span style={{ fontWeight: '700', color: color, flexShrink: 0 }}>{row.pct}%</span>
+                          </div>
+                          <div style={{ height: '5px', background: '#E2E8F0', borderRadius: '3px', overflow: 'hidden' }}>
+                            <div style={{ width: `${row.pct}%`, height: '100%', background: color, borderRadius: '3px' }} />
+                          </div>
                         </div>
-                        <div style={{ height: '5px', background: '#E2E8F0', borderRadius: '3px', overflow: 'hidden' }}>
-                          <div style={{ width: `${row.pct}%`, height: '100%', background: row.color, borderRadius: '3px' }} />
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
                 {/* Activity Feed */}
                 <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '14px', padding: '14px' }}>
-                  <h4 style={{ fontSize: '11px', fontWeight: '700', color: '#0F172A', marginBottom: '10px' }}>Real-time Faollik</h4>
+                  <h4 style={{ fontSize: '11px', fontWeight: '700', color: '#0F172A', marginBottom: '10px' }}>{t.hero.mock.activityTitle}</h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', background: '#FFFFFF', border: '1px solid #E2E8F0', padding: '8px', borderRadius: '9px' }}>
-                      <div style={{ width: '24px', height: '24px', borderRadius: '7px', background: '#ECFDF5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: '800', flexShrink: 0 }}>AI</div>
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ color: '#0F172A', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Topshiriq baholandi</div>
-                        <div style={{ color: '#64748B', fontSize: '10px' }}>Gemini AI • 94/100</div>
+                    {t.hero.mock.activities.map((act, idx) => (
+                      <div key={act.title} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', background: '#FFFFFF', border: '1px solid #E2E8F0', padding: '8px', borderRadius: '9px' }}>
+                        <div style={{
+                          width: '24px', height: '24px', borderRadius: '7px',
+                          background: idx === 0 ? '#ECFDF5' : '#EFF6FF',
+                          color: idx === 0 ? '#059669' : '#2563EB',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: '9px', fontWeight: '800', flexShrink: 0
+                        }}>
+                          {idx === 0 ? 'AI' : 'PIN'}
+                        </div>
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{ color: '#0F172A', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{act.title}</div>
+                          <div style={{ color: '#64748B', fontSize: '10px' }}>{act.sub}</div>
+                        </div>
                       </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', background: '#FFFFFF', border: '1px solid #E2E8F0', padding: '8px', borderRadius: '9px' }}>
-                      <div style={{ width: '24px', height: '24px', borderRadius: '7px', background: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: '800', flexShrink: 0 }}>PIN</div>
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ color: '#0F172A', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Live Quiz boshlandi</div>
-                        <div style={{ color: '#64748B', fontSize: '10px' }}>210-20 • 42 talaba</div>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -258,7 +260,7 @@ export default function Hero({ onOpenDemo }) {
                 whiteSpace: 'nowrap'
               }}>
                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', flexShrink: 0 }} />
-                AI Integrity: 99.8% Aniq
+                {t.hero.mock.badge}
               </div>
             </div>
           </div>

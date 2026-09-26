@@ -1,7 +1,10 @@
 import React from 'react';
 import { ArrowRight, Sparkles, MessageSquare } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function FinalCta({ onOpenDemo }) {
+  const { t } = useLanguage();
+
   return (
     <section style={{
       backgroundColor: '#FFFFFF',
@@ -38,7 +41,7 @@ export default function FinalCta({ onOpenDemo }) {
             {/* Eyebrow */}
             <div style={{ marginBottom: '18px', display: 'flex', justifyContent: 'center' }}>
               <span className="eyebrow-badge">
-                <Sparkles size={13} color="#059669" /> RAQAMLI TA'LIM KELAJAGI
+                <Sparkles size={13} color="#059669" /> {t.cta.eyebrow}
               </span>
             </div>
 
@@ -51,7 +54,7 @@ export default function FinalCta({ onOpenDemo }) {
               margin: '0 auto 16px',
               color: '#0F172A'
             }}>
-              Universitetingizni yanada aqlli boshqarishga tayyormisiz?
+              {t.cta.title}
             </h2>
 
             {/* Subheading */}
@@ -62,7 +65,7 @@ export default function FinalCta({ onOpenDemo }) {
               margin: '0 auto 32px',
               lineHeight: '1.6'
             }}>
-              EduMind AI bilan barcha dekanatlar, o'qituvchilar va talabalarni yagona raqamli ekotizimga birlashtiring.
+              {t.cta.desc}
             </p>
 
             {/* Buttons */}
@@ -73,7 +76,7 @@ export default function FinalCta({ onOpenDemo }) {
               gap: '14px'
             }}>
               <button onClick={onOpenDemo} className="btn-primary" style={{ padding: '15px 30px', fontSize: '15px' }}>
-                Universitet uchun demo olish <ArrowRight size={17} />
+                {t.cta.btn1} <ArrowRight size={17} />
               </button>
               <a
                 href="#faq"
@@ -101,7 +104,7 @@ export default function FinalCta({ onOpenDemo }) {
                   e.currentTarget.style.borderColor = '#CBD5E1';
                 }}
               >
-                <MessageSquare size={17} /> Mutaxassis bilan bog'lanish
+                <MessageSquare size={17} /> {t.cta.btn2}
               </a>
             </div>
           </div>

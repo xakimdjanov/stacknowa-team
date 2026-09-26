@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { X, CheckCircle2, ShieldCheck, Sparkles, Send, Loader2 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function DemoModal({ isOpen, onClose }) {
+  const { t } = useLanguage();
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     university: '',
     name: '',
-    role: 'Rektor / Prorektor',
+    role: t.modal.roles[0],
     phone: '',
-    studentsCount: '5,000 - 20,000 talaba',
+    studentsCount: t.modal.studentOptions[1],
   });
 
   if (!isOpen) return null;
@@ -56,9 +58,9 @@ export default function DemoModal({ isOpen, onClose }) {
     setFormData({
       university: '',
       name: '',
-      role: 'Rektor / Prorektor',
+      role: t.modal.roles[0],
       phone: '',
-      studentsCount: '5,000 - 20,000 talaba',
+      studentsCount: t.modal.studentOptions[1],
     });
     onClose();
   };
@@ -144,25 +146,25 @@ export default function DemoModal({ isOpen, onClose }) {
                 fontWeight: '700',
                 marginBottom: '10px'
               }}>
-                <Sparkles size={12} /> DEMO TAQDIMOT VA KONSALTING
+                <Sparkles size={12} /> {t.modal.eyebrow}
               </div>
               <h3 style={{ fontSize: 'clamp(20px, 4vw, 24px)', fontWeight: '800', lineHeight: '1.2', color: '#0F172A' }}>
-                Universitetingiz uchun demo oling
+                {t.modal.title}
               </h3>
               <p style={{ color: '#64748B', fontSize: '13px', marginTop: '6px', lineHeight: '1.5' }}>
-                EduMind AI mutaxassislari 24 soat ichida siz bilan bog'lanib, platformani oliygohingizga moslashtirib ko'rsatib berishadi.
+                {t.modal.desc}
               </p>
             </div>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#1E293B', marginBottom: '5px' }}>
-                  Universitet nomi *
+                  {t.modal.fields.university}
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="Masalan: Toshkent Davlat Texnika Universiteti"
+                  placeholder={t.modal.fields.universityPh}
                   value={formData.university}
                   onChange={(e) => setFormData({ ...formData, university: e.target.value })}
                   style={inputStyle}
@@ -174,12 +176,12 @@ export default function DemoModal({ isOpen, onClose }) {
               <div className="modal-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#1E293B', marginBottom: '5px' }}>
-                    Ism-sharifingiz *
+                    {t.modal.fields.name}
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="Prof. Jamshid Karimov"
+                    placeholder={t.modal.fields.namePh}
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     style={inputStyle}
@@ -189,18 +191,16 @@ export default function DemoModal({ isOpen, onClose }) {
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#1E293B', marginBottom: '5px' }}>
-                    Lavozimingiz *
+                    {t.modal.fields.role}
                   </label>
                   <select
                     value={formData.role}
                     onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                     style={{ ...inputStyle }}
                   >
-                    <option value="Rektor / Prorektor">Rektor / Prorektor</option>
-                    <option value="Dekan / Dekan o'rinbosari">Dekan / O'rinbosar</option>
-                    <option value="Kafedra mudiri">Kafedra mudiri</option>
-                    <option value="IT va Raqamlashtirish bo'limi">IT & Raqamlashtirish</option>
-                    <option value="O'qituvchi / Professor">O'qituvchi / Professor</option>
+                    {t.modal.roles.map(r => (
+                      <option key={r} value={r}>{r}</option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -208,12 +208,12 @@ export default function DemoModal({ isOpen, onClose }) {
               <div className="modal-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#1E293B', marginBottom: '5px' }}>
-                    Telefon raqam *
+                    {t.modal.fields.phone}
                   </label>
                   <input
                     type="tel"
                     required
-                    placeholder="+998 90 123 45 67"
+                    placeholder={t.modal.fields.phonePh}
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     style={inputStyle}
@@ -223,16 +223,16 @@ export default function DemoModal({ isOpen, onClose }) {
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#1E293B', marginBottom: '5px' }}>
-                    Talabalar soni
+                    {t.modal.fields.students}
                   </label>
                   <select
                     value={formData.studentsCount}
                     onChange={(e) => setFormData({ ...formData, studentsCount: e.target.value })}
                     style={{ ...inputStyle }}
                   >
-                    <option value="< 5,000 talaba">&lt; 5,000 (Starter)</option>
-                    <option value="5,000 - 20,000 talaba">5k–20k (Standart)</option>
-                    <option value="> 20,000 talaba">&gt; 20,000 (Enterprise)</option>
+                    {t.modal.studentOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -251,14 +251,14 @@ export default function DemoModal({ isOpen, onClose }) {
                 }}
               >
                 {isSubmitting ? (
-                  <><Loader2 size={17} /> Yuborilmoqda...</>
+                  <><Loader2 size={17} className="animate-spin" /> {t.modal.submitting}</>
                 ) : (
-                  <><Send size={17} /> Ariza Yuborish & Demo Olish</>
+                  <><Send size={17} /> {t.modal.submit}</>
                 )}
               </button>
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', color: '#64748B', fontSize: '12px' }}>
-                <ShieldCheck size={14} color="#059669" /> Maxfiylik va ma'lumotlar xavfsizligi kafolatlanadi
+                <ShieldCheck size={14} color="#059669" /> {t.modal.privacy}
               </div>
             </form>
           </>
@@ -279,17 +279,17 @@ export default function DemoModal({ isOpen, onClose }) {
               <CheckCircle2 size={32} />
             </div>
             <h3 style={{ fontSize: 'clamp(18px, 4vw, 22px)', fontWeight: '800', marginBottom: '10px', color: '#0F172A' }}>
-              Arizangiz muvaffaqiyatli qabul qilindi!
+              {t.modal.successTitle}
             </h3>
             <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', marginBottom: '22px' }}>
-              Hurmatli {formData.name}, sizning <strong>{formData.university}</strong> bo'yicha demo so'rovingiz qabul qilindi va mutaxassislarimizga yuborildi. Tez orada siz bilan <strong>{formData.phone}</strong> raqami orqali bog'lanamiz.
+              {t.modal.successDesc(formData.name, formData.university, formData.phone)}
             </p>
             <button
               onClick={handleReset}
               className="btn-primary"
               style={{ width: '100%', padding: '12px', borderRadius: '10px' }}
             >
-              Yopish
+              {t.modal.close}
             </button>
           </div>
         )}
