@@ -109,7 +109,7 @@ const Sidebar = () => {
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
                 <span className="text-base font-black text-slate-900 tracking-tight leading-none">
-                  AI Practice
+                  EduMind AI
                 </span>
                 {isPro && (
                   <Crown className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
@@ -245,7 +245,7 @@ const Sidebar = () => {
           <div>
             <div className="flex items-center gap-1.5">
               <span className="text-sm font-black text-slate-900 tracking-tight leading-none">
-                AI Practice
+                EduMind AI
               </span>
               <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-emerald-50 text-[9px] font-bold text-emerald-700 tracking-wide border border-emerald-200/50">
                 USTOZ
@@ -294,7 +294,7 @@ const Sidebar = () => {
               >
                 <GraduationCap className="w-4 h-4 text-white" />
               </div>
-              <span className="text-sm font-black text-slate-900">AI Practice Teacher</span>
+              <span className="text-sm font-black text-slate-900">EduMind AI Teacher</span>
             </div>
             <button
               onClick={() => setMobileOpen(false)}
@@ -399,7 +399,7 @@ const Sidebar = () => {
           </button>
 
           <p className="text-center text-[10px] text-slate-400 font-medium">
-            AI Practice Teacher • StackNowa
+            EduMind AI — Teacher
           </p>
         </div>
       </div>
@@ -459,3 +459,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+

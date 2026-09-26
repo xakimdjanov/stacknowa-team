@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { User, Mail, Lock, Eye, EyeOff, Check, KeyRound } from 'lucide-react';
@@ -84,7 +84,7 @@ const Register = () => {
               <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
             </svg>
           </div>
-          <span className="font-bold text-lg tracking-wider uppercase">AI PRACTICE</span>
+          <span className="font-bold text-lg tracking-wider uppercase">EduMind AI</span>
         </div>
 
         {/* Markaziy rasm va matn */}
@@ -109,7 +109,7 @@ const Register = () => {
         <div className="flex items-center justify-between text-xs text-emerald-200/80 pt-6 border-t border-emerald-400/20 z-10">
           <span>O'qituvchilarga dars maydonini boshqarish uchun yaratilgan</span>
           <div className="flex items-center space-x-1 font-bold tracking-widest uppercase">
-            <span>AI PRACTICE</span>
+            <span>EduMind AI</span>
           </div>
         </div>
       </div>
@@ -124,7 +124,7 @@ const Register = () => {
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
               </svg>
             </div>
-            <span>AI PRACTICE</span>
+            <span>EduMind AI</span>
           </div>
 
           <div>
@@ -342,3 +342,4 @@ const Register = () => {
 };
 
 export default Register;
+

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import api from '../api/client';
 import { 
   Users, 
@@ -599,7 +599,7 @@ const Dashboard = () => {
             Oxirgi sinxronizatsiya: {now.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })}
           </span>
           <span className="font-medium text-slate-500">
-            AI Practice • O'qituvchilar uchun intellektual ta'lim platformasi
+            EduMind AI • O'qituvchilar uchun intellektual ta'lim platformasi
           </span>
         </div>
 
@@ -610,3 +610,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

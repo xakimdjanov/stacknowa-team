@@ -1,4 +1,4 @@
-const { Group, GroupMember, User, Assignment, Submission } = require("../models");
+const { Group, GroupMember, User, Assignment, Submission, Event } = require("../models");
 const { nanoid } = require("nanoid");
 const QRCode = require("qrcode");
 const Joi = require("joi");
@@ -300,3 +300,72 @@ exports.addStudentToGroup = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+/**
+ * 8. Guruhni tahrirlash (Teacher yoki Admin)
+ */
+exports.updateGroup = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const group = await Group.findByPk(id);
+    if (!group) {
+      return res.status(404).json({ success: false, message: "Guruh topilmadi" });
+    }
+    if (req.user.role !== "ADMIN" && group.teacher_id !== req.user.id) {
+      return res.status(403).json({ success: false, message: "Ruxsat berilmagan" });
+    }
+
+    const { name, subject, course, faculty, academic_year, semester, access_code, allowed_email_domain, status } = req.body;
+    
+    if (name) group.name = name;
+    if (subject) group.subject = subject;
+    if (course !== undefined) group.course = Number(course);
+    if (faculty !== undefined) group.faculty = faculty;
+    if (academic_year) group.academic_year = academic_year;
+    if (semester !== undefined) group.semester = Number(semester);
+    if (access_code !== undefined) group.access_code = access_code;
+    if (allowed_email_domain !== undefined) group.allowed_email_domain = allowed_email_domain;
+    if (status) group.status = status;
+
+    await group.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Guruh ma'lumotlari muvaffaqiyatli yangilandi",
+      group,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * 9. Guruhni o'chirish (Teacher yoki Admin)
+ */
+exports.deleteGroup = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const group = await Group.findByPk(id);
+    if (!group) {
+      return res.status(404).json({ success: false, message: "Guruh topilmadi" });
+    }
+    if (req.user.role !== "ADMIN" && group.teacher_id !== req.user.id) {
+      return res.status(403).json({ success: false, message: "Ruxsat berilmagan" });
+    }
+
+    // A'zolarni tozalash va bog'liq eventlarni uzish
+    await GroupMember.destroy({ where: { group_id: id } });
+    if (Event) {
+      await Event.update({ group_id: null }, { where: { group_id: id } });
+    }
+    await group.destroy();
+
+    return res.status(200).json({
+      success: true,
+      message: "Guruh muvaffaqiyatli o'chirildi",
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+

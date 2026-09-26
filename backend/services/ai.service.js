@@ -2,30 +2,60 @@ const axios = require("axios");
 
 class AIService {
   /**
-   * AI 40 Savol Generator:
-   * Yuklangan amaliy ish / dars materiali (PDF/PPTX/Text) asosida
-   * 40 ta interaktiv savol va 4 ta javob varianti yaratadi.
+   * AI 40/20 Savol Generator:
+   * Yuklangan amaliy ish / dars materiali (PDF/DOCX/Text) asosida
+   * savollar va aralashtirilgan javob variantlarini yaratadi.
    */
   async generate40Questions({ materialText = "", documentTitle = "Dars Materiali", count = 40 }) {
-    if (process.env.GEMINI_API_KEY) {
+    if (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim().length > 10) {
       try {
-        return await this.generateQuestionsWithGemini({ materialText, documentTitle, count });
+        const questions = await this.generateQuestionsWithGemini({ materialText, documentTitle, count });
+        if (questions && questions.length > 0) {
+          return this.ensureShuffledAnswers(questions);
+        }
       } catch (err) {
         console.error("Gemini API Error in 40 Questions generator, fallback generator ishlatiladi:", err.message);
       }
     }
 
-    return this.fallback40QuestionsGenerator({ documentTitle, count });
+    return this.fallback40QuestionsGenerator({ materialText, documentTitle, count });
+  }
+
+  // To'g'ri javoblarni haqiqiy tasodifiy (random) aralashtirish (hech qanday takrorlanuvchi ketma-ketliksiz)
+  ensureShuffledAnswers(questions) {
+    return questions.map((q) => {
+      let options = Array.isArray(q.options) && q.options.length >= 2 ? [...q.options] : ["A", "B", "C", "D"];
+      const oldCorrect = options[q.correctIndex !== undefined ? q.correctIndex : 0] || options[0];
+
+      // Fisher-Yates algoritmi orqali variantlarni to'liq random aralashtirish
+      for (let j = options.length - 1; j > 0; j--) {
+        const k = Math.floor(Math.random() * (j + 1));
+        [options[j], options[k]] = [options[k], options[j]];
+      }
+
+      const newTarget = options.indexOf(oldCorrect);
+      return {
+        ...q,
+        options,
+        correctIndex: newTarget >= 0 ? newTarget : Math.floor(Math.random() * options.length),
+      };
+    });
   }
 
   async generateQuestionsWithGemini({ materialText, documentTitle, count }) {
-    const prompt = `Siz universitet profis va ta'lim bo'yicha ekspertsiz.
+    const cleanText = (materialText || "").trim().slice(0, 20000);
+    const prompt = `Siz universitet professori va dars bo'yicha mutaxassis ekspertsiz.
 Dars / amaliy ish materiali nomi: "${documentTitle}"
-Material matni parchasi: "${materialText.substring(0, 3000) || "Axborot texnologiyalari va dasturlash asoslari"}"
+Material matni mazmuni:
+---
+${cleanText || documentTitle}
+---
 
-Iltimos, ushbu dars materialidan foydalanib talabalar bilan darsda live-quiz / savol-javob o'tkazish uchun aynan ${count} ta ko'p variantli (multiple choice) savol tuzing.
-
-Har bir savol uchun 4 ta muqobil variant (A, B, C, D) va 1 ta to'g'ri javob indeksi (0, 1, 2, yoki 3) hamda qisqa tushuntirish kiritilsin.
+TALABLAR:
+1. Aynan yuqoridagi dars materiali matnidan, undagi mavzular, tushunchalar, atamalar va formulalardan foydalanib aynan ${count} ta multiple-choice test savoli tuzing. Mavzudan chetga chiqmang!
+2. Har bir savol uchun 4 ta aniq variant (options) bering.
+3. JUDA MUHIM TALAB: To'g'ri javob indeksi "correctIndex" (0, 1, 2, yoki 3) barcha savollarda TURLICHA va ARALASHTIRILGAN bo'lsin! Barcha javoblar 0 (A) bo'lishi MUTLAQO MUMKIN EMAS! A (0), B (1), C (2), D (3) teng taqsimlansin!
+4. "correctIndex" ga mos ravishda to'g'ri javob aynan o'sha indeksdagi variantda joylashgan bo'lishi shart!
 
 Javobni FAQAT QUYIDAGI QAT'IY JSON ARRAY FORMATIDA BERING:
 [
@@ -33,8 +63,8 @@ Javobni FAQAT QUYIDAGI QAT'IY JSON ARRAY FORMATIDA BERING:
     "id": 1,
     "question": "Savol matni...",
     "options": ["A variant", "B variant", "C variant", "D variant"],
-    "correctIndex": 0,
-    "explanation": "Nima uchun to'g'riligi izohi"
+    "correctIndex": 2,
+    "explanation": "To'g'ri javob izohi"
   }
 ]`;
 
@@ -52,34 +82,164 @@ Javobni FAQAT QUYIDAGI QAT'IY JSON ARRAY FORMATIDA BERING:
     throw new Error("Invalid response array from Gemini");
   }
 
-  fallback40QuestionsGenerator({ documentTitle, count = 40 }) {
-    const questions = [];
-    const baseTopics = [
-      "Algoritmik murakkablik O(N) va saralash usullari",
-      "Relatsion ma'lumotlar bazasi va B-Tree indekslari",
-      "Asinxron dasturlash va Event Loop mexanizmi",
-      "RESTful API va HTTP status kodlari",
-      "Neyron tarmoqlari va Gradient Descent algoritmi",
-      "Bulutli texnologiyalar va AWS S3 xotirasi",
-      "OOB (Ob'ektga yo'naltirilgan dasturlash) tamoyillari",
-      "Kiberxavfsizlik va JWT token autentifikatsiyasi",
-      "SQL JOIN turlari va so'rovlar optimizatsiyasi",
-      "Docker konteynerlashtirish va Kubernetes",
+  fallback40QuestionsGenerator({ materialText = "", documentTitle = "Dars Materiali", count = 40 }) {
+    const cleanText = (materialText || "").replace(/\r\n/g, "\n").trim();
+    
+    // Matndan mazmunli jumlalar va qatorlarni tozalash
+    const rawSentences = cleanText
+      .split(/(?<=[.?!])\s+|\n+/)
+      .map(s => s.trim().replace(/\s+/g, ' '))
+      .filter(s => s.length >= 15 && !s.startsWith("%PDF") && !s.includes("obj <<") && !s.includes("endobj"));
+
+    const concepts = [];
+
+    // 1. "X — bu Y" yoki "X bu Y" yoki "X - Y" ta'riflari
+    const defRegex = /^([A-ZА-Яa-zа-я0-9\s_'.-]{2,35}?)\s*(?:—|-|–|\s+bu\s+|\s+—\s+bu\s+)\s*(.+)$/i;
+
+    for (const sent of rawSentences) {
+      const match = sent.match(defRegex);
+      if (match && match[1].trim().length >= 2 && match[2].trim().length >= 10) {
+        const term = match[1].trim().replace(/^[\d.-]+\s*/, '');
+        const def = match[2].trim().replace(/[.?!]$/, '');
+        if (term.split(' ').length <= 4) {
+          concepts.push({
+            term,
+            definition: def,
+            type: 'definition',
+            sentence: sent
+          });
+          continue;
+        }
+      }
+
+      // 2. "... uchun ishlatiladi / xizmat qiladi / mo'ljallangan / vazifasini bajaradi"
+      const purposeMatch = sent.match(/^([A-ZА-Яa-zа-я0-9\s_'.-]{2,35}?)\s+(.+?(?:uchun ishlatiladi|uchun xizmat qiladi|vazifasini bajaradi|imkonini beradi|mo'ljallangan).*?)$/i);
+      if (purposeMatch) {
+        const term = purposeMatch[1].trim().replace(/^[\d.-]+\s*/, '');
+        if (term.split(' ').length <= 4) {
+          concepts.push({
+            term,
+            definition: sent.replace(/[.?!]$/, ''),
+            type: 'purpose',
+            sentence: sent
+          });
+          continue;
+        }
+      }
+
+      // 3. Matndagi texnik terminlar (Masalan: React Native, JavaScript, API, Component, State...)
+      const techMatch = sent.match(/\b([A-Z][a-zA-Z0-9.+]{2,}(?:\s+[A-Z][a-zA-Z0-9.+]{2,})?)\b/g);
+      if (techMatch && techMatch.length > 0) {
+        const term = techMatch[0];
+        if (term.length >= 3 && !['Dars', 'Mavzu', 'Siz', 'Ushbu', 'Barcha', 'Agar', 'Chunki', 'Ammo', 'Bunday'].includes(term)) {
+          concepts.push({
+            term,
+            definition: sent.replace(/[.?!]$/, ''),
+            type: 'tech_term',
+            sentence: sent
+          });
+          continue;
+        }
+      }
+
+      // 4. Boshqa mazmunli jumlalar
+      if (sent.length >= 30 && sent.length <= 220) {
+        const words = sent.split(' ');
+        const firstTwo = words.slice(0, 2).join(' ').replace(/[,:—.]/g, '');
+        concepts.push({
+          term: firstTwo || documentTitle,
+          definition: sent.replace(/[.?!]$/, ''),
+          type: 'general',
+          sentence: sent
+        });
+      }
+    }
+
+    // Agar matndan birorta tushuncha topilmasa, mavzu sarlavhasidan foydalanamiz
+    const finalConcepts = concepts.length > 0 ? concepts : [
+      { term: documentTitle, definition: `${documentTitle} mavzusida belgilangan asosiy qoidalar va ilmiy tushunchalar`, type: 'definition' }
     ];
 
+    const generalDistractors = [
+      "Faqat vaqtinchalik xotiradagi o'zgaruvchilarni cheklash uchun qo'llaniladi",
+      "Tizim xavfsizlik protokollarini o'chirib, ma'lumotlarni shifrsiz uzatadi",
+      "Foydalanuvchi interfeysini avtomatik tarzda qayta yuklashni to'xtatadi",
+      "Ma'lumotlar bazasining asosiy konfiguratsiyasini tozalab tashlaydi",
+      "Dastur arxitekturasining samaradorligi va tezligini pasaytiradi",
+      "Faqat tashqi apparat vositalarini boshqarishga xizmat qiladi",
+      "Lokal tarmoqdagi so'rovlarni qabul qilmasdan, xatolik qaytaradi",
+      "Tizimdagi barcha faol jarayonlarni majburiy to'xtatadi"
+    ];
+
+    const questions = [];
+
     for (let i = 1; i <= count; i++) {
-      const topic = baseTopics[(i - 1) % baseTopics.length];
+      const c = finalConcepts[(i - 1) % finalConcepts.length];
+      const termName = c.term || documentTitle;
+
+      // Savol matnini aniq tushuncha bo'yicha tuzish
+      let qText = "";
+      if (c.type === 'definition') {
+        const templates = [
+          `"${termName}" nima va uning asosiy mohiyati nimadan iborat?`,
+          `Dars materialiga ko'ra, "${termName}" qanday ta'riflanadi?`,
+          `"${termName}" tushunchasining to'g'ri izohi qaysi javobda keltirilgan?`
+        ];
+        qText = templates[(i - 1) % templates.length];
+      } else if (c.type === 'purpose') {
+        const templates = [
+          `Dars materialida keltirilgan "${termName}" nima maqsadda qo'llaniladi?`,
+          `"${termName}" qanday vazifani bajarish uchun xizmat qiladi?`,
+          `"${termName}" orqali qanday imkoniyatga ega bo'linadi?`
+        ];
+        qText = templates[(i - 1) % templates.length];
+      } else if (c.type === 'tech_term') {
+        const templates = [
+          `"${termName}" texnologiyasi / vositasi haqida quyidagi fikrlardan qaysi biri to'g'ri?`,
+          `Mavzuga ko'ra, "${termName}" nima uchun ishlatiladi?`,
+          `"${termName}" tushunchasining asosiy vazifasi nima?`
+        ];
+        qText = templates[(i - 1) % templates.length];
+      } else {
+        qText = `"${termName}" mavzusi bo'yicha quyidagi fikrlardan qaysi biri to'g'ri?`;
+      }
+
+      const correctOpt = c.definition.slice(0, 115);
+
+      // Chalg'ituvchi variantlarni boshqa tushunchalardan olish
+      const otherConcepts = finalConcepts.filter((_, idx) => idx !== ((i - 1) % finalConcepts.length));
+      const wrongOpts = [];
+
+      if (otherConcepts.length > 0) {
+        wrongOpts.push(otherConcepts[(i * 2) % otherConcepts.length].definition.slice(0, 115));
+      }
+      if (otherConcepts.length > 1) {
+        wrongOpts.push(otherConcepts[(i * 3 + 1) % otherConcepts.length].definition.slice(0, 115));
+      }
+
+      while (wrongOpts.length < 3) {
+        const candidate = generalDistractors[(i * 2 + wrongOpts.length * 3) % generalDistractors.length];
+        if (!wrongOpts.includes(candidate)) {
+          wrongOpts.push(candidate);
+        } else {
+          wrongOpts.push(`Bunday tushuncha ushbu mavzuda ko'zda tutilmagan (${wrongOpts.length + 1})`);
+        }
+      }
+
+      // To'liq tasodifiy (Fisher-Yates) aralashtirish
+      const options = [correctOpt, wrongOpts[0], wrongOpts[1], wrongOpts[2]];
+      for (let j = options.length - 1; j > 0; j--) {
+        const k = Math.floor(Math.random() * (j + 1));
+        [options[j], options[k]] = [options[k], options[j]];
+      }
+      const targetPos = options.indexOf(correctOpt);
+
       questions.push({
         id: i,
-        question: `${documentTitle} bo'yicha ${i}-savol: ${topic} mavzusining asosiy mohiyati nima?`,
-        options: [
-          `A) ${topic} bo'yicha ma'lumotlar yaxlitligi va tezligini ta'minlash`,
-          `B) Faqat vaqtinchalik kesh xotira bilan ishlash`,
-          `C) Tarmoq protokollarini shifrlash va cheklash`,
-          `D) Foydalanuvchi interfeysini avtomatik render qilish`,
-        ],
-        correctIndex: 0,
-        explanation: `${topic} dars materialining eng muhim qismi hisoblanadi.`,
+        question: qText,
+        options,
+        correctIndex: targetPos,
+        explanation: `To'g'ri javob "${['A','B','C','D'][targetPos]}" varianti: ${correctOpt.slice(0, 80)}...`,
       });
     }
 

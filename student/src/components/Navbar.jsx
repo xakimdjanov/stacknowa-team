@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
@@ -10,10 +10,11 @@ const Navbar = () => {
         <h2 className="text-base font-bold text-slate-900 tracking-tight">
           Xush kelibsiz, {user?.name || 'Talaba'} 👋
         </h2>
-        <p className="text-xs text-slate-400 mt-0.5">AI Practice — Talaba portali</p>
+        <p className="text-xs text-slate-400 mt-0.5">EduMind AI — Talaba portali</p>
       </div>
     </header>
   );
 };
 
 export default Navbar;
+

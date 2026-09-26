@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { 
   BookOpen, 
   ChevronLeft, 
@@ -493,7 +493,7 @@ const BookViewer = ({ pages = [], documentTitle = "Amaliy Mashg'ulot Hisoboti", 
                         {/* Sahifa tepasi headeri */}
                         <div className="border-b border-slate-200 pb-2 mb-4 flex items-center justify-between text-[10px] text-slate-400">
                           <span className="font-semibold">{rightPage?.title || ''}</span>
-                          <span className="truncate max-w-[200px]">AI Practice Booklet</span>
+                          <span className="truncate max-w-[200px]">EduMind AI Booklet</span>
                         </div>
 
                         {/* Sahifa mazmuni */}
@@ -657,3 +657,4 @@ const BookViewer = ({ pages = [], documentTitle = "Amaliy Mashg'ulot Hisoboti", 
 };
 
 export default BookViewer;
+

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/client';
 import { KeyRound, ShieldAlert, CheckCircle2, Building2, Sparkles, X, ArrowRight, Loader2 } from 'lucide-react';
@@ -93,7 +93,7 @@ export default function UniversityCodeModal() {
               <p className="text-[11px] text-slate-400">
                 {isPending
                   ? `Kiritilgan Code: ${user.university_code}`
-                  : "AI Practice platformasidan to'liq foydalanish uchun Universitet Unique Code kiritishingiz lozim"}
+                  : "EduMind AI platformasidan to'liq foydalanish uchun Universitet Unique Code kiritishingiz lozim"}
               </p>
             </div>
           </div>
@@ -207,3 +207,4 @@ export default function UniversityCodeModal() {
     </div>
   );
 }
+

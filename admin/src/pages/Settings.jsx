@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
   Settings as SettingsIcon,
@@ -162,7 +162,7 @@ const Settings = () => {
                 status="ready"
                 statusLabel="Tayyor"
                 color="#059669"
-                details="AI Practice Plagiarism Engine v2"
+                details="EduMind AI Plagiarism Engine v2"
               />
             </Section>
 
@@ -291,3 +291,4 @@ const Settings = () => {
 };
 
 export default Settings;
+
