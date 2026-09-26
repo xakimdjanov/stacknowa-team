@@ -1,27 +1,55 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, ArrowRight, ChevronDown, Building2, GraduationCap, UserCheck, ExternalLink } from 'lucide-react';
+import { Menu, X, ArrowRight, ChevronDown, Building2, GraduationCap, UserCheck, ExternalLink, Globe } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Navbar({ onOpenDemo }) {
+  const { lang, setLang, t } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('platforma');
   const [loginDropdownOpen, setLoginDropdownOpen] = useState(false);
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const langRef = useRef(null);
 
-  const loginPortals = [
-    { title: 'Universitet Admini', desc: 'Rektorat va Dekanat boshqaruvi', badge: 'Rektorat', url: 'https://edu-mind-university.vercel.app/login', icon: Building2, color: '#059669', bg: '#ECFDF5', border: '#A7F3D0' },
-    { title: "O'qituvchi Kabineti", desc: 'Topshiriqlar, AI tekshiruv, Live dars', badge: "O'qituvchi", url: 'https://edu-mind-teacher.vercel.app/', icon: GraduationCap, color: '#2563EB', bg: '#EFF6FF', border: '#BFDBFE' },
-    { title: 'Talaba Portali', desc: 'Darslar, topshiriqlar va AI repetitor', badge: 'Talaba', url: 'https://edu-mind-student.vercel.app/', icon: UserCheck, color: '#D97706', bg: '#FFFBEB', border: '#FDE68A' },
+  const languages = [
+    { code: 'uz', label: "O'zbek", short: 'UZ', flag: '🇺🇿' },
+    { code: 'ru', label: 'Русский', short: 'RU', flag: '🇷🇺' },
+    { code: 'en', label: 'English', short: 'EN', flag: 'EN' },
   ];
 
-  const navLinks = [
-    { name: 'Platforma', href: '#platforma', id: 'platforma' },
-    { name: 'Imkoniyatlar', href: '#imkoniyatlar', id: 'imkoniyatlar' },
-    { name: 'Qanday ishlaydi', href: '#qanday-ishlaydi', id: 'qanday-ishlaydi' },
-    { name: 'Universitetlar', href: '#universitetlar', id: 'universitetlar' },
-    { name: 'Biznes modeli', href: '#narxlar', id: 'narxlar' },
-    { name: 'FAQ', href: '#faq', id: 'faq' },
+  const portalsData = [
+    {
+      url: 'https://edu-mind-university.vercel.app/login',
+      icon: Building2,
+      color: '#059669',
+      bg: '#ECFDF5',
+      border: '#A7F3D0',
+      ...t.nav.portals[0]
+    },
+    {
+      url: 'https://edu-mind-teacher.vercel.app/',
+      icon: GraduationCap,
+      color: '#2563EB',
+      bg: '#EFF6FF',
+      border: '#BFDBFE',
+      ...t.nav.portals[1]
+    },
+    {
+      url: 'https://edu-mind-student.vercel.app/',
+      icon: UserCheck,
+      color: '#D97706',
+      bg: '#FFFBEB',
+      border: '#FDE68A',
+      ...t.nav.portals[2]
+    },
   ];
+
+  const navLinks = t.nav.linkIds.map((id, index) => ({
+    id,
+    name: t.nav.links[index],
+    href: `#${id}`,
+  }));
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,25 +57,36 @@ export default function Navbar({ onOpenDemo }) {
       const scrollPosition = window.scrollY + 200;
       for (let i = navLinks.length - 1; i >= 0; i--) {
         const el = document.getElementById(navLinks[i].id);
-        if (el && scrollPosition >= el.offsetTop) { setActiveSection(navLinks[i].id); break; }
+        if (el && scrollPosition >= el.offsetTop) {
+          setActiveSection(navLinks[i].id);
+          break;
+        }
       }
     };
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) setLoginDropdownOpen(false);
+      if (langRef.current && !langRef.current.contains(e.target)) setLangDropdownOpen(false);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     document.addEventListener('mousedown', handleClickOutside);
     handleScroll();
-    return () => { window.removeEventListener('scroll', handleScroll); document.removeEventListener('mousedown', handleClickOutside); };
-  }, []);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [t]);
 
-  // Prevent body scroll when mobile menu open
   useEffect(() => {
     document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [mobileMenuOpen]);
 
-  const handleNavClick = (e, link) => { setActiveSection(link.id); setMobileMenuOpen(false); };
+  const handleNavClick = (e, link) => {
+    setActiveSection(link.id);
+    setMobileMenuOpen(false);
+  };
+
+  const currentLangObj = languages.find(l => l.code === lang) || languages[0];
 
   return (
     <>
@@ -87,21 +126,91 @@ export default function Navbar({ onOpenDemo }) {
 
           {/* Desktop Actions */}
           <div style={{ display: 'none', gap: '10px', alignItems: 'center', position: 'relative', flexShrink: 0 }} className="desktop-actions" ref={dropdownRef}>
+            
+            {/* Language Switcher */}
+            <div style={{ position: 'relative' }} ref={langRef}>
+              <button
+                onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '8px 12px',
+                  fontSize: '13px',
+                  fontWeight: '700',
+                  color: '#0F172A',
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #CBD5E1',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <Globe size={14} color="#059669" />
+                <span>{currentLangObj.short}</span>
+                <ChevronDown size={13} color="#64748B" />
+              </button>
+
+              {langDropdownOpen && (
+                <div style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 6px)',
+                  right: 0,
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '12px',
+                  padding: '6px',
+                  boxShadow: '0 10px 25px -5px rgba(15,23,42,0.12)',
+                  zIndex: 1100,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '4px',
+                  minWidth: '120px'
+                }}>
+                  {languages.map((l) => (
+                    <button
+                      key={l.code}
+                      onClick={() => { setLang(l.code); setLangDropdownOpen(false); }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '8px 10px',
+                        fontSize: '12px',
+                        fontWeight: lang === l.code ? '700' : '500',
+                        color: lang === l.code ? '#059669' : '#334155',
+                        backgroundColor: lang === l.code ? '#ECFDF5' : 'transparent',
+                        border: 'none',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'all 0.15s'
+                      }}
+                    >
+                      <span>{l.label}</span>
+                      <span style={{ fontSize: '10px', fontWeight: '700', color: '#94A3B8' }}>{l.short}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Login Dropdown */}
             <div style={{ position: 'relative' }}>
               <button onClick={() => setLoginDropdownOpen(!loginDropdownOpen)} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '9px 16px', fontSize: '13px', fontWeight: '600', color: '#0F172A', backgroundColor: loginDropdownOpen ? '#F8FAFC' : '#FFFFFF', border: loginDropdownOpen ? '1px solid #059669' : '1px solid #CBD5E1', borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
                 onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#F8FAFC'; e.currentTarget.style.borderColor = '#059669'; }}
                 onMouseLeave={(e) => { if (!loginDropdownOpen) { e.currentTarget.style.backgroundColor = '#FFFFFF'; e.currentTarget.style.borderColor = '#CBD5E1'; } }}>
-                <span>Tizimga kirish</span>
+                <span>{t.nav.login}</span>
                 <ChevronDown size={15} color={loginDropdownOpen ? '#059669' : '#64748B'} style={{ transition: 'transform 0.25s', transform: loginDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
               </button>
               {loginDropdownOpen && (
                 <div style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, width: '320px', backgroundColor: '#fff', border: '1px solid #E2E8F0', borderRadius: '18px', padding: '14px', boxShadow: '0 20px 40px -10px rgba(15,23,42,0.15)', zIndex: 1100 }}>
                   <div style={{ padding: '4px 8px 10px', borderBottom: '1px solid #F1F5F9', marginBottom: '8px' }}>
-                    <div style={{ fontSize: '10px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Foydalanuvchi portallari</div>
-                    <div style={{ fontSize: '13px', fontWeight: '700', color: '#0F172A', marginTop: '2px' }}>O'z profilingizga kiring</div>
+                    <div style={{ fontSize: '10px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{t.nav.portalsSubtitle}</div>
+                    <div style={{ fontSize: '13px', fontWeight: '700', color: '#0F172A', marginTop: '2px' }}>{t.nav.portalsTitle}</div>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    {loginPortals.map((portal) => {
+                    {portalsData.map((portal) => {
                       const Icon = portal.icon;
                       return (
                         <a key={portal.title} href={portal.url} target="_blank" rel="noreferrer" onClick={() => setLoginDropdownOpen(false)}
@@ -124,17 +233,45 @@ export default function Navbar({ onOpenDemo }) {
                 </div>
               )}
             </div>
+
             <button onClick={onOpenDemo} className="btn-primary" style={{ padding: '9px 18px', fontSize: '13px', borderRadius: '10px' }}>
-              Demo olish <ArrowRight size={15} />
+              {t.nav.demo} <ArrowRight size={15} />
             </button>
           </div>
 
-          {/* Mobile Hamburger */}
-          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="mobile-toggle"
-            style={{ display: 'block', background: mobileMenuOpen ? '#ECFDF5' : '#F1F5F9', border: mobileMenuOpen ? '1px solid #A7F3D0' : '1px solid #E2E8F0', color: mobileMenuOpen ? '#059669' : '#0F172A', cursor: 'pointer', padding: '7px', borderRadius: '9px', flexShrink: 0, transition: 'all 0.2s' }}
-            aria-label="Menu">
-            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          {/* Mobile Right Controls: Lang + Hamburger */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} className="mobile-toggle">
+            {/* Quick Lang Switcher for Mobile in Bar */}
+            <div style={{ display: 'flex', background: '#F1F5F9', borderRadius: '8px', padding: '2px', border: '1px solid #E2E8F0' }}>
+              {languages.map(l => (
+                <button
+                  key={l.code}
+                  onClick={() => setLang(l.code)}
+                  style={{
+                    border: 'none',
+                    background: lang === l.code ? '#FFFFFF' : 'transparent',
+                    color: lang === l.code ? '#059669' : '#64748B',
+                    fontWeight: '700',
+                    fontSize: '11px',
+                    padding: '4px 6px',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    boxShadow: lang === l.code ? '0 1px 3px rgba(0,0,0,0.08)' : 'none'
+                  }}
+                >
+                  {l.short}
+                </button>
+              ))}
+            </div>
+
+            {/* Mobile Hamburger */}
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              style={{ background: mobileMenuOpen ? '#ECFDF5' : '#F1F5F9', border: mobileMenuOpen ? '1px solid #A7F3D0' : '1px solid #E2E8F0', color: mobileMenuOpen ? '#059669' : '#0F172A', cursor: 'pointer', padding: '7px', borderRadius: '9px', flexShrink: 0, transition: 'all 0.2s' }}
+              aria-label="Menu">
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
+
         </div>
       </nav>
 
@@ -148,14 +285,37 @@ export default function Navbar({ onOpenDemo }) {
         overflowY: 'auto',
       }}>
         {/* Menu Header — spacer under fixed navbar */}
-        <div style={{ height: '64px', borderBottom: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '0 20px' }}>
-          <span style={{ fontSize: '11px', fontWeight: '600', color: '#64748B', background: '#F1F5F9', padding: '4px 10px', borderRadius: '20px' }}>Menyu</span>
+        <div style={{ height: '64px', borderBottom: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px' }}>
+          <span style={{ fontSize: '11px', fontWeight: '600', color: '#64748B', background: '#F1F5F9', padding: '4px 10px', borderRadius: '20px' }}>{t.nav.menuLabel}</span>
+          {/* Language selector in menu */}
+          <div style={{ display: 'flex', gap: '4px' }}>
+            {languages.map(l => (
+              <button
+                key={l.code}
+                onClick={() => setLang(l.code)}
+                style={{
+                  border: lang === l.code ? '1px solid #A7F3D0' : '1px solid #E2E8F0',
+                  background: lang === l.code ? '#ECFDF5' : '#F8FAFC',
+                  color: lang === l.code ? '#059669' : '#64748B',
+                  fontWeight: '700',
+                  fontSize: '12px',
+                  padding: '4px 10px',
+                  borderRadius: '7px',
+                  cursor: 'pointer'
+                }}
+              >
+                {l.short}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Nav Links */}
         <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
-          <div style={{ fontSize: '10px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>Sahifalar</div>
-          {navLinks.map((link, idx) => {
+          <div style={{ fontSize: '10px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>
+            {t.nav.links[0]} & ...
+          </div>
+          {navLinks.map((link) => {
             const isActive = activeSection === link.id;
             return (
               <a key={link.name} href={link.href} onClick={(e) => handleNavClick(e, link)}
@@ -176,9 +336,11 @@ export default function Navbar({ onOpenDemo }) {
 
           {/* Login Portals */}
           <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #F1F5F9' }}>
-            <div style={{ fontSize: '10px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>Tizimga kirish</div>
+            <div style={{ fontSize: '10px', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>
+              {t.nav.login}
+            </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {loginPortals.map((portal) => {
+              {portalsData.map((portal) => {
                 const Icon = portal.icon;
                 return (
                   <a key={portal.title} href={portal.url} target="_blank" rel="noreferrer"
@@ -199,7 +361,7 @@ export default function Navbar({ onOpenDemo }) {
           <div style={{ marginTop: '20px', paddingBottom: '10px' }}>
             <button onClick={() => { setMobileMenuOpen(false); onOpenDemo(); }} className="btn-primary"
               style={{ width: '100%', justifyContent: 'center', padding: '15px', fontSize: '15px', borderRadius: '14px' }}>
-              Demo olish <ArrowRight size={17} />
+              {t.nav.demo} <ArrowRight size={17} />
             </button>
           </div>
         </div>

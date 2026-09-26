@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { LanguageProvider } from './context/LanguageContext';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Problem from './components/Problem';
@@ -13,7 +14,7 @@ import FinalCta from './components/FinalCta';
 import Footer from './components/Footer';
 import DemoModal from './components/DemoModal';
 
-function App() {
+function AppContent() {
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
 
   const handleOpenDemo = () => setIsDemoModalOpen(true);
@@ -60,6 +61,14 @@ function App() {
       {/* ENTERPRISE DEMO REQUEST MODAL */}
       <DemoModal isOpen={isDemoModalOpen} onClose={handleCloseDemo} />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
   );
 }
 

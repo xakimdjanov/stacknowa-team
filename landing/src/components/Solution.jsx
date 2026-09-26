@@ -1,24 +1,16 @@
 import React from 'react';
 import { Building, ShieldCheck, Users, GraduationCap, Layers, UserCheck, CheckCircle2, Award, Sparkles, Video, BarChart3, FileText } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Solution() {
-  const hierarchyNodes = [
-    { title: 'University Admin', role: 'OTM Boshqaruvi', icon: Building, color: '#059669', bg: '#ECFDF5', border: '#A7F3D0' },
-    { title: 'Faculty', role: 'Fakultet Dekanati', icon: Layers, color: '#2563EB', bg: '#EFF6FF', border: '#BFDBFE' },
-    { title: 'Department', role: 'Kafedra Mudirligi', icon: ShieldCheck, color: '#D97706', bg: '#FFFBEB', border: '#FDE68A' },
-    { title: 'Teacher', role: 'O\'qituvchilar', icon: GraduationCap, color: '#7C3AED', bg: '#F5F3FF', border: '#DDD6FE' },
-    { title: 'Group', role: 'Akademik Guruhlar', icon: Users, color: '#DB2777', bg: '#FDF2F8', border: '#FBCFE8' },
-    { title: 'Student', role: 'Talabalar Portali', icon: UserCheck, color: '#059669', bg: '#ECFDF5', border: '#A7F3D0' },
-  ];
+  const { t } = useLanguage();
 
-  const floatingCards = [
-    { name: 'Teacher approval', icon: CheckCircle2, tag: 'Admin Control' },
-    { name: 'Group management', icon: Users, tag: 'Structure' },
-    { name: 'Assignment & AI Check', icon: FileText, tag: 'AI Evaluation' },
-    { name: 'Attendance tracking', icon: Award, tag: 'Smart Tracking' },
-    { name: 'Live Classroom', icon: Video, tag: 'Game PIN Quiz' },
-    { name: 'University Analytics', icon: BarChart3, tag: 'Real-time KPIs' },
-  ];
+  const nodeIcons = [Building, Layers, ShieldCheck, GraduationCap, Users, UserCheck];
+  const nodeColors = ['#059669', '#2563EB', '#D97706', '#7C3AED', '#DB2777', '#059669'];
+  const nodeBgs = ['#ECFDF5', '#EFF6FF', '#FFFBEB', '#F5F3FF', '#FDF2F8', '#ECFDF5'];
+  const nodeBorders = ['#A7F3D0', '#BFDBFE', '#FDE68A', '#DDD6FE', '#FBCFE8', '#A7F3D0'];
+
+  const pillIcons = [CheckCircle2, Users, FileText, Award, Video, BarChart3];
 
   return (
     <section style={{
@@ -47,13 +39,13 @@ export default function Solution() {
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '48px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <span className="eyebrow-badge" style={{ marginBottom: '14px' }}>
-            <Sparkles size={13} color="#059669" /> YAGONA EKOTIZIM
+            <Sparkles size={13} color="#059669" /> {t.solution.eyebrow}
           </span>
           <h2 className="section-heading" style={{ marginBottom: '14px' }}>
-            Bitta platforma. Butun universitet.
+            {t.solution.title}
           </h2>
           <p className="section-subheading">
-            EduMind AI universitet rektorati, dekanatlar, o'qituvchilar va talabalarni yagona raqamli ekotizimga bog'laydi.
+            {t.solution.desc}
           </p>
         </div>
 
@@ -76,8 +68,12 @@ export default function Solution() {
             position: 'relative',
             zIndex: 2
           }}>
-            {hierarchyNodes.map((node) => {
-              const Icon = node.icon;
+            {t.solution.nodes.map((node, idx) => {
+              const Icon = nodeIcons[idx] || Building;
+              const color = nodeColors[idx] || '#059669';
+              const bg = nodeBgs[idx] || '#ECFDF5';
+              const border = nodeBorders[idx] || '#A7F3D0';
+
               return (
                 <div
                   key={node.title}
@@ -92,7 +88,7 @@ export default function Solution() {
                     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.03)'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = node.color;
+                    e.currentTarget.style.borderColor = color;
                     e.currentTarget.style.transform = 'translateY(-4px)';
                     e.currentTarget.style.boxShadow = '0 12px 20px -5px rgba(0, 0, 0, 0.08)';
                   }}
@@ -106,9 +102,9 @@ export default function Solution() {
                     width: '38px',
                     height: '38px',
                     borderRadius: '10px',
-                    backgroundColor: node.bg,
-                    border: `1px solid ${node.border}`,
-                    color: node.color,
+                    backgroundColor: bg,
+                    border: `1px solid ${border}`,
+                    color: color,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -135,8 +131,8 @@ export default function Solution() {
             justifyContent: 'center',
             gap: '8px'
           }}>
-            {floatingCards.map((card) => {
-              const Icon = card.icon;
+            {t.solution.pills.map((card, idx) => {
+              const Icon = pillIcons[idx] || CheckCircle2;
               return (
                 <div
                   key={card.name}
@@ -183,7 +179,7 @@ export default function Solution() {
             letterSpacing: '-0.01em',
             lineHeight: '1.3'
           }}>
-            "Bir universitet. Bir ekotizim. <span style={{ color: '#059669' }}>Bitta platforma.</span>"
+            {t.solution.quote} <span style={{ color: '#059669' }}>{t.solution.quoteAccent}</span>
           </h3>
         </div>
 

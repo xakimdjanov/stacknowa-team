@@ -1,35 +1,10 @@
 import React, { useState } from 'react';
 import { ChevronDown, Sparkles } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Faq() {
+  const { t } = useLanguage();
   const [openIndex, setOpenIndex] = useState(0);
-
-  const faqs = [
-    {
-      q: 'Universitet EduMind AI tizimiga qanday ulanadi?',
-      a: 'University Admin tizimda ro\'yxatdan o\'tib, universitet tashkiliy tuzilmasini yaratadi va generatsiya qilingan Unique Code orqali o\'qituvchi va xodimlarni tizimga ulaydi.'
-    },
-    {
-      q: 'O\'qituvchilar tizimga qanday qo\'shiladi?',
-      a: 'O\'qituvchi mustaqil ro\'yxatdan o\'tib, o\'zining universitet Unique Code kodini kiritadi. Rektorat yoki Dekanat Admini tasdiqlagach, barcha funksiyalar faollashadi.'
-    },
-    {
-      q: 'HEMIS va boshqa davlat tizimlari bilan integratsiya bormi?',
-      a: 'Ha, EduMind AI O\'zbekiston OTMlarida amalda bo\'lgan HEMIS axborot tizimi va boshqa ma\'lumotlar bazalari bilan API orqali to\'liq integratsiya qilinadi.'
-    },
-    {
-      q: 'Talabalar dars va quizlarga qanday kirishadi?',
-      a: 'Talabalar o\'qituvchi yuborgan havola, QR-kod yoki real-vaqt rejimida doskada ko\'rsatiladigan 6 xonali Game PIN orqali hech qanday qiyinchiliksiz ulanishadi.'
-    },
-    {
-      q: 'AI baholash qanchalik xolis va aniq ishlaydi?',
-      a: 'Gemini AI baholash modeli o\'qituvchi belgilagan rubrika va mezonlar asosida javoblarni tahlil qiladi, plagiat va o\'xshashlikni aniqlaydi hamda har bir talabaga shaxsiy izoh va ball taqdim etadi.'
-    },
-    {
-      q: 'Universitet ma\'lumotlari xavfsizligi qanday ta\'minlanadi?',
-      a: 'Tizim bank darajasidagi shifrlash (AES-256 va TLS 1.3) protokollaridan foydalanadi. OTM ma\'lumotlari himoyalangan mahalliy server infratuzilmasida saqlanadi.'
-    },
-  ];
 
   return (
     <section id="faq" style={{
@@ -42,19 +17,19 @@ export default function Faq() {
         {/* Section Header */}
         <div style={{ textAlign: 'center', marginBottom: '48px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <span className="eyebrow-badge" style={{ marginBottom: '14px' }}>
-            <Sparkles size={13} color="#059669" /> SAVOLLAR VA XAVFSIZLIK
+            <Sparkles size={13} color="#059669" /> {t.faq.eyebrow}
           </span>
           <h2 className="section-heading" style={{ marginBottom: '14px' }}>
-            Ko'p beriladigan savollar
+            {t.faq.title}
           </h2>
           <p className="section-subheading">
-            EduMind AI integratsiyasi, foydalanish tartibi va ma'lumotlar xavfsizligi bo'yicha muhim savollarga javoblar.
+            {t.faq.desc}
           </p>
         </div>
 
         {/* Accordion */}
         <div style={{ maxWidth: '820px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {faqs.map((faq, index) => {
+          {t.faq.items.map((faq, index) => {
             const isOpen = openIndex === index;
             return (
               <div

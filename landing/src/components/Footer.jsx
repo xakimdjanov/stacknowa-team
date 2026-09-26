@@ -1,14 +1,13 @@
 import React from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Footer({ onOpenDemo }) {
-  const footerLinks = [
-    { name: 'Platforma', href: '#platforma' },
-    { name: 'Imkoniyatlar', href: '#imkoniyatlar' },
-    { name: 'Qanday ishlaydi', href: '#qanday-ishlaydi' },
-    { name: 'Universitetlar', href: '#universitetlar' },
-    { name: 'Biznes modeli', href: '#narxlar' },
-    { name: 'FAQ', href: '#faq' },
-  ];
+  const { t } = useLanguage();
+
+  const footerLinks = t.nav.linkIds.map((id, index) => ({
+    name: t.nav.links[index],
+    href: `#${id}`,
+  }));
 
   return (
     <footer style={{
@@ -50,8 +49,8 @@ export default function Footer({ onOpenDemo }) {
                 EduMind <span style={{ color: '#059669' }}>AI</span>
               </span>
             </div>
-            <p style={{ color: '#64748B', fontSize: '13px', marginTop: '2px', maxWidth: '300px' }}>
-              O'zbekiston OTMlari uchun yagona AI ta'lim ekotizimi.
+            <p style={{ color: '#64748B', fontSize: '13px', marginTop: '2px', maxWidth: '340px' }}>
+              {t.footer.tagline}
             </p>
           </div>
 
@@ -93,8 +92,8 @@ export default function Footer({ onOpenDemo }) {
             gap: '4px',
             textAlign: 'center'
           }}>
-            <span style={{ color: '#94A3B8', fontSize: '12px' }}>© 2026 EduMind AI. Barcha huquqlar himoyalangan.</span>
-            <span style={{ color: '#CBD5E1', fontSize: '11px' }}>#MilliyAIXakaton 2026 uchun maxsus ishlab chiqilgan.</span>
+            <span style={{ color: '#94A3B8', fontSize: '12px' }}>{t.footer.copyright}</span>
+            <span style={{ color: '#CBD5E1', fontSize: '11px' }}>{t.footer.subtext}</span>
           </div>
         </div>
       </div>

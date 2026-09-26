@@ -2,32 +2,14 @@ import React from 'react';
 import { Check, ShieldCheck, ArrowRight, Sparkles, Building2 } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper/modules';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Pricing({ onOpenDemo }) {
-  const plans = [
-    {
-      name: 'Starter', category: 'Kichik OTMlar', audience: '(< 5 000 talaba)',
-      price: '12 mln', period: "so'm / yil", popular: false,
-      features: ["Asosiy funksiyalar", "AI savollar (limit)", "Davomat va baholash", "Email qo'llab-quvvatlash"],
-      buttonText: 'Starter tanlash', accentColor: '#059669', cardBg: '#FFFFFF',
-    },
-    {
-      name: 'Standart', category: "O'rta OTMlar", audience: '(5 000 – 20 000 talaba)',
-      price: '24 mln', period: "so'm / yil", popular: true, badge: 'Eng ommabop',
-      features: ["Barcha asosiy funksiyalar", "AI savollar (kengaytirilgan)", "Analitika va hisobotlar", "Integratsiya (HEMIS va b.)", "Texnik qo'llab-quvvatlash"],
-      buttonText: 'Standart tanlash', accentColor: '#059669', cardBg: '#FFFFFF',
-    },
-    {
-      name: 'Enterprise', category: 'Yirik OTMlar', audience: '(> 20 000 talaba)',
-      price: '36 mln', period: "so'm / yil", popular: false,
-      features: ["Barcha funksiyalar", "Cheksiz AI imkoniyatlar", "Maxsus integratsiyalar", "Dedicated qo'llab-quvvatlash", "Shaxsiy sozlashlar"],
-      buttonText: "Enterprise bilan bog'lanish", accentColor: '#2563EB', cardBg: '#FFFFFF',
-    },
-  ];
+  const { t } = useLanguage();
 
   const CardItem = ({ plan }) => (
     <div style={{
-      backgroundColor: plan.cardBg, borderRadius: '20px',
+      backgroundColor: '#FFFFFF', borderRadius: '20px',
       border: plan.popular ? '2px solid #059669' : '1px solid #E2E8F0',
       padding: '28px 22px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
       position: 'relative',
@@ -74,32 +56,40 @@ export default function Pricing({ onOpenDemo }) {
     <section id="narxlar" style={{ backgroundColor: '#FFFFFF', padding: '90px 0', borderBottom: '1px solid #E2E8F0', position: 'relative' }}>
       <div className="container">
         <div style={{ textAlign: 'center', marginBottom: '50px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <span className="eyebrow-badge" style={{ marginBottom: '14px' }}><Sparkles size={13} color="#059669" /> B2B NARXLASH MODELI</span>
-          <h2 className="section-heading" style={{ marginBottom: '12px' }}>Biznes modeli</h2>
-          <p className="section-subheading" style={{ fontSize: 'clamp(14px,2vw,18px)', fontWeight: '500', color: '#475569' }}>B2B — Universitetlar uchun yillik obuna asosidagi model</p>
+          <span className="eyebrow-badge" style={{ marginBottom: '14px' }}>
+            <Sparkles size={13} color="#059669" /> {t.pricing.eyebrow}
+          </span>
+          <h2 className="section-heading" style={{ marginBottom: '12px' }}>{t.pricing.title}</h2>
+          <p className="section-subheading" style={{ fontSize: 'clamp(14px,2vw,18px)', fontWeight: '500', color: '#475569' }}>
+            {t.pricing.subtitle}
+          </p>
         </div>
 
         <div className="pricing-box" style={{ backgroundColor: '#F8FAFC', borderRadius: '24px', border: '1px solid #E2E8F0', padding: '32px 24px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.03)' }}>
           <div style={{ textAlign: 'center', maxWidth: '560px', margin: '0 auto 28px' }}>
-            <h3 style={{ fontSize: 'clamp(18px,3vw,24px)', fontWeight: '800', color: '#0F172A', marginBottom: '6px' }}>Narxlash paketlari</h3>
-            <p style={{ fontSize: '14px', color: '#64748B' }}>OTMlarning o'lchamiga mos moslashuvchan tariflar</p>
+            <h3 style={{ fontSize: 'clamp(18px,3vw,24px)', fontWeight: '800', color: '#0F172A', marginBottom: '6px' }}>{t.pricing.boxTitle}</h3>
+            <p style={{ fontSize: '14px', color: '#64748B' }}>{t.pricing.boxDesc}</p>
           </div>
 
           {/* Desktop */}
           <div className="cards-desktop" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: '20px', alignItems: 'stretch' }}>
-            {plans.map(p => <CardItem key={p.name} plan={p} />)}
+            {t.pricing.plans.map(p => <CardItem key={p.name} plan={p} />)}
           </div>
 
-          {/* Mobile Swiper — no popular card translate on mobile */}
+          {/* Mobile Swiper */}
           <div className="cards-mobile em-swiper-wrapper">
             <Swiper modules={[Pagination]} pagination={{ clickable: true }} spaceBetween={14} slidesPerView={1.1} initialSlide={1} className="em-swiper">
-              {plans.map(p => <SwiperSlide key={p.name}><CardItem plan={{ ...p, popular: p.popular }} /></SwiperSlide>)}
+              {t.pricing.plans.map(p => (
+                <SwiperSlide key={p.name}>
+                  <CardItem plan={p} />
+                </SwiperSlide>
+              ))}
             </Swiper>
           </div>
 
           <div style={{ marginTop: '24px', paddingTop: '18px', borderTop: '1px solid #E2E8F0', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', gap: '8px', fontSize: '13px', color: '#64748B', textAlign: 'center' }}>
             <ShieldCheck size={17} color="#059669" style={{ flexShrink: 0, marginTop: '1px' }} />
-            <span>Barcha tariflar rasmiy shartnoma, hisob-faktura va kafolatlangan texnik xizmat ko'rsatish bilan birga taqdim etiladi.</span>
+            <span>{t.pricing.guarantee}</span>
           </div>
         </div>
       </div>

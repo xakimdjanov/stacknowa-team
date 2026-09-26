@@ -4,22 +4,17 @@ import {
   FileText, Video, LineChart, Settings, Bell, Search, Sparkles,
   TrendingUp, PlayCircle, ArrowUpRight
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function ProductShowcase({ onOpenDemo }) {
-  const [activeTab, setActiveTab] = useState('Dashboard');
+  const { t } = useLanguage();
+  const [activeTab, setActiveTab] = useState(0);
 
-  const sidebarNav = [
-    { name: 'Dashboard', icon: LayoutDashboard },
-    { name: 'Faculties', icon: Building2 },
-    { name: 'Departments', icon: Layers },
-    { name: 'Teachers', icon: GraduationCap },
-    { name: 'Students', icon: Users },
-    { name: 'Groups', icon: UserCheck },
-    { name: 'Assignments', icon: FileText },
-    { name: 'Live Classes', icon: Video },
-    { name: 'Analytics', icon: LineChart },
-    { name: 'Settings', icon: Settings },
-  ];
+  const sidebarIcons = [LayoutDashboard, Building2, Layers, GraduationCap, Users, UserCheck, FileText, Video, LineChart, Settings];
+  const metricIcons = [Users, GraduationCap, UserCheck, Video];
+  const metricColors = ['#059669', '#2563EB', '#059669', '#D97706'];
+  const chartDaysVals = [88, 94, 91, 96, 89, 85];
+  const facultyColors = ['#059669', '#2563EB'];
 
   return (
     <section style={{
@@ -48,20 +43,20 @@ export default function ProductShowcase({ onOpenDemo }) {
         {/* Section Header */}
         <div style={{ textAlign: 'center', marginBottom: '50px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <span className="eyebrow-badge" style={{ marginBottom: '14px' }}>
-            <Sparkles size={13} color="#059669" /> REAL-TIME ADMIN DASHBOARD
+            <Sparkles size={13} color="#059669" /> {t.showcase.eyebrow}
           </span>
           <h2 className="section-heading" style={{ marginBottom: '14px' }}>
-            Universitetingizni real vaqt rejimida ko'ring.
+            {t.showcase.title}
           </h2>
           <p className="section-subheading">
-            Butun universitet faoliyati, akademik baholar va jonli davomat ko'rsatkichlari bitta interaktiv SaaS boshqaruv panelida.
+            {t.showcase.desc}
           </p>
         </div>
 
         {/* Dashboard Mockup */}
         <div style={{ position: 'relative', maxWidth: '1100px', margin: '0 auto' }}>
           
-          {/* Floating Cards — Hidden on small mobile */}
+          {/* Floating Cards */}
           <div style={{
             position: 'absolute',
             top: '-20px',
@@ -80,8 +75,8 @@ export default function ProductShowcase({ onOpenDemo }) {
               <FileText size={16} />
             </div>
             <div>
-              <div style={{ fontSize: '12px', fontWeight: '700', color: '#0F172A' }}>Topshiriq baholandi</div>
-              <div style={{ fontSize: '10px', color: '#64748B' }}>Axborot xavfsizligi • 120 talaba</div>
+              <div style={{ fontSize: '12px', fontWeight: '700', color: '#0F172A' }}>{t.showcase.floats[0].title}</div>
+              <div style={{ fontSize: '10px', color: '#64748B' }}>{t.showcase.floats[0].sub}</div>
             </div>
           </div>
 
@@ -103,8 +98,8 @@ export default function ProductShowcase({ onOpenDemo }) {
               <PlayCircle size={16} />
             </div>
             <div>
-              <div style={{ fontSize: '12px', fontWeight: '700', color: '#0F172A' }}>Live dars boshlandi</div>
-              <div style={{ fontSize: '10px', color: '#64748B' }}>Game PIN #849201</div>
+              <div style={{ fontSize: '12px', fontWeight: '700', color: '#0F172A' }}>{t.showcase.floats[1].title}</div>
+              <div style={{ fontSize: '10px', color: '#64748B' }}>{t.showcase.floats[1].sub}</div>
             </div>
           </div>
 
@@ -126,8 +121,8 @@ export default function ProductShowcase({ onOpenDemo }) {
               <UserCheck size={16} />
             </div>
             <div>
-              <div style={{ fontSize: '12px', fontWeight: '700', color: '#0F172A' }}>Davomat yangilandi</div>
-              <div style={{ fontSize: '10px', color: '#059669', fontWeight: '600' }}>94% qayd etildi</div>
+              <div style={{ fontSize: '12px', fontWeight: '700', color: '#0F172A' }}>{t.showcase.floats[2].title}</div>
+              <div style={{ fontSize: '10px', color: '#059669', fontWeight: '600' }}>{t.showcase.floats[2].sub}</div>
             </div>
           </div>
 
@@ -158,7 +153,7 @@ export default function ProductShowcase({ onOpenDemo }) {
                 </div>
                 <div className="dashboard-search-box" style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#FFFFFF', border: '1px solid #E2E8F0', padding: '5px 10px', borderRadius: '8px', fontSize: '11px', color: '#64748B', overflow: 'hidden', minWidth: 0 }}>
                   <Search size={12} style={{ flexShrink: 0 }} />
-                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Qidiruv...</span>
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Search...</span>
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
@@ -171,8 +166,8 @@ export default function ProductShowcase({ onOpenDemo }) {
                     RA
                   </div>
                   <div className="dashboard-admin-text">
-                    <div style={{ fontSize: '11px', fontWeight: '700', color: '#0F172A', lineHeight: '1.2' }}>Rektorat Admin</div>
-                    <div style={{ fontSize: '9px', color: '#059669', fontWeight: '700' }}>Boshqaruvchi</div>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: '#0F172A', lineHeight: '1.2' }}>{t.showcase.adminName}</div>
+                    <div style={{ fontSize: '9px', color: '#059669', fontWeight: '700' }}>{t.showcase.adminRole}</div>
                   </div>
                 </div>
               </div>
@@ -191,15 +186,15 @@ export default function ProductShowcase({ onOpenDemo }) {
                 gap: '3px'
               }}>
                 <div className="dashboard-sidebar-title" style={{ fontSize: '10px', fontWeight: '800', color: '#94A3B8', padding: '0 8px 8px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                  ASOSIY MENYU
+                  {t.showcase.sidebarTitle}
                 </div>
-                {sidebarNav.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = activeTab === item.name;
+                {t.showcase.sidebarNav.map((name, idx) => {
+                  const Icon = sidebarIcons[idx] || LayoutDashboard;
+                  const isActive = activeTab === idx;
                   return (
                     <button
-                      key={item.name}
-                      onClick={() => setActiveTab(item.name)}
+                      key={name}
+                      onClick={() => setActiveTab(idx)}
                       className="dashboard-sidebar-btn"
                       style={{
                         display: 'flex',
@@ -219,7 +214,7 @@ export default function ProductShowcase({ onOpenDemo }) {
                       }}
                     >
                       <Icon size={14} color={isActive ? '#059669' : '#64748B'} />
-                      <span>{item.name}</span>
+                      <span>{name}</span>
                     </button>
                   );
                 })}
@@ -235,22 +230,18 @@ export default function ProductShowcase({ onOpenDemo }) {
                   gap: '10px',
                   marginBottom: '18px'
                 }}>
-                  {[
-                    { label: 'Talabalar', val: '24,500', sub: '+12.4% bu semestr', icon: Users, iconColor: '#059669', subColor: '#059669' },
-                    { label: 'O\'qituvchilar', val: '1,240', sub: '100% akkreditatsiya', icon: GraduationCap, iconColor: '#2563EB', subColor: '#64748B' },
-                    { label: 'O\'rtacha Davomat', val: '92%', sub: 'Avto QR va Live PIN', icon: UserCheck, iconColor: '#059669', valColor: '#059669', subColor: '#059669' },
-                    { label: 'Jonli Darslar', val: '186', sub: 'Hozir dars ketmoqda', icon: Video, iconColor: '#D97706', subColor: '#D97706' },
-                  ].map((m) => {
-                    const Icon = m.icon;
+                  {t.showcase.metrics.map((m, idx) => {
+                    const Icon = metricIcons[idx] || Users;
+                    const color = metricColors[idx] || '#059669';
                     return (
                       <div key={m.label} style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '14px', padding: '14px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748B', fontSize: '11px', fontWeight: '600' }}>
                           <span>{m.label}</span>
-                          <Icon size={14} color={m.iconColor} style={{ flexShrink: 0 }} />
+                          <Icon size={14} color={color} style={{ flexShrink: 0 }} />
                         </div>
-                        <div style={{ fontSize: '22px', fontWeight: '800', color: m.valColor || '#0F172A', marginTop: '5px' }}>{m.val}</div>
-                        <div style={{ fontSize: '10px', color: m.subColor, marginTop: '3px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                          {m.subColor === '#059669' && <TrendingUp size={10} />} {m.sub}
+                        <div style={{ fontSize: '22px', fontWeight: '800', color: idx === 2 ? '#059669' : '#0F172A', marginTop: '5px' }}>{m.val}</div>
+                        <div style={{ fontSize: '10px', color: idx === 0 || idx === 2 ? '#059669' : '#64748B', marginTop: '3px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                          {(idx === 0 || idx === 2) && <TrendingUp size={10} />} {m.sub}
                         </div>
                       </div>
                     );
@@ -265,29 +256,22 @@ export default function ProductShowcase({ onOpenDemo }) {
                     <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '14px', padding: '18px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', gap: '8px' }}>
                         <div>
-                          <h4 style={{ fontSize: '13px', fontWeight: '800', color: '#0F172A' }}>Haftalik Davomat Grafikasi</h4>
-                          <span style={{ fontSize: '11px', color: '#64748B' }}>Barcha 12 ta fakultet</span>
+                          <h4 style={{ fontSize: '13px', fontWeight: '800', color: '#0F172A' }}>{t.showcase.chartTitle}</h4>
+                          <span style={{ fontSize: '11px', color: '#64748B' }}>{t.showcase.chartSubtitle}</span>
                         </div>
-                        <span style={{ fontSize: '10px', color: '#047857', background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '3px 8px', borderRadius: '6px', fontWeight: '700', flexShrink: 0 }}>Live</span>
+                        <span style={{ fontSize: '10px', color: '#047857', background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '3px 8px', borderRadius: '6px', fontWeight: '700', flexShrink: 0 }}>{t.showcase.chartLive}</span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', height: '110px', padding: '8px 0', borderBottom: '1px solid #E2E8F0' }}>
-                        {[
-                          { day: 'Du', val: 88 },
-                          { day: 'Se', val: 94 },
-                          { day: 'Ch', val: 91 },
-                          { day: 'Pa', val: 96 },
-                          { day: 'Ju', val: 89 },
-                          { day: 'Sh', val: 85 },
-                        ].map((d, i) => (
-                          <div key={d.day} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', width: '13%' }}>
-                            <span style={{ fontSize: '9px', color: '#059669', fontWeight: '700' }}>{d.val}%</span>
+                        {t.showcase.days.map((day, i) => (
+                          <div key={day} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', width: '13%' }}>
+                            <span style={{ fontSize: '9px', color: '#059669', fontWeight: '700' }}>{chartDaysVals[i]}%</span>
                             <div style={{
                               width: '100%',
-                              height: `${d.val}px`,
+                              height: `${chartDaysVals[i]}px`,
                               background: i === 3 ? 'linear-gradient(180deg, #10B981, #059669)' : '#A7F3D0',
                               borderRadius: '5px 5px 0 0'
                             }} />
-                            <span style={{ fontSize: '10px', color: '#64748B', fontWeight: '600' }}>{d.day}</span>
+                            <span style={{ fontSize: '10px', color: '#64748B', fontWeight: '600' }}>{day}</span>
                           </div>
                         ))}
                       </div>
@@ -296,22 +280,19 @@ export default function ProductShowcase({ onOpenDemo }) {
                     {/* Assignment Activity */}
                     <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '14px', padding: '18px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                        <h4 style={{ fontSize: '13px', fontWeight: '800', color: '#0F172A' }}>Topshiriqlar Faoliyati</h4>
-                        <span style={{ fontSize: '10px', color: '#2563EB', fontWeight: '700' }}>Gemini AI</span>
+                        <h4 style={{ fontSize: '13px', fontWeight: '800', color: '#0F172A' }}>{t.showcase.assignTitle}</h4>
+                        <span style={{ fontSize: '10px', color: '#2563EB', fontWeight: '700' }}>{t.showcase.assignAI}</span>
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        {[
-                          { text: 'Algoritmlar va Ma\'lumotlar Tuzilmasi', count: '412 topshirildi', color: '#059669', icon: FileText },
-                          { text: 'Sun\'iy Intellekt va Mashinali O\'qitish', count: '298 topshirildi', color: '#2563EB', icon: FileText },
-                        ].map((a) => {
-                          const Icon = a.icon;
+                        {t.showcase.assignments.map((a, idx) => {
+                          const color = idx === 0 ? '#059669' : '#2563EB';
                           return (
                             <div key={a.text} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 11px', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '9px', fontSize: '12px', gap: '8px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
-                                <Icon size={14} color={a.color} style={{ flexShrink: 0 }} />
+                                <FileText size={14} color={color} style={{ flexShrink: 0 }} />
                                 <span style={{ color: '#1E293B', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.text}</span>
                               </div>
-                              <span style={{ fontSize: '10px', color: a.color, fontWeight: '700', flexShrink: 0 }}>{a.count}</span>
+                              <span style={{ fontSize: '10px', color: color, fontWeight: '700', flexShrink: 0 }}>{a.count}</span>
                             </div>
                           );
                         })}
@@ -322,38 +303,36 @@ export default function ProductShowcase({ onOpenDemo }) {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                     {/* Faculty Performance */}
                     <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '14px', padding: '18px' }}>
-                      <h4 style={{ fontSize: '13px', fontWeight: '800', color: '#0F172A', marginBottom: '12px' }}>Fakultetlar Samaradorligi</h4>
+                      <h4 style={{ fontSize: '13px', fontWeight: '800', color: '#0F172A', marginBottom: '12px' }}>{t.showcase.facultyTitle}</h4>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        {[
-                          { name: 'Kompyuter Injiniringi', pct: 98, color: '#059669' },
-                          { name: 'Raqamli Iqtisodiyot', pct: 92, color: '#2563EB' },
-                        ].map((row) => (
-                          <div key={row.name}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '4px' }}>
-                              <span style={{ color: '#334155', fontWeight: '600' }}>{row.name}</span>
-                              <span style={{ color: row.color, fontWeight: '700' }}>{row.pct}%</span>
+                        {t.showcase.faculties.map((row, idx) => {
+                          const color = facultyColors[idx] || '#059669';
+                          return (
+                            <div key={row.name}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '4px' }}>
+                                <span style={{ color: '#334155', fontWeight: '600' }}>{row.name}</span>
+                                <span style={{ color: color, fontWeight: '700' }}>{row.pct}%</span>
+                              </div>
+                              <div style={{ height: '5px', background: '#E2E8F0', borderRadius: '3px' }}>
+                                <div style={{ width: `${row.pct}%`, height: '100%', background: color, borderRadius: '3px' }} />
+                              </div>
                             </div>
-                            <div style={{ height: '5px', background: '#E2E8F0', borderRadius: '3px' }}>
-                              <div style={{ width: `${row.pct}%`, height: '100%', background: row.color, borderRadius: '3px' }} />
-                            </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
 
                     {/* Live Classes */}
                     <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '14px', padding: '18px' }}>
-                      <h4 style={{ fontSize: '13px', fontWeight: '800', color: '#0F172A', marginBottom: '10px' }}>Jonli Darslar & Faollik</h4>
+                      <h4 style={{ fontSize: '13px', fontWeight: '800', color: '#0F172A', marginBottom: '10px' }}>{t.showcase.liveTitle}</h4>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '12px' }}>
-                        {[
-                          { icon: Video, color: '#D97706', text: 'Prof. Alimov • Game PIN #9102' },
-                          { icon: GraduationCap, color: '#059669', text: 'Doc. Abdullayeva • 32 quiz' },
-                        ].map((item) => {
-                          const Icon = item.icon;
+                        {t.showcase.liveItems.map((text, idx) => {
+                          const Icon = idx === 0 ? Video : GraduationCap;
+                          const color = idx === 0 ? '#D97706' : '#059669';
                           return (
-                            <div key={item.text} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#334155', background: '#FFFFFF', padding: '8px 10px', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
-                              <Icon size={13} color={item.color} style={{ flexShrink: 0 }} />
-                              <span style={{ fontWeight: '500', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.text}</span>
+                            <div key={text} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#334155', background: '#FFFFFF', padding: '8px 10px', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                              <Icon size={13} color={color} style={{ flexShrink: 0 }} />
+                              <span style={{ fontWeight: '500', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{text}</span>
                             </div>
                           );
                         })}
@@ -370,7 +349,7 @@ export default function ProductShowcase({ onOpenDemo }) {
         {/* Demo Callout */}
         <div style={{ textAlign: 'center', marginTop: '44px' }}>
           <button onClick={onOpenDemo} className="btn-primary">
-            Ushbu dashboardni demo ko'rish <ArrowUpRight size={17} />
+            {t.showcase.cta} <ArrowUpRight size={17} />
           </button>
         </div>
 
