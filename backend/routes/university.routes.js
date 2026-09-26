@@ -37,6 +37,10 @@ router.post("/departments", verifyToken, universityController.createDepartment);
 // Dashboard statistika
 router.get("/:universityId/stats", verifyToken, universityController.getUniversityStats);
 
+// Universitet profilini olish va tarifini yangilash
+router.get("/:universityId/profile", verifyToken, universityController.getUniversityProfile);
+router.put("/:universityId/plan", verifyToken, universityController.updateUniversityPlan);
+
 // Universitetni o'chirish
 router.delete("/:universityId", verifyToken, universityController.deleteUniversity);
 

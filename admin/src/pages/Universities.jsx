@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../api/client';
 import Modal from '../components/Modal';
 import {
@@ -299,7 +299,11 @@ export default function Universities() {
                       {u.name.substring(0, 2).toUpperCase()}
                     </div>
                     <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80">
-                      {u.plan_name || 'ENTERPRISE PRO'}
+                      {String(u.plan_name || '').toUpperCase().includes('STARTER')
+                        ? 'STARTER (12 MLN)'
+                        : String(u.plan_name || '').toUpperCase().includes('STANDART')
+                        ? 'STANDART (24 MLN)'
+                        : 'ENTERPRISE (36 MLN)'}
                     </span>
                   </div>
 
@@ -454,9 +458,9 @@ export default function Universities() {
                   onChange={(e) => setPlanName(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20"
                 >
-                  <option value="ENTERPRISE_STARTER">Enterprise Starter ($1,200/yr) — 5 Fakultet, 50 O'qituvchi</option>
-                  <option value="ENTERPRISE_PRO">Enterprise Pro ($3,500/yr) — 25 Fakultet, 300 O'qituvchi (Tavsiya)</option>
-                  <option value="ENTERPRISE_UNLIMITED">Enterprise Unlimited ($7,900/yr) — Cheksiz Imkoniyatlar</option>
+                  <option value="STARTER">Starter — 12 mln so‘m / yil (&lt; 5 000 talaba)</option>
+                  <option value="STANDART">Standart — 24 mln so‘m / yil (5 000 – 20 000 talaba)</option>
+                  <option value="ENTERPRISE">Enterprise — 36 mln so‘m / yil (&gt; 20 000 talaba)</option>
                 </select>
               </div>
 

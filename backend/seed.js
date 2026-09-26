@@ -5,65 +5,89 @@ async function seed() {
 
   const defaultPlans = [
     {
-      name: "FREE",
-      title: "Teacher Free",
-      description: "Yangi boshlovchi o'qituvchilar uchun",
-      price_uzs: 0,
+      name: "STARTER",
+      title: "Starter",
+      description: "Kichik OTMlar (< 5 000 talaba)",
+      price_uzs: 12000000,
       duration_days: 365,
-      role_target: "TEACHER",
-      features: ["Maksimal 3 ta guruh", "Oddiy AI baholash", "Guruh statistikasi"],
-      max_groups: 3,
-      ai_credits: 50,
+      role_target: "ALL",
+      features: [
+        "Asosiy funksiyalar",
+        "AI savollar (limit)",
+        "Davomat va baholash",
+        "Email qo‘llab-quvvatlash",
+      ],
+      max_groups: 30,
+      ai_credits: 5000,
+      is_default: true,
     },
     {
-      name: "PRO_MONTHLY",
-      title: "Teacher Pro (1 oylik)",
-      description: "To'liq funksional va cheksiz imkoniyatlar",
-      price_uzs: 49000,
-      duration_days: 30,
-      role_target: "TEACHER",
+      name: "STANDART",
+      title: "Standart",
+      description: "O‘rta OTMlar (5 000 – 20 000 talaba)",
+      price_uzs: 24000000,
+      duration_days: 365,
+      role_target: "ALL",
       features: [
-        "Cheksiz guruhlar yaratish",
-        "Cheksiz AI baholash & feedback",
-        "Plagiat va Similarity tahlili",
-        "AI-writing (neyrotarmoq yozuvi) tahlili",
-        "Kengaytirilgan o'qituvchi analitikasi",
+        "Barcha asosiy funksiyalar",
+        "AI savollar (kengaytirilgan)",
+        "Analitika va hisobotlar",
+        "Integratsiya (HEMIS va b.)",
+        "Texnik qo‘llab-quvvatlash",
       ],
-      max_groups: 9999,
-      ai_credits: 99999,
+      max_groups: 100,
+      ai_credits: 20000,
+      is_default: true,
     },
     {
-      name: "PRO_ANNUAL",
-      title: "Teacher Pro (1 yillik)",
-      description: "1 yillik chegirmali Pro obuna",
-      price_uzs: 390000,
+      name: "ENTERPRISE",
+      title: "Enterprise",
+      description: "Yirik OTMlar (> 20 000 talaba)",
+      price_uzs: 36000000,
       duration_days: 365,
-      role_target: "TEACHER",
+      role_target: "ALL",
       features: [
-        "Cheksiz guruhlar yaratish",
-        "Cheksiz AI baholash & feedback",
-        "Plagiat va Similarity tahlili",
-        "AI-writing tahlili",
-        "Prioritet qo'llab-quvvatlash",
+        "Barcha funksiyalar",
+        "Cheksiz AI imkoniyatlar",
+        "Maxsus integratsiyalar",
+        "Dedicated qo‘llab-quvvatlash",
+        "Shaxsiy sozlashlar",
       ],
-      max_groups: 9999,
+      max_groups: 99999,
       ai_credits: 999999,
+      is_default: true,
     },
   ];
+
+  await Plan.destroy({
+    where: {
+      name: [
+        "ENTERPRISE_STARTER",
+        "ENTERPRISE_PRO",
+        "ENTERPRISE_UNLIMITED",
+        "PRO_MONTHLY",
+        "PRO_ANNUAL",
+        "FREE",
+      ],
+    },
+  });
 
   for (const p of defaultPlans) {
     const existing = await Plan.findOne({ where: { name: p.name } });
     if (!existing) {
       await Plan.create(p);
-      console.log(`Plan qo'shildi: ${p.title}`);
+      console.log(`Plan ${p.name} yaratildi ✅`);
+    } else {
+      await existing.update(p);
+      console.log(`Plan ${p.name} yangilandi ✅`);
     }
   }
 
-  console.log("Boshlang'ich tariflar muvaffaqiyatli yuklandi ✅");
+  console.log("Seeding yakunlandi! 3 ta standart B2B tarif mavjud 🚀");
   process.exit(0);
 }
 
 seed().catch((err) => {
-  console.error("Seed error:", err);
+  console.error("Seeding xatolik:", err);
   process.exit(1);
 });

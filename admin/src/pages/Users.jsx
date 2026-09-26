@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   GraduationCap,
   BookOpen,
+  Building2,
   CheckCircle,
   XCircle,
   Sparkles,
@@ -18,7 +19,7 @@ import {
   EyeOff,
 } from 'lucide-react';
 
-const EMERALD_GRADIENT = 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)';
+const EMERALD_GRADIENT = 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100% )';
 
 /* ─── Role badge ─────────────────────────── */
 const RoleBadge = ({ role }) => {
@@ -29,6 +30,13 @@ const RoleBadge = ({ role }) => {
       bg: 'rgba(239,68,68,0.1)',
       border: 'rgba(239,68,68,0.25)',
       color: '#ef4444',
+    },
+    UNIVERSITY_ADMIN: {
+      label: 'OTM Admini',
+      icon: Building2,
+      bg: 'rgba(99,102,241,0.1)',
+      border: 'rgba(99,102,241,0.25)',
+      color: '#6366f1',
     },
     TEACHER: {
       label: "O'qituvchi",
@@ -59,19 +67,107 @@ const RoleBadge = ({ role }) => {
 };
 
 /* ─── Plan badge ─────────────────────────── */
-const PlanBadge = ({ plan }) => {
-  const isPro = plan === 'PRO';
+const PlanBadge = ({ plan, university }) => {
+  const p = (plan || 'FREE').toUpperCase();
+
+  if (p === 'STANDART') {
+    return (
+      <div className="inline-flex flex-col items-start gap-0.5">
+        <span
+          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-black tracking-wide"
+          style={{
+            background: 'rgba(16,185,129,0.12)',
+            border: '1px solid rgba(16,185,129,0.3)',
+            color: '#059669',
+          }}
+        >
+          <Sparkles className="w-3 h-3 text-emerald-600" />
+          STANDART
+        </span>
+        {university?.name && (
+          <span className="text-[10px] text-emerald-600 font-semibold px-0.5 flex items-center gap-1">
+            <Building2 className="w-2.5 h-2.5" />
+            {university.name}
+          </span>
+        )}
+      </div>
+    );
+  }
+
+  if (p === 'ENTERPRISE') {
+    return (
+      <div className="inline-flex flex-col items-start gap-0.5">
+        <span
+          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-black tracking-wide"
+          style={{
+            background: 'rgba(99,102,241,0.12)',
+            border: '1px solid rgba(99,102,241,0.3)',
+            color: '#4f46e5',
+          }}
+        >
+          <Sparkles className="w-3 h-3 text-indigo-600" />
+          ENTERPRISE
+        </span>
+        {university?.name && (
+          <span className="text-[10px] text-indigo-600 font-semibold px-0.5 flex items-center gap-1">
+            <Building2 className="w-2.5 h-2.5" />
+            {university.name}
+          </span>
+        )}
+      </div>
+    );
+  }
+
+  if (p === 'STARTER') {
+    return (
+      <div className="inline-flex flex-col items-start gap-0.5">
+        <span
+          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-black tracking-wide"
+          style={{
+            background: 'rgba(14,165,233,0.12)',
+            border: '1px solid rgba(14,165,233,0.3)',
+            color: '#0284c7',
+          }}
+        >
+          <Sparkles className="w-3 h-3 text-sky-600" />
+          STARTER
+        </span>
+        {university?.name && (
+          <span className="text-[10px] text-sky-600 font-semibold px-0.5 flex items-center gap-1">
+            <Building2 className="w-2.5 h-2.5" />
+            {university.name}
+          </span>
+        )}
+      </div>
+    );
+  }
+
+  if (p === 'PRO') {
+    return (
+      <span
+        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-black tracking-wide"
+        style={{
+          background: 'rgba(245,158,11,0.12)',
+          border: '1px solid rgba(245,158,11,0.3)',
+          color: '#d97706',
+        }}
+      >
+        <Sparkles className="w-3 h-3" />
+        PRO
+      </span>
+    );
+  }
+
   return (
     <span
       className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold"
-      style={
-        isPro
-          ? { background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.3)', color: '#d97706' }
-          : { background: 'rgba(100,116,139,0.08)', border: '1px solid rgba(100,116,139,0.2)', color: '#64748b' }
-      }
+      style={{
+        background: 'rgba(100,116,139,0.08)',
+        border: '1px solid rgba(100,116,139,0.2)',
+        color: '#64748b',
+      }}
     >
-      {isPro && <Sparkles className="w-3 h-3" />}
-      {plan}
+      FREE
     </span>
   );
 };
@@ -80,6 +176,7 @@ const PlanBadge = ({ plan }) => {
 const Avatar = ({ name, role }) => {
   const colors = {
     ADMIN: { bg: 'linear-gradient(135deg,#ef4444,#f97316)', shadow: 'rgba(239,68,68,0.25)' },
+    UNIVERSITY_ADMIN: { bg: 'linear-gradient(135deg,#6366f1,#8b5cf6)', shadow: 'rgba(99,102,241,0.25)' },
     TEACHER: { bg: 'linear-gradient(135deg,#0d9488,#059669)', shadow: 'rgba(13,148,136,0.25)' },
     STUDENT: { bg: 'linear-gradient(135deg,#059669,#047857)', shadow: 'rgba(5,150,105,0.25)' },
   };
@@ -97,10 +194,10 @@ const Avatar = ({ name, role }) => {
 
 /* ─── Stat mini card ─────────────────────── */
 const MiniStat = ({ label, value, color }) => (
-  <div className="bg-white rounded-2xl border border-slate-200/80 px-5 py-4 flex items-center gap-3 shadow-xs">
+  <div className="bg-white rounded-2xl border border-slate-200/80 px-4 sm:px-5 py-3 sm:py-4 flex items-center gap-3 shadow-xs">
     <div className="w-2 h-8 rounded-full flex-shrink-0" style={{ background: color }} />
     <div>
-      <p className="text-2xl font-black text-slate-800 leading-none">{value}</p>
+      <p className="text-xl sm:text-2xl font-black text-slate-800 leading-none">{value}</p>
       <p className="text-xs text-slate-400 font-medium mt-0.5">{label}</p>
     </div>
   </div>
@@ -197,6 +294,7 @@ const Users = () => {
   const counts = {
     all: users.length,
     admin: users.filter((u) => u.role === 'ADMIN').length,
+    uniAdmin: users.filter((u) => u.role === 'UNIVERSITY_ADMIN').length,
     teacher: users.filter((u) => u.role === 'TEACHER').length,
     student: users.filter((u) => u.role === 'STUDENT').length,
   };
@@ -231,9 +329,10 @@ const Users = () => {
           </div>
 
           {/* Mini stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-3">
             <MiniStat label="Jami hisob" value={counts.all} color="linear-gradient(#059669,#047857)" />
             <MiniStat label="Adminlar" value={counts.admin} color="linear-gradient(#ef4444,#f97316)" />
+            <MiniStat label="OTM Adminlari" value={counts.uniAdmin} color="linear-gradient(#6366f1,#8b5cf6)" />
             <MiniStat label="O'qituvchilar" value={counts.teacher} color="linear-gradient(#0d9488,#14b8a6)" />
             <MiniStat label="Talabalar" value={counts.student} color="linear-gradient(#059669,#10b981)" />
           </div>
@@ -263,6 +362,7 @@ const Users = () => {
             {[
               { value: '', label: 'Hammasi' },
               { value: 'ADMIN', label: 'Admin' },
+              { value: 'UNIVERSITY_ADMIN', label: 'OTM Admin' },
               { value: 'TEACHER', label: "O'qituvchi" },
               { value: 'STUDENT', label: 'Talaba' },
             ].map((opt) => (
@@ -351,7 +451,7 @@ const Users = () => {
 
                       {/* Plan */}
                       <td className="px-6 py-4">
-                        <PlanBadge plan={u.plan_type} />
+                        <PlanBadge plan={u.plan_type} university={u.university} />
                       </td>
 
                       {/* Status */}
@@ -410,16 +510,48 @@ const Users = () => {
               <span className="text-xs text-slate-500">
                 Jami <span className="font-bold text-slate-700">{filteredUsers.length}</span> ta foydalanuvchi
               </span>
-              <span className="text-xs text-slate-500">
-                PRO:{' '}
-                <span className="font-bold text-amber-600">
-                  {filteredUsers.filter((u) => u.plan_type === 'PRO').length}
-                </span>{' '}
-                | FREE:{' '}
-                <span className="font-bold text-slate-600">
-                  {filteredUsers.filter((u) => u.plan_type === 'FREE').length}
-                </span>
-              </span>
+              <div className="flex items-center gap-3 text-xs text-slate-500 font-medium">
+                {filteredUsers.filter((u) => u.plan_type === 'STANDART').length > 0 && (
+                  <span>
+                    STANDART:{' '}
+                    <span className="font-bold text-emerald-600">
+                      {filteredUsers.filter((u) => u.plan_type === 'STANDART').length}
+                    </span>
+                  </span>
+                )}
+                {filteredUsers.filter((u) => u.plan_type === 'ENTERPRISE').length > 0 && (
+                  <span>
+                    ENTERPRISE:{' '}
+                    <span className="font-bold text-indigo-600">
+                      {filteredUsers.filter((u) => u.plan_type === 'ENTERPRISE').length}
+                    </span>
+                  </span>
+                )}
+                {filteredUsers.filter((u) => u.plan_type === 'STARTER').length > 0 && (
+                  <span>
+                    STARTER:{' '}
+                    <span className="font-bold text-sky-600">
+                      {filteredUsers.filter((u) => u.plan_type === 'STARTER').length}
+                    </span>
+                  </span>
+                )}
+                {filteredUsers.filter((u) => u.plan_type === 'PRO').length > 0 && (
+                  <span>
+                    PRO:{' '}
+                    <span className="font-bold text-amber-600">
+                      {filteredUsers.filter((u) => u.plan_type === 'PRO').length}
+                    </span>
+                  </span>
+                )}
+                {filteredUsers.filter((u) => u.plan_type === 'FREE').length > 0 && (
+                  <span>
+                    FREE:{' '}
+                    <span className="font-bold text-slate-600">
+                      {filteredUsers.filter((u) => u.plan_type === 'FREE').length}
+                    </span>
+                  </span>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -489,6 +621,7 @@ const Users = () => {
               >
                 <option value="STUDENT">Talaba</option>
                 <option value="TEACHER">O'qituvchi</option>
+                <option value="UNIVERSITY_ADMIN">OTM Admini</option>
                 <option value="ADMIN">Administrator</option>
               </select>
             </div>
@@ -500,6 +633,9 @@ const Users = () => {
                 className={inputCls}
               >
                 <option value="FREE">FREE</option>
+                <option value="STARTER">STARTER</option>
+                <option value="STANDART">STANDART</option>
+                <option value="ENTERPRISE">ENTERPRISE</option>
                 <option value="PRO">PRO</option>
               </select>
             </div>

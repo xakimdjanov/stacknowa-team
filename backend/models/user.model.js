@@ -55,7 +55,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       plan_type: {
-        type: DataTypes.ENUM("FREE", "PRO"),
+        type: DataTypes.STRING,
         defaultValue: "FREE",
       },
       plan_expires_at: {
@@ -84,6 +84,8 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   User.associate = (models) => {
+    // User belongs to university
+    User.belongsTo(models.University, { foreignKey: "university_id", as: "university" });
     // Teacher owns groups
     User.hasMany(models.Group, { foreignKey: "teacher_id", as: "created_groups" });
     // Student belongs to groups via GroupMember

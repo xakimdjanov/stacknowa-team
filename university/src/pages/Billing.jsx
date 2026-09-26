@@ -18,15 +18,24 @@ import {
   Clock,
   Phone,
   Loader2,
-  ExternalLink
+  ExternalLink,
+  Check,
+  BadgeCheck
 } from 'lucide-react';
 
 const EMERALD_GRADIENT = 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)';
 
+export const getNormalizedPlanKey = (rawPlan = '') => {
+  const p = String(rawPlan || '').toUpperCase();
+  if (p.includes('STARTER')) return 'STARTER';
+  if (p.includes('STANDART') || p.includes('STANDARD')) return 'STANDART';
+  return 'ENTERPRISE';
+};
+
 export default function Billing() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'history'
-  const [plans, setPlans] = useState([]);
+  const [universityProfile, setUniversityProfile] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -38,90 +47,90 @@ export default function Billing() {
   const [paymentMessage, setPaymentMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const mockPlans = [
+  const b2bPlans = [
     {
-      id: 1,
-      name: "ENTERPRISE_STARTER",
-      title: "Enterprise Starter",
-      price_uzs: 15000000,
-      price_usd: "$1,200 / yil",
+      id: "STARTER",
+      name: "STARTER",
+      title: "Starter",
+      category: "Kichik OTMlar (< 5 000 talaba)",
+      price_uzs: 12000000,
+      price_display: "12 mln so‘m / yil",
       features: [
-        "Up to 5 ta Fakultet",
-        "Up to 50 ta O'qituvchi",
-        "Up to 2,500 ta Talaba",
-        "500 ta AI 40-Savol material/oy",
-        "Standard Email Support"
+        "5 tagacha fakultet",
+        "30 tagacha o‘qituvchi",
+        "Asosiy AI savollar (limit bilan)",
+        "Davomat va avtomat baholash",
+        "Email orqali qo‘llab-quvvatlash"
       ],
+      popular: false,
+      faculties_limit: "5 ta fakultet",
+      teachers_limit: "30 ta o‘qituvchi",
+      students_limit: "< 5 000 talaba",
+      ai_limit: "Asosiy (500 so‘rov/oy)"
     },
     {
-      id: 2,
-      name: "ENTERPRISE_PRO",
-      title: "Enterprise Pro",
-      price_uzs: 43750000,
-      price_usd: "$3,500 / yil",
+      id: "STANDART",
+      name: "STANDART",
+      title: "Standart",
+      category: "O‘rta OTMlar (5 000 – 20 000 talaba)",
+      price_uzs: 24000000,
+      price_display: "24 mln so‘m / yil",
+      badge: "Eng ommabop",
       features: [
-        "Up to 25 ta Fakultet",
-        "Up to 300 ta O'qituvchi",
-        "Up to 20,000 ta Talaba",
-        "5,000 ta AI 40-Savol material/oy",
-        "HEMIS & LMS Avto-Sync API",
-        "Prioritet VIP Support (4h)"
+        "15 tagacha fakultet",
+        "100 tagacha o‘qituvchi",
+        "AI savollar (kengaytirilgan)",
+        "Analitika va to‘liq hisobotlar",
+        "Integratsiya (HEMIS va b.)",
+        "Prioritet texnik qo‘llab-quvvatlash"
       ],
       popular: true,
+      faculties_limit: "15 ta fakultet",
+      teachers_limit: "100 ta o‘qituvchi",
+      students_limit: "5 000 – 20 000 talaba",
+      ai_limit: "Kengaytirilgan (5,000/oy)"
     },
     {
-      id: 3,
-      name: "ENTERPRISE_UNLIMITED",
-      title: "Enterprise Unlimited",
-      price_uzs: 98750000,
-      price_usd: "$7,900 / yil",
+      id: "ENTERPRISE",
+      name: "ENTERPRISE",
+      title: "Enterprise",
+      category: "Yirik OTMlar (> 20 000 talaba)",
+      price_uzs: 36000000,
+      price_display: "36 mln so‘m / yil",
       features: [
-        "Cheksiz (Unlimited) Fakultetlar",
-        "Cheksiz O'qituvchilar va Talabalar",
-        "Cheksiz AI 40-Savol Generator",
-        "Dedicated Server & Custom Brand",
-        "24/7 Shaxsiy Menejer"
+        "Cheksiz fakultet va kafedralar",
+        "Cheksiz o‘qituvchi va guruhlar",
+        "Cheksiz AI baholash va savollar",
+        "Maxsus HEMIS va API integratsiyalar",
+        "Dedicated 24/7 menejer qo‘llab-quvvatlashi",
+        "Shaxsiy server va maxsus sozlashlar"
       ],
-    }
-  ];
-
-  const mockTransactions = [
-    {
-      id: "INV-2026-98421",
-      date: "2026-09-25 14:20",
-      description: "EduMind AI Enterprise Pro 1 Yillik Obuna",
-      amount_usd: "$3,500.00",
-      amount_uzs: "43,750,000 UZS",
-      method: "InPay Gateway (Uzcard/Humo)",
-      status: "PAID"
-    },
-    {
-      id: "INV-2025-44120",
-      date: "2025-09-25 11:15",
-      description: "EduMind AI Enterprise Starter Obuna",
-      amount_usd: "$1,200.00",
-      amount_uzs: "15,000,000 UZS",
-      method: "InPay Gateway (Click/Payme)",
-      status: "PAID"
+      popular: false,
+      faculties_limit: "Cheksiz (Unlimited)",
+      teachers_limit: "Cheksiz (Unlimited)",
+      students_limit: "> 20 000 talaba",
+      ai_limit: "Cheksiz (Unlimited)"
     }
   ];
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [user]);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [plansRes, txRes] = await Promise.all([
-        api.get('/plans').catch(() => null),
+      const uniId = user?.university_id || user?.id || '1';
+      const [profileRes, txRes] = await Promise.all([
+        api.get(`/universities/${uniId}/profile`).catch(() => null),
         api.get('/plans/transactions').catch(() => null),
       ]);
 
-      if (plansRes?.data?.plans && plansRes.data.plans.length > 0) {
-        setPlans(plansRes.data.plans);
-      } else {
-        setPlans(mockPlans);
+      if (profileRes?.data?.university) {
+        setUniversityProfile(profileRes.data.university);
+        if (profileRes.data.university.plan_name && updateUser) {
+          updateUser({ university_plan: profileRes.data.university.plan_name });
+        }
       }
 
       if (txRes?.data?.transactions) {
@@ -131,12 +140,17 @@ export default function Billing() {
       }
     } catch (err) {
       console.log("Fetch billing data error:", err.message);
-      setPlans(mockPlans);
       setTransactions([]);
     } finally {
       setLoading(false);
     }
   };
+
+  const currentPlanKey = getNormalizedPlanKey(
+    universityProfile?.plan_name || user?.university_plan || user?.university?.plan_name || 'ENTERPRISE'
+  );
+
+  const activePlanObj = b2bPlans.find(p => p.id === currentPlanKey) || b2bPlans[2];
 
   const handleInPaySubscribe = async (e) => {
     e.preventDefault();
@@ -147,41 +161,44 @@ export default function Billing() {
     setErrorMessage('');
 
     try {
-      const res = await api.post('/plans/subscribe', {
-        plan_id: selectedPlan.id,
-        payment_method: paymentMethod,
-        phone,
+      const uniId = user?.university_id || user?.id || '1';
+
+      // 1. Universitetning real DB dagi tarifini yangilash
+      await api.put(`/universities/${uniId}/plan`, {
+        plan_name: selectedPlan.name,
       });
 
-      if (res.data?.success) {
-        const targetUrl = res.data.pay_url || res.data.payment_url || res.data.transaction?.pay_url;
-        if (targetUrl) {
-          setPaymentMessage("inPAY to'lov sahifasiga yo'naltirilmoqda...");
-          setTimeout(() => {
-            window.open(targetUrl, '_blank');
-            window.location.href = targetUrl;
-          }, 600);
-        } else {
-          setPaymentMessage("Obuna va inPAY tranzaksiyasi muvaffaqiyatli yaratildi! ✅");
-        }
-        fetchData();
+      // 2. inPAY to'lov so'rovini ro'yxatdan o'tkazish
+      await api.post('/plans/subscribe', {
+        plan_id: selectedPlan.name === 'STARTER' ? 1 : selectedPlan.name === 'STANDART' ? 2 : 3,
+        payment_method: paymentMethod,
+        phone,
+      }).catch(() => null);
+
+      // 3. Mahalliy context va profilni yangilash
+      if (updateUser) {
+        updateUser({ university_plan: selectedPlan.name });
       }
-    } catch (err) {
-      // Fallback sandbox simulation for InPay
-      setPaymentMessage("InPay Sandbox Gatewaysi chaqirildi! Tranzaksiya faollashtirildi ✅");
+      setUniversityProfile(prev => prev ? { ...prev, plan_name: selectedPlan.name } : null);
+
       const newTx = {
         id: `INV-${Date.now().toString().substring(5)}`,
         date: new Date().toISOString().replace('T', ' ').substring(0, 16),
-        description: `${selectedPlan.title || selectedPlan.name} InPay Obunasi`,
-        amount_usd: "$3,500.00",
-        amount_uzs: `${(selectedPlan.price_uzs || 43750000).toLocaleString()} UZS`,
-        method: `InPay (${paymentMethod.toUpperCase()})`,
+        description: `EduMind AI ${selectedPlan.title} Yillik B2B Obuna`,
+        amount_uzs: `${(selectedPlan.price_uzs || 36000000).toLocaleString()} UZS`,
+        method: `inPAY (${paymentMethod.toUpperCase()})`,
         status: "PAID"
       };
       setTransactions([newTx, ...transactions]);
+
+      setPaymentMessage(`Tabriklaymiz! Siz muvaffaqiyatli ${selectedPlan.title} tarifiga o‘tdingiz ✅`);
       setTimeout(() => {
         setSelectedPlan(null);
-      }, 1500);
+        setPaymentMessage('');
+      }, 1600);
+    } catch (err) {
+      console.error("Subscription error:", err);
+      setErrorMessage("To'lovni tasdiqlashda xatolik yuz berdi: " + (err.response?.data?.error || err.message));
     } finally {
       setSubmittingPayment(false);
     }
@@ -207,8 +224,8 @@ export default function Billing() {
           table { width: 100%; border-collapse: collapse; font-size: 13px; }
           th { text-align: left; padding: 12px; background: #f1f5f9; color: #475569; font-size: 11px; text-transform: uppercase; }
           td { padding: 14px 12px; border-bottom: 1px solid #f1f5f9; font-weight: 600; }
-          .total-box { display: flex; justify-content: space-between; align-items: center; background: #0f172a; color: #ffffff; padding: 20px; border-radius: 16px; margin-top: 24px; }
-          .total-amount { font-size: 24px; font-weight: 900; color: #34d399; }
+          .total-box { display: flex; justify-content: space-between; align-items: center; background: #059669; color: #ffffff; padding: 20px; border-radius: 16px; margin-top: 24px; }
+          .total-amount { font-size: 24px; font-weight: 900; color: #ffffff; }
           .stamp { text-align: center; margin-top: 32px; font-size: 11px; color: #94a3b8; font-weight: 600; border-top: 1px dashed #e2e8f0; padding-top: 20px; }
           @media print {
             body { background: white; padding: 0; }
@@ -219,29 +236,26 @@ export default function Billing() {
       <body>
         <div class="receipt-box">
           <div class="header">
-            <div>
-              <div class="logo">EDUMIND AI</div>
-              <div style="font-size: 12px; color: #64748b; font-weight: 600; margin-top: 4px;">inPAY Rasmiy To'lov Kvitansiyasi (Official Receipt)</div>
-            </div>
-            <div class="badge">✓ TASDIQLANGAN (PAID & VERIFIED)</div>
+            <div class="logo">EduMind AI Enterprise</div>
+            <div class="badge">TO‘LANGAN (PAID)</div>
           </div>
 
           <div class="info-grid">
             <div>
-              <div class="info-label">Kvitansiya / Order ID</div>
+              <div class="info-label">Invoys Raqami</div>
               <div class="info-val">${tx.id || tx.order_id || 'INV-2026-98421'}</div>
             </div>
             <div>
-              <div class="info-label">To'lov Sanasi</div>
-              <div class="info-val">${tx.date || tx.created_at || new Date().toLocaleString()}</div>
+              <div class="info-label">To‘lov Sanasi</div>
+              <div class="info-val">${tx.date || tx.created_at || '2026-09-25 14:20'}</div>
             </div>
             <div>
-              <div class="info-label">Tashkilot / OTM</div>
-              <div class="info-val">${user?.university_name || user?.name || "Namangan davlat texnika universiteti"}</div>
+              <div class="info-label">Buyurtmachi (OTM)</div>
+              <div class="info-val">${universityProfile?.name || user?.name || "Toshkent Axborot Texnologiyalari Universiteti"}</div>
             </div>
             <div>
-              <div class="info-label">To'lov Shlyuzi (Gateway)</div>
-              <div class="info-val">${tx.method || 'inPAY Gateway (Uzcard / Humo / Click)'}</div>
+              <div class="info-label">To‘lov Turi</div>
+              <div class="info-val">${tx.method || "InPay Gateway"}</div>
             </div>
           </div>
 
@@ -256,9 +270,9 @@ export default function Billing() {
               </thead>
               <tbody>
                 <tr>
-                  <td>${tx.description || "EduMind AI Enterprise Pro Obunasi"}</td>
-                  <td>1 Yil (Cheksiz Reja)</td>
-                  <td style="text-align: right;">${tx.amount_uzs || (tx.amount ? (tx.amount).toLocaleString() + ' UZS' : '43,750,000 UZS')}</td>
+                  <td>${tx.description || "EduMind AI Yillik Obuna"}</td>
+                  <td>1 Yil (B2B Obuna)</td>
+                  <td style="text-align: right;">${tx.amount_uzs || '36,000,000 UZS'}</td>
                 </tr>
               </tbody>
             </table>
@@ -266,14 +280,14 @@ export default function Billing() {
 
           <div class="total-box">
             <div>
-              <div style="font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 700;">Jami To'langan Summa</div>
-              <div style="font-size: 12px; color: #e2e8f0; margin-top: 2px;">Barcha soliqlar va inPAY komissiyasi o'z ichiga olingan</div>
+              <div style="font-size: 11px; text-transform: uppercase; color: rgba(255,255,255,0.8); font-weight: 700;">Jami To‘langan Summa</div>
+              <div style="font-size: 12px; color: rgba(255,255,255,0.9); margin-top: 2px;">Barcha xizmatlar va inPAY komissiyasi o‘z ichiga olingan</div>
             </div>
-            <div class="total-amount">${tx.amount_usd || "$3,500.00"}</div>
+            <div class="total-amount">${tx.amount_uzs || '36,000,000 UZS'}</div>
           </div>
 
           <div class="stamp">
-            ✔ Ushbu kvitansiya inPAY va EduMind AI Enterprise tizimi tomonidan avtomatik shakllantirildi va rasmiy qonuniy kuchga ega.
+            ✔ Ushbu kvitansiya inPAY va EduMind AI Enterprise tizimi tomonidan avtomatik shakllantirildi va rasmiy kuchga ega.
           </div>
         </div>
         <script>
@@ -295,16 +309,16 @@ export default function Billing() {
   return (
     <div className="p-4 md:p-8 space-y-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5 mb-1">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
               <CreditCard className="w-5 h-5" />
             </div>
-            <h1 className="text-2xl font-black text-slate-800 tracking-tight">Obuna Tariflari va inPAY To'lovlar Shlyuzi</h1>
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Obuna Tariflari va inPAY To‘lovlar Shlyuzi</h1>
           </div>
           <p className="text-sm text-slate-500 font-medium">
-            inPAY API Payment Gateway (Uzcard, Humo, Click, Payme) orqali obunani to'lash va hisob-fakturalar tarixi
+            inPAY API Payment Gateway (Uzcard, Humo, Click, Payme) orqali obunani boshqarish va hisob-fakturalar arxivi
           </p>
         </div>
 
@@ -313,143 +327,102 @@ export default function Billing() {
           <button
             onClick={() => setActiveTab('overview')}
             className={`px-4 py-2 rounded-lg font-bold text-xs transition-all cursor-pointer ${
-              activeTab === 'overview' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+              activeTab === 'overview' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            Faol Obuna & Planlar
+            Faol Obuna & Tariflar
           </button>
           <button
             onClick={() => setActiveTab('history')}
             className={`px-4 py-2 rounded-lg font-bold text-xs transition-all cursor-pointer ${
-              activeTab === 'history' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+              activeTab === 'history' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            To'lovlar Tarixi ({transactions.length})
+            To‘lovlar Tarixi ({transactions.length})
           </button>
         </div>
       </div>
 
       {/* OVERVIEW TAB */}
       {activeTab === 'overview' && (
-        <div className="space-y-8">
-          {/* Active Plan Card */}
-          <div className="bg-slate-900 text-white rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-extrabold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full">
-                    FAOL OBUNA (TO'LANGAN)
-                  </span>
-                  <span className="text-xs text-slate-400 font-mono">Code: {user?.university_code || "TATU-9842"}</span>
-                </div>
-                <h2 className="text-2xl font-black text-white">Enterprise Pro Yillik Rejasi</h2>
-                <p className="text-xs text-slate-400">Obuna amal qilish muddati: <strong>2026-09-25 ➔ 2027-09-25</strong></p>
-              </div>
+        <div className="space-y-6">
 
-              <div className="text-right">
-                <div className="text-xs text-slate-400 font-medium">inPAY To'lov Shlyuzi Holati</div>
-                <div className="text-3xl font-black text-emerald-400">$3,500 / yil</div>
-                <div className="text-[11px] text-slate-400 font-mono">43,750,000 UZS (PAID)</div>
-              </div>
-            </div>
-
-            {/* Usage Limit Bars */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700/80 space-y-2">
-                <div className="flex justify-between text-xs font-bold text-slate-300">
-                  <span>Fakultetlar</span>
-                  <span className="text-emerald-400">4 / 25</span>
-                </div>
-                <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
-                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: '16%' }} />
-                </div>
-              </div>
-
-              <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700/80 space-y-2">
-                <div className="flex justify-between text-xs font-bold text-slate-300">
-                  <span>O'qituvchilar</span>
-                  <span className="text-emerald-400">84 / 300</span>
-                </div>
-                <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
-                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: '28%' }} />
-                </div>
-              </div>
-
-              <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700/80 space-y-2">
-                <div className="flex justify-between text-xs font-bold text-slate-300">
-                  <span>Talabalar</span>
-                  <span className="text-emerald-400">4,200 / 20k</span>
-                </div>
-                <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
-                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: '21%' }} />
-                </div>
-              </div>
-
-              <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700/80 space-y-2">
-                <div className="flex justify-between text-xs font-bold text-slate-300">
-                  <span>AI 40-Savol Gen</span>
-                  <span className="text-amber-400">1,420 / 5,000</span>
-                </div>
-                <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
-                  <div className="h-full bg-amber-400 rounded-full" style={{ width: '28%' }} />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* All Enterprise Plans Showcase */}
+          {/* All Enterprise Plans Showcase (3 B2B Tiers) */}
           <div className="space-y-4">
-            <h3 className="font-bold text-slate-800 text-lg">Barcha Enterprise Tarif Rejalari</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {plans.map((p) => {
-                const isCurrent = (user?.plan_name || 'ENTERPRISE_PRO') === p.name || p.name === 'ENTERPRISE_PRO';
+            <div>
+              <h3 className="font-bold text-slate-900 text-lg">Universitetlar Uchun Narxlash Paketlari</h3>
+              <p className="text-xs text-slate-500">
+                OTMlarning o‘lchamiga mos moslashuvchan yillik B2B tariflar. Siz hozirda <strong className="text-emerald-700">{activePlanObj.title}</strong> tarifidasiz.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+              {b2bPlans.map((p) => {
+                const isCurrent = p.id === currentPlanKey;
                 return (
                   <div
-                    key={p.id || p.name}
-                    className={`bg-white rounded-3xl p-6 border flex flex-col justify-between space-y-6 relative ${
-                      isCurrent ? 'border-emerald-500 ring-2 ring-emerald-500/20 shadow-lg' : 'border-slate-200/80 shadow-sm'
+                    key={p.id}
+                    className={`bg-white rounded-3xl p-6 border flex flex-col justify-between space-y-6 relative transition-all ${
+                      isCurrent
+                        ? 'border-emerald-500 ring-2 ring-emerald-500/20 shadow-lg bg-emerald-50/15'
+                        : 'border-slate-200/80 shadow-xs hover:shadow-md'
                     }`}
                   >
                     {isCurrent && (
                       <span
                         style={{ background: EMERALD_GRADIENT }}
-                        className="absolute top-4 right-4 text-[9px] font-extrabold uppercase px-2.5 py-0.5 rounded-full text-white tracking-widest shadow-sm"
+                        className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-[10px] font-black uppercase px-4 py-1 rounded-full text-white tracking-widest shadow-md flex items-center gap-1.5"
                       >
-                        ⭐ Hozirgi Plan
+                        <CheckCircle2 className="w-3.5 h-3.5" /> SIZ SHU OBUNADASIZ
+                      </span>
+                    )}
+
+                    {p.badge && !isCurrent && (
+                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] font-black uppercase px-3.5 py-1 rounded-full text-emerald-800 bg-emerald-100 border border-emerald-200 tracking-wider">
+                        {p.badge}
                       </span>
                     )}
 
                     <div className="space-y-4">
                       <div>
-                        <h4 className="font-extrabold text-slate-800 text-lg">{p.title || p.name}</h4>
-                        <div className="text-2xl font-black text-slate-900 mt-1">
-                          {p.price_uzs ? `${(p.price_uzs).toLocaleString()} UZS / yil` : p.price_usd}
+                        <div className="flex items-center gap-2">
+                          <Building2 className={`w-5 h-5 ${isCurrent ? 'text-emerald-700' : 'text-slate-600'}`} />
+                          <h4 className="font-black text-slate-900 text-xl">{p.title}</h4>
                         </div>
-                        <div className="text-xs font-mono text-slate-400">{p.price_usd || "$3,500.00"}</div>
+                        <div className="text-xs font-semibold text-slate-500 mt-1">{p.category}</div>
+                        <div className="text-2xl font-black text-slate-900 mt-3">
+                          {p.price_display}
+                        </div>
                       </div>
 
-                      <div className="space-y-2 pt-2 border-t text-xs">
+                      <div className="space-y-2 pt-3 border-t border-slate-100 text-xs">
                         {p.features?.map((feat, idx) => (
-                          <div key={idx} className="flex items-center gap-2 text-slate-700 font-medium">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                          <div key={idx} className="flex items-center gap-2.5 text-slate-700 font-medium">
+                            <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
+                              isCurrent ? 'bg-emerald-100 text-emerald-700 font-bold' : 'bg-slate-100 text-slate-600'
+                            }`}>
+                              <Check className="w-3 h-3" strokeWidth={3} />
+                            </div>
                             <span>{feat}</span>
                           </div>
                         ))}
                       </div>
                     </div>
 
-                    <button
-                      onClick={() => setSelectedPlan(p)}
-                      disabled={isCurrent}
-                      style={isCurrent ? {} : { background: EMERALD_GRADIENT }}
-                      className={`w-full py-3 rounded-xl font-bold text-xs transition-all ${
-                        isCurrent
-                          ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                          : 'text-white shadow-md hover:opacity-95 cursor-pointer flex items-center justify-center gap-1.5'
-                      }`}
-                    >
-                      {isCurrent ? "Faol Tarif" : "inPAY Orqali To'lash 💳"}
-                    </button>
+                    {isCurrent ? (
+                      <div className="w-full py-3 rounded-xl font-bold text-xs bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center justify-center gap-2 shadow-xs">
+                        <BadgeCheck className="w-4 h-4 text-emerald-700" />
+                        Siz hozir shu tarifdasiz (Faol)
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setSelectedPlan(p)}
+                        style={{ background: EMERALD_GRADIENT }}
+                        className="w-full py-3 rounded-xl font-bold text-xs text-white shadow-md shadow-emerald-700/20 hover:opacity-95 cursor-pointer flex items-center justify-center gap-1.5 transition-all"
+                      >
+                        Ushbu tarifga o‘tish (inPAY 💳)
+                      </button>
+                    )}
                   </div>
                 );
               })}
@@ -460,74 +433,68 @@ export default function Billing() {
 
       {/* HISTORY TAB */}
       {activeTab === 'history' && (
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden space-y-4 p-6">
-          <div className="flex items-center justify-between border-b pb-4">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden space-y-4 p-6">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
             <div>
-              <h3 className="font-bold text-slate-800 text-lg">inPAY Orqali Bajarilgan To'lovlar Tarixi</h3>
-              <p className="text-xs text-slate-500">InPay Payment Gateway orqali to'langan barcha tranzaksiyalar</p>
+              <h3 className="font-bold text-slate-900 text-lg">inPAY Orqali Bajarilgan To‘lovlar Tarixi</h3>
+              <p className="text-xs text-slate-500">InPay Payment Gateway orqali to‘langan rasmiy shartnomalar va cheklar</p>
             </div>
           </div>
 
           <div className="divide-y divide-slate-100">
-            {transactions.map((tx) => (
-              <div key={tx.id} className="py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex items-start gap-4">
-                  <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold flex-shrink-0">
-                    <Receipt className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-slate-800 text-sm">{tx.id || tx.order_id}</span>
-                      {(() => {
-                        const st = (tx.status || '').toLowerCase();
-                        if (st === 'success' || st === 'paid' || st === 'approved') {
-                          return (
-                            <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase px-3 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                              TASDIQLANGAN (TO'LANGAN)
-                            </span>
-                          );
-                        }
-                        if (st === 'pending' || st === 'waiting') {
-                          return (
-                            <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase px-3 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
-                              <Sparkles className="w-3.5 h-3.5 text-amber-600 animate-spin" />
-                              KUTILMOQDA (PENDING)
-                            </span>
-                          );
-                        }
-                        return (
-                          <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase px-3 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">
-                            BEKOR QILINGAN (RAD ETILGAN)
-                          </span>
-                        );
-                      })()}
-                    </div>
-                    <p className="text-xs font-semibold text-slate-700 mt-0.5">{tx.description || "Enterprise Obuna To'lovi"}</p>
-                    <div className="text-[11px] text-slate-400 mt-1 flex items-center gap-3 font-medium">
-                      <span>Sana: {tx.date || tx.created_at}</span>
-                      <span>•</span>
-                      <span>Usul: {tx.method || "InPay Gateway"}</span>
-                    </div>
-                  </div>
+            {transactions.length === 0 ? (
+              <div className="py-16 text-center space-y-3">
+                <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-200/80 text-slate-400 mx-auto flex items-center justify-center">
+                  <Receipt className="w-7 h-7" />
                 </div>
-
-                <div className="flex items-center gap-4 flex-shrink-0">
-                  <div className="text-right">
-                    <div className="font-black text-slate-900 text-base">{tx.amount_usd || "$3,500.00"}</div>
-                    <div className="text-xs font-mono text-slate-400">{tx.amount_uzs || `${tx.amount} UZS`}</div>
-                  </div>
-
-                  <button
-                    onClick={() => handleDownloadPdfReceipt(tx)}
-                    className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:text-emerald-700 hover:border-emerald-300 transition-all flex items-center gap-1 text-xs font-bold cursor-pointer"
-                  >
-                    <Download className="w-4 h-4" />
-                    PDF Chek
-                  </button>
-                </div>
+                <h4 className="font-bold text-slate-800 text-sm">Hozircha to‘lovlar tarixi mavjud emas</h4>
+                <p className="text-xs text-slate-400 max-w-md mx-auto">
+                  inPAY to‘lov shlyuzi orqali birinchi to‘lov amalga oshirilgach, rasmiy invoyslar va PDF cheklar bu yerda avtomatik saqlanadi.
+                </p>
               </div>
-            ))}
+            ) : (
+              transactions.map((tx) => (
+                <div key={tx.id || tx.order_id} className="py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="flex items-start gap-4">
+                    <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold flex-shrink-0 border border-emerald-100">
+                      <Receipt className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-slate-900 text-sm">{tx.order_id || tx.id}</span>
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase px-3 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                          {tx.status === 'PAID' || tx.status === 'COMPLETED' ? 'TO‘LANGAN (PAID)' : (tx.status || 'KUTILMOQDA')}
+                        </span>
+                      </div>
+                      <p className="text-xs font-semibold text-slate-700 mt-0.5">{tx.description || `${tx.plan?.title || 'B2B'} Obuna To‘lovi`}</p>
+                      <div className="text-[11px] text-slate-400 mt-1 flex items-center gap-3 font-medium">
+                        <span>Sana: {tx.created_at ? new Date(tx.created_at).toLocaleString('uz-UZ') : (tx.date || '—')}</span>
+                        <span>•</span>
+                        <span>Usul: {tx.payment_method || tx.method || "inPAY Gateway"}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4 flex-shrink-0">
+                    <div className="text-right">
+                      <div className="font-black text-slate-900 text-base">
+                        {tx.amount ? `${Number(tx.amount).toLocaleString('uz-UZ')} UZS` : (tx.amount_uzs || '—')}
+                      </div>
+                      <div className="text-xs font-semibold text-emerald-600">Tasdiqlangan</div>
+                    </div>
+
+                    <button
+                      onClick={() => handleDownloadPdfReceipt(tx)}
+                      className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:text-emerald-700 hover:border-emerald-300 transition-all flex items-center gap-1.5 text-xs font-bold cursor-pointer bg-slate-50 hover:bg-white"
+                    >
+                      <Download className="w-4 h-4" />
+                      PDF Chek
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       )}
@@ -536,13 +503,13 @@ export default function Billing() {
       {selectedPlan && (
         <Modal onClose={() => setSelectedPlan(null)}>
           <form onSubmit={handleInPaySubscribe} className="space-y-4">
-            <div className="flex items-center gap-3 border-b pb-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
                 <CreditCard className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-bold text-slate-800 text-lg">inPAY Orqali To'lov Qilish</h3>
-                <p className="text-xs text-slate-500">Uzcard, Humo, Click, Payme va Visa kartalari orqali to'lov</p>
+                <h3 className="font-bold text-slate-900 text-lg">inPAY Orqali Tarifga O‘tish</h3>
+                <p className="text-xs text-slate-500">Uzcard, Humo, Click, Payme va Bank hisob raqami orqali</p>
               </div>
             </div>
 
@@ -552,23 +519,29 @@ export default function Billing() {
               </div>
             )}
 
-            <div className="bg-slate-50 p-4 rounded-2xl border space-y-1 text-xs">
-              <div className="text-slate-400 font-bold uppercase text-[10px]">Tanlangan Tarif</div>
-              <div className="font-bold text-slate-800 text-base">{selectedPlan.title || selectedPlan.name}</div>
+            {errorMessage && (
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold">
+                {errorMessage}
+              </div>
+            )}
+
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1 text-xs">
+              <div className="text-slate-400 font-bold uppercase text-[10px]">Tanlangan Yangi Tarif</div>
+              <div className="font-bold text-slate-900 text-base">{selectedPlan.title}</div>
               <div className="font-black text-emerald-700 text-lg">
-                {selectedPlan.price_uzs ? `${(selectedPlan.price_uzs).toLocaleString()} UZS` : selectedPlan.price_usd}
+                {selectedPlan.price_display}
               </div>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">To'lov Turi (Payment Gateway)</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">To‘lov Shlyuzi (Payment Gateway)</label>
                 <div className="grid grid-cols-3 gap-2 text-xs">
                   <button
                     type="button"
                     onClick={() => setPaymentMethod('click')}
                     className={`p-3 rounded-xl border font-bold text-center cursor-pointer transition-all ${
-                      paymentMethod === 'click' ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-slate-200 text-slate-600'
+                      paymentMethod === 'click' ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-slate-200 text-slate-600 bg-white'
                     }`}
                   >
                     Click / Uzcard
@@ -577,54 +550,53 @@ export default function Billing() {
                     type="button"
                     onClick={() => setPaymentMethod('payme')}
                     className={`p-3 rounded-xl border font-bold text-center cursor-pointer transition-all ${
-                      paymentMethod === 'payme' ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-slate-200 text-slate-600'
+                      paymentMethod === 'payme' ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-slate-200 text-slate-600 bg-white'
                     }`}
                   >
                     Payme / Humo
                   </button>
                   <button
                     type="button"
-                    onClick={() => setPaymentMethod('cardsystem')}
+                    onClick={() => setPaymentMethod('invoice')}
                     className={`p-3 rounded-xl border font-bold text-center cursor-pointer transition-all ${
-                      paymentMethod === 'cardsystem' ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-slate-200 text-slate-600'
+                      paymentMethod === 'invoice' ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-slate-200 text-slate-600 bg-white'
                     }`}
                   >
-                    Bank Kartasi
+                    Bank Shartnomasi
                   </button>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Telefon Raqami (SMS Tasdiqlash uchun)</label>
-                <div className="relative">
-                  <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    required
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold outline-none"
-                  />
-                </div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">Mas’ul xodim telefon raqami *</label>
+                <input
+                  type="tel"
+                  required
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white text-slate-900"
+                />
               </div>
             </div>
 
-            <div className="pt-3 border-t flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setSelectedPlan(null)}
-                className="px-4 py-2 border rounded-xl font-semibold text-xs text-slate-600"
-              >
-                Bekor qilish
-              </button>
+            <div className="pt-2">
               <button
                 type="submit"
                 disabled={submittingPayment}
                 style={{ background: EMERALD_GRADIENT }}
-                className="px-5 py-2 text-white font-bold text-xs rounded-xl shadow-md flex items-center gap-2 cursor-pointer hover:opacity-95"
+                className="w-full py-3 text-white font-bold text-xs rounded-xl shadow-md shadow-emerald-700/20 hover:opacity-95 transition-all cursor-pointer flex items-center justify-center gap-2"
               >
-                {submittingPayment && <Loader2 className="w-4 h-4 animate-spin" />}
-                InPay Shlyuzi Orqali To'lash 💳
+                {submittingPayment ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    To‘lov Shlyuziga Ulanmoqda...
+                  </>
+                ) : (
+                  <>
+                    <ExternalLink className="w-4 h-4" />
+                    Tarifni Faollashtirish va inPAY Orqali To‘lash
+                  </>
+                )}
               </button>
             </div>
           </form>

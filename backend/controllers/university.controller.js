@@ -1,4 +1,4 @@
-const { University, Faculty, Department, User, Group, GroupMember, Assignment, Event, sequelize } = require("../models");
+const { University, Faculty, Department, User, Group, GroupMember, Assignment, Submission, Event, EventParticipant, sequelize } = require("../models");
 const bcrypt = require("bcryptjs");
 
 const generateUniqueCode = (name) => {
@@ -238,16 +238,16 @@ class UniversityController {
 
       let groups = await Group.findAll({
         include: [
-          { 
-            model: User, 
-            as: "teacher", 
+          {
+            model: User,
+            as: "teacher",
             attributes: ["id", "name", "email", "university_id"],
             ...(teacherWhere ? { where: teacherWhere } : {})
           },
-          { 
-            model: GroupMember, 
-            as: "members", 
-            include: [{ model: User, as: "student", attributes: ["id", "name", "email"] }] 
+          {
+            model: GroupMember,
+            as: "members",
+            include: [{ model: User, as: "student", attributes: ["id", "name", "email"] }]
           },
           { model: Assignment, as: "assignments" }
         ],
@@ -259,10 +259,10 @@ class UniversityController {
         groups = await Group.findAll({
           include: [
             { model: User, as: "teacher", attributes: ["id", "name", "email", "university_id"] },
-            { 
-              model: GroupMember, 
-              as: "members", 
-              include: [{ model: User, as: "student", attributes: ["id", "name", "email"] }] 
+            {
+              model: GroupMember,
+              as: "members",
+              include: [{ model: User, as: "student", attributes: ["id", "name", "email"] }]
             },
             { model: Assignment, as: "assignments" }
           ],
@@ -409,25 +409,182 @@ class UniversityController {
     }
   }
 
-  // Universitet Admin Dashboard - umumiy statistika
+  // Universitet Admin Dashboard - umumiy statistika (Real DB counts)
   async getUniversityStats(req, res) {
     try {
       const { universityId } = req.params;
-      const totalTeachers = await User.count({ where: { role: "TEACHER", ...(universityId !== "all" ? { university_id: universityId } : {}) } });
-      const totalStudents = await User.count({ where: { role: "STUDENT", ...(universityId !== "all" ? { university_id: universityId } : {}) } });
-      const totalFaculties = await Faculty.count({ where: (universityId && universityId !== "all") ? { university_id: universityId } : {} });
-      const totalDepartments = await Department.count({ where: (universityId && universityId !== "all") ? { university_id: universityId } : {} });
-      const totalGroups = await Group.count();
+      let targetUniId = (universityId && universityId !== "all" && universityId !== "undefined") ? universityId : req.user?.university_id;
+
+      let university = null;
+      if (targetUniId && targetUniId !== 'all') {
+        const parsed = parseInt(targetUniId);
+        if (!isNaN(parsed)) {
+          university = await University.findByPk(parsed);
+        }
+      }
+      if (!university && req.user?.university_code) {
+        university = await University.findOne({ where: { unique_code: req.user.university_code } });
+        if (university) targetUniId = university.id;
+      }
+
+      // Teacher and Student conditions
+      let teacherWhere = { role: "TEACHER" };
+      let studentWhere = { role: "STUDENT" };
+      let structureWhere = {};
+
+      if (targetUniId && targetUniId !== "all") {
+        const uniIdNum = parseInt(targetUniId);
+        const orConditions = [{ university_id: uniIdNum }];
+        if (university?.unique_code) {
+          orConditions.push({ university_code: university.unique_code });
+        }
+        teacherWhere = {
+          role: "TEACHER",
+          [sequelize.Sequelize.Op.or]: orConditions,
+        };
+        studentWhere = {
+          role: "STUDENT",
+          [sequelize.Sequelize.Op.or]: orConditions,
+        };
+        structureWhere = { university_id: uniIdNum };
+      }
+
+      const totalTeachers = await User.count({ where: teacherWhere });
+      const totalFaculties = await Faculty.count({ where: structureWhere });
+      const totalDepartments = await Department.count({ where: structureWhere });
+
+      // Universitet guruhlari va talabalar:
+      // Talaba faqat guruhga qo'shilganidan keyin universitetda talaba sifatida ko'rinadi va hisoblanadi!
+      let totalGroups = 0;
+      let totalStudents = 0;
+
+      if (targetUniId && targetUniId !== "all") {
+        const uniTeachers = await User.findAll({ where: teacherWhere, attributes: ['id'] });
+        const teacherIds = uniTeachers.map(t => t.id);
+
+        if (teacherIds.length > 0) {
+          const uniGroups = await Group.findAll({ where: { teacher_id: teacherIds }, attributes: ['id'] });
+          const groupIds = uniGroups.map(g => g.id);
+          totalGroups = groupIds.length;
+
+          if (groupIds.length > 0) {
+            totalStudents = await GroupMember.count({
+              where: { group_id: groupIds },
+              distinct: true,
+              col: 'student_id',
+            });
+          }
+        }
+      } else {
+        totalGroups = await Group.count();
+        totalStudents = await GroupMember.count({ distinct: true, col: 'student_id' });
+      }
+
       const activeEvents = await Event.count({ where: { status: "ACTIVE" } });
 
+      const evaluatedSubmissions = await Submission.count({ where: { status: "graded" } });
+      const pendingSubmissions = await Submission.count({ where: { status: ["evaluating", "submitted"] } });
+      const missingSubmissions = await Submission.count({ where: { status: ["draft", "returned"] } });
+
+      // Real Attendance rate from EventParticipant
+      let attendanceRate = 0;
+      const totalParticipants = await EventParticipant.count();
+      if (totalParticipants > 0) {
+        const presentCount = await EventParticipant.count({ where: { attendance_status: "PRESENT" } });
+        attendanceRate = Number(((presentCount / totalParticipants) * 100).toFixed(1));
+      }
+
       return res.json({
-        totalTeachers,
-        totalStudents,
-        totalFaculties: totalFaculties || 4,
-        totalDepartments: totalDepartments || 12,
-        totalGroups,
-        activeEvents,
-        attendanceRate: 94.8,
+        totalTeachers: Number(totalTeachers) || 0,
+        totalStudents: Number(totalStudents) || 0,
+        totalFaculties: Number(totalFaculties) || 0,
+        totalDepartments: Number(totalDepartments) || 0,
+        totalGroups: Number(totalGroups) || 0,
+        activeEvents: Number(activeEvents) || 0,
+        attendanceRate: attendanceRate,
+        assignments: {
+          submitted: Number(evaluatedSubmissions) || 0,
+          reviewing: Number(pendingSubmissions) || 0,
+          missing: Number(missingSubmissions) || 0,
+        },
+      });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  // Universitet profilini olish (Joriy tarif va ma'lumotlar)
+  async getUniversityProfile(req, res) {
+    try {
+      const { universityId } = req.params;
+      let uniId = (universityId && universityId !== 'all' && universityId !== 'undefined') ? universityId : req.user?.university_id;
+      let university = null;
+
+      if (uniId) {
+        university = await University.findByPk(uniId, {
+          include: [
+            { model: Faculty, as: "faculties", include: [{ model: Department, as: "departments" }] },
+            { model: User, as: "users", attributes: ["id", "name", "email", "role"] }
+          ]
+        });
+      }
+      if (!university && req.user?.university_code) {
+        university = await University.findOne({
+          where: { unique_code: req.user.university_code },
+          include: [
+            { model: Faculty, as: "faculties", include: [{ model: Department, as: "departments" }] },
+            { model: User, as: "users", attributes: ["id", "name", "email", "role"] }
+          ]
+        });
+      }
+      if (!university) {
+        university = await University.findOne({
+          where: { status: "ACTIVE" },
+          include: [
+            { model: Faculty, as: "faculties", include: [{ model: Department, as: "departments" }] },
+            { model: User, as: "users", attributes: ["id", "name", "email", "role"] }
+          ]
+        });
+      }
+
+      return res.json({ success: true, university });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  // Universitet obuna tarifini yangilash (Change plan)
+  async updateUniversityPlan(req, res) {
+    try {
+      const { universityId } = req.params;
+      const { plan_name } = req.body;
+      if (!plan_name) {
+        return res.status(400).json({ error: "plan_name kiritilishi shart." });
+      }
+
+      let targetUni = null;
+      if (universityId && universityId !== 'all' && universityId !== 'undefined') {
+        targetUni = await University.findByPk(universityId);
+      }
+      if (!targetUni && req.user?.university_id) {
+        targetUni = await University.findByPk(req.user.university_id);
+      }
+      if (!targetUni) {
+        targetUni = await University.findOne({ where: { status: "ACTIVE" } });
+      }
+
+      if (!targetUni) {
+        return res.status(404).json({ error: "Universitet topilmadi!" });
+      }
+
+      targetUni.plan_name = plan_name;
+      await targetUni.save();
+
+      return res.json({
+        success: true,
+        message: "Universitet obuna tarifi muvaffaqiyatli yangilandi ✅",
+        plan_name: targetUni.plan_name,
+        university: targetUni,
       });
     } catch (err) {
       return res.status(500).json({ error: err.message });

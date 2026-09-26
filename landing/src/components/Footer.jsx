@@ -5,16 +5,17 @@ export default function Footer({ onOpenDemo }) {
     { name: 'Platforma', href: '#platforma' },
     { name: 'Imkoniyatlar', href: '#imkoniyatlar' },
     { name: 'Qanday ishlaydi', href: '#qanday-ishlaydi' },
+    { name: 'Universitetlar', href: '#universitetlar' },
+    { name: 'Biznes modeli', href: '#narxlar' },
     { name: 'FAQ', href: '#faq' },
-    { name: 'Kontakt', href: '#narxlar' },
   ];
 
   return (
     <footer style={{
-      backgroundColor: '#070C15',
-      color: '#9CA3AF',
+      backgroundColor: '#F8FAFC',
+      color: '#64748B',
       padding: '60px 0 40px',
-      borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+      borderTop: '1px solid #E2E8F0',
       fontSize: '14px'
     }}>
       <div className="container">
@@ -27,28 +28,29 @@ export default function Footer({ onOpenDemo }) {
           gap: '24px'
         }}>
           {/* Logo & Tagline */}
-          <div style={{ display: 'flex', flexContent: 'column', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '8px',
-                background: 'linear-gradient(135deg, #34D399 0%, #059669 100%)',
+                width: '36px',
+                height: '36px',
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontWeight: '800',
-                color: '#0B1220',
-                fontSize: '15px'
+                color: '#FFFFFF',
+                fontSize: '15px',
+                boxShadow: '0 4px 10px rgba(5, 150, 105, 0.2)'
               }}>
-                SE
+                EM
               </div>
-              <span style={{ fontSize: '22px', fontWeight: '800', color: '#FFFFFF' }}>
-                Smart <span style={{ color: '#34D399' }}>Edu</span>
+              <span style={{ fontSize: '22px', fontWeight: '800', color: '#0F172A' }}>
+                EduMind <span style={{ color: '#059669' }}>AI</span>
               </span>
             </div>
-            <p style={{ color: '#6B7280', fontSize: '14px', marginTop: '6px' }}>
-              AI-powered university education platform.
+            <p style={{ color: '#64748B', fontSize: '14px', marginTop: '4px' }}>
+              O‘zbekiston OTMlari uchun yagona AI ta’lim ekotizimi.
             </p>
           </div>
 
@@ -58,20 +60,20 @@ export default function Footer({ onOpenDemo }) {
             flexWrap: 'wrap',
             justifyContent: 'center',
             gap: '28px',
-            margin: '10px 0'
+            margin: '8px 0'
           }}>
             {footerLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
                 style={{
-                  color: '#D1D5DB',
+                  color: '#475569',
                   textDecoration: 'none',
-                  fontWeight: '500',
+                  fontWeight: '600',
                   transition: 'color 0.2s'
                 }}
-                onMouseEnter={(e) => e.target.style.color = '#34D399'}
-                onMouseLeave={(e) => e.target.style.color = '#D1D5DB'}
+                onMouseEnter={(e) => e.target.style.color = '#059669'}
+                onMouseLeave={(e) => e.target.style.color = '#475569'}
               >
                 {link.name}
               </a>
@@ -80,13 +82,19 @@ export default function Footer({ onOpenDemo }) {
 
           {/* Copyright */}
           <div style={{
-            borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+            borderTop: '1px solid #E2E8F0',
             width: '100%',
             paddingTop: '24px',
-            color: '#6B7280',
-            fontSize: '13px'
+            color: '#94A3B8',
+            fontSize: '13px',
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '12px'
           }}>
-            © 2026 Smart Edu. Barcha huquqlar himoyalangan.
+            <span>© 2026 EduMind AI. Barcha huquqlar himoyalangan.</span>
+            <span>#MilliyAIXakaton 2026 uchun maxsus ishlab chiqilgan.</span>
           </div>
         </div>
       </div>

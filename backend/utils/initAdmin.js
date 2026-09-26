@@ -2,79 +2,87 @@ const { User, Plan } = require("../models");
 
 /**
  * Server ishga tushganda avtomatik ravishda .env dagi ma'lumotlar bilan
- * Admin hisobini va standart tariflarni bazaga kiritadi.
+ * Admin hisobini va faqat 3 ta rasmiy standart B2B tarifni bazaga kiritadi.
  */
 async function initAdminAndPlans() {
   try {
-    // 1. Standart Tariflarni (Plans) yaratish
+    // 1. Faqat 3 ta rasmiy standart B2B tariflar (Universitetlar uchun)
     const defaultPlans = [
       {
-        name: "FREE",
-        title: "Teacher Free",
-        description: "Yangi boshlovchi o'qituvchilar uchun",
-        price_uzs: 0,
-        duration_days: 365,
-        role_target: "TEACHER",
-        features: ["Maksimal 3 ta guruh", "Oddiy AI baholash", "Guruh statistikasi"],
-        max_groups: 3,
-        ai_credits: 50,
-      },
-      {
-        name: "PRO_MONTHLY",
-        title: "Teacher Pro (1 oylik)",
-        description: "To'liq funksional va cheksiz imkoniyatlar",
-        price_uzs: 49000,
-        duration_days: 30,
-        role_target: "TEACHER",
-        features: [
-          "Cheksiz guruhlar yaratish",
-          "Cheksiz AI baholash & feedback",
-          "Plagiat va Similarity tahlili",
-          "AI-writing tahlili",
-          "Kengaytirilgan o'qituvchi analitikasi",
-        ],
-        max_groups: 9999,
-        ai_credits: 99999,
-      },
-      {
-        name: "ENTERPRISE_STARTER",
-        title: "Enterprise Starter",
-        description: "Kichik va o'rta universitetlar uchun yillik obuna",
-        price_uzs: 15000000,
+        name: "STARTER",
+        title: "Starter",
+        description: "Kichik OTMlar (< 5 000 talaba)",
+        price_uzs: 12000000,
         duration_days: 365,
         role_target: "ALL",
-        features: ["Up to 5 ta Fakultet", "Up to 50 ta O'qituvchi", "Up to 2,500 ta Talaba", "500 ta AI 40-Savol material/oy", "Standard Email Support"],
-        max_groups: 100,
+        is_default: true,
+        features: [
+          "Asosiy funksiyalar",
+          "AI savollar (limit)",
+          "Davomat va baholash",
+          "Email qo‘llab-quvvatlash",
+        ],
+        max_groups: 30,
         ai_credits: 5000,
       },
       {
-        name: "ENTERPRISE_PRO",
-        title: "Enterprise Pro",
-        description: "Yirik davlat va xususiy universitetlar uchun",
-        price_uzs: 43750000,
+        name: "STANDART",
+        title: "Standart",
+        description: "O‘rta OTMlar (5 000 – 20 000 talaba)",
+        price_uzs: 24000000,
         duration_days: 365,
         role_target: "ALL",
-        features: ["Up to 25 ta Fakultet", "Up to 300 ta O'qituvchi", "Up to 20,000 ta Talaba", "5,000 ta AI 40-Savol material/oy", "HEMIS & LMS Avto-Sync API", "Prioritet VIP Support (4h)"],
-        max_groups: 1000,
-        ai_credits: 50000,
+        is_default: true,
+        features: [
+          "Barcha asosiy funksiyalar",
+          "AI savollar (kengaytirilgan)",
+          "Analitika va hisobotlar",
+          "Integratsiya (HEMIS va b.)",
+          "Texnik qo‘llab-quvvatlash",
+        ],
+        max_groups: 100,
+        ai_credits: 20000,
       },
       {
-        name: "ENTERPRISE_UNLIMITED",
-        title: "Enterprise Unlimited",
-        description: "Cheksiz imkoniyatlarga ega strategik paket",
-        price_uzs: 98750000,
+        name: "ENTERPRISE",
+        title: "Enterprise",
+        description: "Yirik OTMlar (> 20 000 talaba)",
+        price_uzs: 36000000,
         duration_days: 365,
         role_target: "ALL",
-        features: ["Cheksiz Fakultetlar", "Cheksiz O'qituvchilar va Talabalar", "Cheksiz AI 40-Savol Generator", "Dedicated Server & Custom Brand", "24/7 Shaxsiy Menejer"],
+        is_default: true,
+        features: [
+          "Barcha funksiyalar",
+          "Cheksiz AI imkoniyatlar",
+          "Maxsus integratsiyalar",
+          "Dedicated qo‘llab-quvvatlash",
+          "Shaxsiy sozlashlar",
+        ],
         max_groups: 99999,
         ai_credits: 999999,
       },
     ];
 
+    // Eski va ortiqcha sinov tariflarini tozalash
+    await Plan.destroy({
+      where: {
+        name: [
+          "ENTERPRISE_STARTER",
+          "ENTERPRISE_PRO",
+          "ENTERPRISE_UNLIMITED",
+          "PRO_MONTHLY",
+          "PRO_ANNUAL",
+          "FREE",
+        ],
+      },
+    });
+
     for (const p of defaultPlans) {
       const existingPlan = await Plan.findOne({ where: { name: p.name } });
       if (!existingPlan) {
         await Plan.create(p);
+      } else {
+        await existingPlan.update(p);
       }
     }
 

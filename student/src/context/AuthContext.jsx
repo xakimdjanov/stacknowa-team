@@ -12,11 +12,22 @@ export const AuthProvider = ({ children }) => {
     const initAuth = async () => {
       const token = localStorage.getItem('student_token');
       const savedUser = localStorage.getItem('student_user');
-      if (token && savedUser) {
+      if (token) {
+        if (savedUser) {
+          try {
+            setUser(JSON.parse(savedUser));
+          } catch {
+            localStorage.removeItem('student_user');
+          }
+        }
         try {
-          setUser(JSON.parse(savedUser));
+          const res = await api.get('/auth/me');
+          if (res.data?.user) {
+            setUser(res.data.user);
+            localStorage.setItem('student_user', JSON.stringify(res.data.user));
+          }
         } catch {
-          localStorage.removeItem('student_user');
+          // Keep saved user or token expired
         }
       }
       setLoading(false);

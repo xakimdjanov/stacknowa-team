@@ -4,72 +4,61 @@ import { FileCheck, Bot, Video, UserCheck, ShieldCheck, LineChart, Sparkles } fr
 export default function Features() {
   const featuresList = [
     {
-      title: 'AI Assignments',
-      desc: 'Topshiriqlarni yaratish, tarqatish va AI yordamida baholash.',
+      title: 'AI Topshiriqlar & Baholash',
+      desc: 'Topshiriqlarni avtomatik tuzish, tarqatish va Gemini AI yordamida chuqur tahliliy baholash.',
       icon: FileCheck,
       badge: 'Gemini AI Powered',
     },
     {
-      title: 'AI Tutor',
-      desc: 'Talabaga topshiriqni bajarish jarayonida tushuntirish va yordam.',
+      title: '24/7 AI Repetitor',
+      desc: 'Talabaga topshiriqni bajarish jarayonida qadam-baqadam yo‘l-yo‘riq va akademik maslahat beradi.',
       icon: Bot,
-      badge: '24/7 Yordamchi',
+      badge: 'Shaxsiy AI Yordamchi',
     },
     {
-      title: 'Live Classroom',
-      desc: 'Materiallardan quiz yaratish, Game PIN orqali ulanish va real-time natijalar.',
+      title: 'Live Classroom & Gamification',
+      desc: 'Materiallardan tezkor quiz yaratish, Game PIN orqali darsda ulanish va jonli reyting peshqadamlari.',
       icon: Video,
       badge: 'Interaktiv Dars',
     },
     {
-      title: 'Smart Attendance',
-      desc: 'Live darslarda talabalar ishtiroki va davomatini kuzatish.',
+      title: 'Aqlli Davomat Nazorati',
+      desc: 'Live darslarda talabalar ishtirokini avtomatik qayd etish va rektorat uchun shaffof ko‘rsatkichlar.',
       icon: UserCheck,
-      badge: 'Avto Davomat',
+      badge: 'Avtomatlashtirilgan',
     },
     {
-      title: 'Academic Integrity',
-      desc: 'Talaba ishlari o‘xshashligi, AI foydalanish indikatorlari va topshiriq talablarini tekshirish.',
+      title: 'Akademik Halollik (Integrity)',
+      desc: 'Talaba ishlari o‘rtasidagi o‘xshashlik, AI generatsiya izlari va plagiatni ko‘p bosqichli tekshirish.',
       icon: ShieldCheck,
       badge: 'Plagiat & Similarity',
     },
     {
-      title: 'University Analytics',
-      desc: 'Faculty, department, teacher va student ko‘rsatkichlarini yagona dashboardda ko‘rish.',
+      title: 'Universitet BI & Analitika',
+      desc: 'Fakultet, kafedra, o‘qituvchi va talaba ko‘rsatkichlarini real-vaqt rejimida yagona dashboardda ko‘rish.',
       icon: LineChart,
-      badge: 'Boshqaruv Paneli',
+      badge: 'Rektorat Paneli',
     },
   ];
 
   return (
     <section id="imkoniyatlar" style={{
-      backgroundColor: '#F5F7FA',
+      backgroundColor: '#F8FAFC',
       padding: '110px 0',
-      borderBottom: '1px solid #E5E7EB'
+      borderBottom: '1px solid #E2E8F0'
     }}>
       <div className="container">
         
         {/* Section Header */}
         <div style={{ textAlign: 'center', marginBottom: '64px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <span style={{
-            fontSize: '13px',
-            fontWeight: '700',
-            color: '#34D399',
-            backgroundColor: 'rgba(52, 211, 153, 0.1)',
-            padding: '6px 14px',
-            borderRadius: '20px',
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            marginBottom: '14px',
-            border: '1px solid rgba(52, 211, 153, 0.3)'
-          }}>
-            PLATFORMA IMMONIYATLARI
+          <span className="eyebrow-badge" style={{ marginBottom: '14px' }}>
+            <Sparkles size={14} color="#059669" /> PLATFORMA IMKONIYATLARI
           </span>
-          <h2 className="section-heading" style={{ color: '#111827', marginBottom: '16px' }}>
+          <h2 className="section-heading" style={{ marginBottom: '16px' }}>
             Universitetga kerak bo‘lgan barcha imkoniyatlar.
           </h2>
           <p className="section-subheading">
-            O‘quv jarayonining har bir bosqichini raqamlashtiruvchi va sun’iy intellekt bilan kuchaytirilgan vositalar majmuasi.
+            O‘quv jarayonining har bir bosqichini to‘liq raqamlashtiruvchi va zamonaviy AI bilan qurollangan modullar majmuasi.
           </p>
         </div>
 
@@ -84,26 +73,37 @@ export default function Features() {
             return (
               <div
                 key={feat.title}
-                className="glass-card-light"
                 style={{
                   padding: '36px 30px',
                   backgroundColor: '#FFFFFF',
-                  borderRadius: '20px',
+                  borderRadius: '22px',
                   position: 'relative',
-                  border: '1px solid #E5E7EB'
+                  border: '1px solid #E2E8F0',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -2px rgba(0, 0, 0, 0.02)',
+                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-4px)';
+                  e.currentTarget.style.boxShadow = '0 20px 35px -10px rgba(0, 0, 0, 0.08)';
+                  e.currentTarget.style.borderColor = '#A7F3D0';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -2px rgba(0, 0, 0, 0.02)';
+                  e.currentTarget.style.borderColor = '#E2E8F0';
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '22px' }}>
                   <div style={{
                     width: '52px',
                     height: '52px',
                     borderRadius: '14px',
-                    backgroundColor: 'rgba(52, 211, 153, 0.1)',
+                    backgroundColor: '#ECFDF5',
                     color: '#059669',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    border: '1px solid rgba(52, 211, 153, 0.25)'
+                    border: '1px solid #A7F3D0'
                   }}>
                     <Icon size={26} color="#059669" />
                   </div>
@@ -112,7 +112,7 @@ export default function Features() {
                     fontWeight: '700',
                     color: '#047857',
                     backgroundColor: '#ECFDF5',
-                    padding: '4px 10px',
+                    padding: '4px 12px',
                     borderRadius: '20px',
                     border: '1px solid #A7F3D0'
                   }}>
@@ -120,10 +120,10 @@ export default function Features() {
                   </span>
                 </div>
 
-                <h3 style={{ fontSize: '22px', fontWeight: '800', color: '#111827', marginBottom: '10px' }}>
+                <h3 style={{ fontSize: '21px', fontWeight: '800', color: '#0F172A', marginBottom: '10px' }}>
                   {feat.title}
                 </h3>
-                <p style={{ fontSize: '15px', lineHeight: '1.6', color: '#4B5563' }}>
+                <p style={{ fontSize: '15px', lineHeight: '1.65', color: '#64748B' }}>
                   {feat.desc}
                 </p>
 
@@ -134,7 +134,7 @@ export default function Features() {
                   left: '30px',
                   right: '30px',
                   height: '2px',
-                  background: 'linear-gradient(90deg, transparent, rgba(52, 211, 153, 0.5), transparent)',
+                  background: 'linear-gradient(90deg, transparent, rgba(5, 150, 105, 0.3), transparent)',
                   borderRadius: '2px'
                 }} />
               </div>

@@ -16,7 +16,7 @@ const ProtectedLayout = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white font-semibold">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-700 font-semibold">
         Yuklanmoqda...
       </div>
     );
