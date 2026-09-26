@@ -1,26 +1,71 @@
 import React, { useState } from 'react';
-import { X, CheckCircle2, ShieldCheck, Sparkles, Send } from 'lucide-react';
+import { X, CheckCircle2, ShieldCheck, Sparkles, Send, Loader2 } from 'lucide-react';
 
 export default function DemoModal({ isOpen, onClose }) {
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     university: '',
     name: '',
     role: 'Rektor / Prorektor',
     phone: '',
-    email: '',
-    studentsCount: '5,000 - 15,000',
+    studentsCount: '5,000 - 20,000 talaba',
   });
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setIsSubmitting(true);
+
+    const token = import.meta.env.VITE_TELEGRAM_BOT_TOKEN || '8839058283:AAEUXZ4nelpC-AHm2U3e0FSsnnc6DVoKSmE';
+    const chatId = import.meta.env.VITE_TELEGRAM_CHAT_ID || '6519831069';
+
+    const messageText = 
+      `🎓 <b>Yangi Demo So‘rovi — EduMind AI</b>\n\n` +
+      `🏛 <b>Universitet:</b> ${formData.university}\n` +
+      `👤 <b>Ism-sharifi:</b> ${formData.name}\n` +
+      `💼 <b>Lavozimi:</b> ${formData.role}\n` +
+      `📞 <b>Telefon:</b> ${formData.phone}\n` +
+      `👥 <b>Talabalar hajmi:</b> ${formData.studentsCount}\n\n` +
+      `⏰ <b>Yuborilgan vaqt:</b> ${new Date().toLocaleString('uz-UZ')}`;
+
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: messageText,
+          parse_mode: 'HTML',
+        }),
+      });
+
+      const data = await res.json();
+      if (!data.ok) {
+        console.warn('Telegram API javobi:', data);
+      }
+      setSubmitted(true);
+    } catch (err) {
+      console.error('Telegramga yuborishda xatolik:', err);
+      // Agar tarmoqda xatolik bo'lsa ham foydalanuvchini to'xtatmaymiz
+      setSubmitted(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReset = () => {
     setSubmitted(false);
+    setFormData({
+      university: '',
+      name: '',
+      role: 'Rektor / Prorektor',
+      phone: '',
+      studentsCount: '5,000 - 20,000 talaba',
+    });
     onClose();
   };
 
@@ -33,29 +78,30 @@ export default function DemoModal({ isOpen, onClose }) {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '20px',
-      backgroundColor: 'rgba(11, 18, 32, 0.85)',
-      backdropFilter: 'blur(12px)',
+      backgroundColor: 'rgba(15, 23, 42, 0.65)',
+      backdropFilter: 'blur(8px)',
       animation: 'fadeIn 0.2s ease-out'
     }}>
       <div style={{
         position: 'relative',
         width: '100%',
         maxWidth: '560px',
-        backgroundColor: '#0B1220',
-        border: '1px solid rgba(52, 211, 153, 0.3)',
+        backgroundColor: '#FFFFFF',
+        border: '1px solid #E2E8F0',
         borderRadius: '24px',
         padding: '36px',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(52, 211, 153, 0.15)',
-        color: '#FFFFFF'
+        boxShadow: '0 25px 60px -12px rgba(15, 23, 42, 0.25)',
+        color: '#0F172A'
       }}>
         {/* Close Button */}
         <button
           onClick={onClose}
+          disabled={isSubmitting}
           style={{
             position: 'absolute',
             top: '20px',
             right: '20px',
-            background: 'rgba(255, 255, 255, 0.08)',
+            background: '#F1F5F9',
             border: 'none',
             borderRadius: '50%',
             width: '36px',
@@ -63,12 +109,12 @@ export default function DemoModal({ isOpen, onClose }) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#9CA3AF',
+            color: '#64748B',
             cursor: 'pointer',
             transition: 'all 0.2s ease'
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = '#FFF'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = '#9CA3AF'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = '#0F172A'; e.currentTarget.style.background = '#E2E8F0'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = '#64748B'; e.currentTarget.style.background = '#F1F5F9'; }}
         >
           <X size={20} />
         </button>
@@ -82,26 +128,26 @@ export default function DemoModal({ isOpen, onClose }) {
                 gap: '6px',
                 padding: '4px 12px',
                 borderRadius: '20px',
-                backgroundColor: 'rgba(52, 211, 153, 0.12)',
-                border: '1px solid rgba(52, 211, 153, 0.3)',
-                color: '#34D399',
+                backgroundColor: '#ECFDF5',
+                border: '1px solid #A7F3D0',
+                color: '#047857',
                 fontSize: '12px',
                 fontWeight: '700',
                 marginBottom: '12px'
               }}>
-                <Sparkles size={14} /> DEMO TUSHUNTIRISH VA SHAXSIY TAQDIMOT
+                <Sparkles size={14} /> DEMO TAQDIMOT VA KONSALTING
               </div>
-              <h3 style={{ fontSize: '26px', fontWeight: '800', lineHeight: '1.2', color: '#FFF' }}>
-                Universitetingiz uchun demo so‘rang
+              <h3 style={{ fontSize: '26px', fontWeight: '800', lineHeight: '1.2', color: '#0F172A' }}>
+                Universitetingiz uchun demo oling
               </h3>
-              <p style={{ color: '#9CA3AF', fontSize: '14px', marginTop: '6px' }}>
-                Smart Edu mutaxassislari 24 soat ichida siz bilan bog‘lanib, platformani universitetingizga moslashtirib ko‘rsatib berishadi.
+              <p style={{ color: '#64748B', fontSize: '14px', marginTop: '6px', lineHeight: '1.5' }}>
+                EduMind AI mutaxassislari 24 soat ichida siz bilan bog‘lanib, platformani oliygohingizga moslashtirib ko‘rsatib berishadi.
               </p>
             </div>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#D1D5DB', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
                   Universitet nomi *
                 </label>
                 <input
@@ -114,20 +160,21 @@ export default function DemoModal({ isOpen, onClose }) {
                     width: '100%',
                     padding: '12px 16px',
                     borderRadius: '10px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#FFF',
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid #CBD5E1',
+                    color: '#0F172A',
                     fontSize: '14px',
-                    outline: 'none'
+                    outline: 'none',
+                    transition: 'border-color 0.2s'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#34D399'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.15)'}
+                  onFocus={(e) => e.target.style.borderColor = '#059669'}
+                  onBlur={(e) => e.target.style.borderColor = '#CBD5E1'}
                 />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#D1D5DB', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
                     Ism-sharifingiz *
                   </label>
                   <input
@@ -140,18 +187,19 @@ export default function DemoModal({ isOpen, onClose }) {
                       width: '100%',
                       padding: '12px 16px',
                       borderRadius: '10px',
-                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#FFF',
+                      backgroundColor: '#FFFFFF',
+                      border: '1px solid #CBD5E1',
+                      color: '#0F172A',
                       fontSize: '14px',
-                      outline: 'none'
+                      outline: 'none',
+                      transition: 'border-color 0.2s'
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#34D399'}
-                    onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.15)'}
+                    onFocus={(e) => e.target.style.borderColor = '#059669'}
+                    onBlur={(e) => e.target.style.borderColor = '#CBD5E1'}
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#D1D5DB', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
                     Lavozimingiz *
                   </label>
                   <select
@@ -161,9 +209,9 @@ export default function DemoModal({ isOpen, onClose }) {
                       width: '100%',
                       padding: '12px 16px',
                       borderRadius: '10px',
-                      backgroundColor: '#131E32',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#FFF',
+                      backgroundColor: '#FFFFFF',
+                      border: '1px solid #CBD5E1',
+                      color: '#0F172A',
                       fontSize: '14px',
                       outline: 'none'
                     }}
@@ -179,7 +227,7 @@ export default function DemoModal({ isOpen, onClose }) {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#D1D5DB', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
                     Telefon raqam *
                   </label>
                   <input
@@ -192,18 +240,19 @@ export default function DemoModal({ isOpen, onClose }) {
                       width: '100%',
                       padding: '12px 16px',
                       borderRadius: '10px',
-                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#FFF',
+                      backgroundColor: '#FFFFFF',
+                      border: '1px solid #CBD5E1',
+                      color: '#0F172A',
                       fontSize: '14px',
-                      outline: 'none'
+                      outline: 'none',
+                      transition: 'border-color 0.2s'
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#34D399'}
-                    onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.15)'}
+                    onFocus={(e) => e.target.style.borderColor = '#059669'}
+                    onBlur={(e) => e.target.style.borderColor = '#CBD5E1'}
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#D1D5DB', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#1E293B', marginBottom: '6px' }}>
                     Talabalar soni
                   </label>
                   <select
@@ -213,57 +262,46 @@ export default function DemoModal({ isOpen, onClose }) {
                       width: '100%',
                       padding: '12px 16px',
                       borderRadius: '10px',
-                      backgroundColor: '#131E32',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#FFF',
+                      backgroundColor: '#FFFFFF',
+                      border: '1px solid #CBD5E1',
+                      color: '#0F172A',
                       fontSize: '14px',
                       outline: 'none'
                     }}
                   >
-                    <option value="1,000 tagacha">1,000 tagacha</option>
-                    <option value="1,000 - 5,000">1,000 - 5,000</option>
-                    <option value="5,000 - 15,000">5,000 - 15,000</option>
-                    <option value="15,000 - 30,000">15,000 - 30,000</option>
-                    <option value="30,000+">30,000 dan ortiq</option>
+                    <option value="< 5,000 talaba">&lt; 5,000 talaba (Starter)</option>
+                    <option value="5,000 - 20,000 talaba">5,000 - 20,000 talaba (Standart)</option>
+                    <option value="> 20,000 talaba">&gt; 20,000 talaba (Enterprise)</option>
                   </select>
                 </div>
               </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#D1D5DB', marginBottom: '6px' }}>
-                  Ishchi Email *
-                </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="rektorat@tstu.uz"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    borderRadius: '10px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#FFF',
-                    fontSize: '14px',
-                    outline: 'none'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = '#34D399'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.15)'}
-                />
-              </div>
-
               <button
                 type="submit"
+                disabled={isSubmitting}
                 className="btn-primary"
-                style={{ width: '100%', marginTop: '10px', padding: '14px', borderRadius: '10px' }}
+                style={{
+                  width: '100%',
+                  marginTop: '8px',
+                  padding: '14px',
+                  borderRadius: '10px',
+                  opacity: isSubmitting ? 0.75 : 1,
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer'
+                }}
               >
-                <Send size={18} /> Ariqsa Yuborish & Demo Olish
+                {isSubmitting ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" /> Yuborilmoqda...
+                  </>
+                ) : (
+                  <>
+                    <Send size={18} /> Ariza Yuborish & Demo Olish
+                  </>
+                )}
               </button>
 
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: '#6B7280', fontSize: '12px', marginTop: '4px' }}>
-                <ShieldCheck size={14} color="#34D399" /> Maxfiylik va ma'lumotlar xavfsizligi каfolatlanadi
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: '#64748B', fontSize: '12px', marginTop: '4px' }}>
+                <ShieldCheck size={15} color="#059669" /> Maxfiylik va ma’lumotlar xavfsizligi kafolatlanadi
               </div>
             </form>
           </>
@@ -273,21 +311,21 @@ export default function DemoModal({ isOpen, onClose }) {
               width: '64px',
               height: '64px',
               borderRadius: '50%',
-              backgroundColor: 'rgba(52, 211, 153, 0.15)',
-              border: '2px solid #34D399',
+              backgroundColor: '#ECFDF5',
+              border: '2px solid #059669',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               margin: '0 auto 20px',
-              color: '#34D399'
+              color: '#059669'
             }}>
               <CheckCircle2 size={36} />
             </div>
-            <h3 style={{ fontSize: '24px', fontWeight: '800', marginBottom: '10px', color: '#FFF' }}>
-              Arizangiz qabul qilindi!
+            <h3 style={{ fontSize: '24px', fontWeight: '800', marginBottom: '10px', color: '#0F172A' }}>
+              Arizangiz muvaffaqiyatli qabul qilindi!
             </h3>
-            <p style={{ color: '#9CA3AF', fontSize: '15px', lineHeight: '1.6', marginBottom: '24px' }}>
-              Hurmatli {formData.name}, sizning <strong>{formData.university}</strong> bo‘yicha demo so‘rovingiz mutaxassislarimizga yuborildi. Tez orada siz kiritgan telefon raqami ({formData.phone}) orqali bog‘lanamiz.
+            <p style={{ color: '#475569', fontSize: '15px', lineHeight: '1.6', marginBottom: '24px' }}>
+              Hurmatli {formData.name}, sizning <strong>{formData.university}</strong> bo‘yicha demo so‘rovingiz qabul qilindi va mutaxassislarimizga yuborildi. Tez orada siz bilan <strong>{formData.phone}</strong> raqami orqali bog‘lanamiz.
             </p>
             <button
               onClick={handleReset}

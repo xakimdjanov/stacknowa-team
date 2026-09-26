@@ -14,6 +14,10 @@ import {
   Star,
   Calendar,
   BadgeCheck,
+  Building2,
+  Trash2,
+  AlertTriangle,
+  Lock,
 } from 'lucide-react';
 
 const EMERALD_GRADIENT = 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)';
@@ -29,6 +33,30 @@ const getPlanStyle = (name = '') => {
       glow: 'rgba(100,116,139,0.15)',
       popular: false,
     };
+  if (n.includes('ENTERPRISE'))
+    return {
+      icon: Crown,
+      gradient: 'linear-gradient(135deg,#4f46e5,#059669)',
+      badge: { bg: 'rgba(79,70,229,0.1)', border: 'rgba(79,70,229,0.3)', color: '#4f46e5' },
+      glow: 'rgba(79,70,229,0.25)',
+      popular: false,
+    };
+  if (n.includes('STANDART') || n.includes('STANDARD'))
+    return {
+      icon: Star,
+      gradient: EMERALD_GRADIENT,
+      badge: { bg: 'rgba(5,150,105,0.1)', border: 'rgba(5,150,105,0.3)', color: '#059669' },
+      glow: 'rgba(5,150,105,0.25)',
+      popular: true,
+    };
+  if (n.includes('STARTER') || n.includes('BASIC'))
+    return {
+      icon: Building2,
+      gradient: 'linear-gradient(135deg,#0d9488,#059669)',
+      badge: { bg: 'rgba(13,148,136,0.1)', border: 'rgba(13,148,136,0.25)', color: '#0d9488' },
+      glow: 'rgba(13,148,136,0.15)',
+      popular: false,
+    };
   if (n.includes('PRO') || n.includes('PREMIUM'))
     return {
       icon: Crown,
@@ -36,14 +64,6 @@ const getPlanStyle = (name = '') => {
       badge: { bg: 'rgba(5,150,105,0.1)', border: 'rgba(5,150,105,0.3)', color: '#059669' },
       glow: 'rgba(5,150,105,0.25)',
       popular: true,
-    };
-  if (n.includes('BASIC') || n.includes('STANDART'))
-    return {
-      icon: Star,
-      gradient: 'linear-gradient(135deg,#0d9488,#059669)',
-      badge: { bg: 'rgba(13,148,136,0.1)', border: 'rgba(13,148,136,0.25)', color: '#0d9488' },
-      glow: 'rgba(13,148,136,0.15)',
-      popular: false,
     };
   return {
     icon: Sparkles,
@@ -55,10 +75,11 @@ const getPlanStyle = (name = '') => {
 };
 
 /* ─── Plan Card ──────────────────────────── */
-const PlanCard = ({ p, onEdit }) => {
+const PlanCard = ({ p, onEdit, onDelete }) => {
   const s = getPlanStyle(p.name);
   const Icon = s.icon;
   const isFree = p.price_uzs === 0;
+  const isProtected = p.is_default || ['STARTER', 'STANDART', 'ENTERPRISE', 'FREE'].includes(String(p.name || '').toUpperCase());
 
   return (
     <div
@@ -74,7 +95,7 @@ const PlanCard = ({ p, onEdit }) => {
           className="absolute top-4 right-4 text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full text-white shadow-sm"
           style={{ background: EMERALD_GRADIENT }}
         >
-          ⭐ Mashhur
+          ⭐ Eng ommabop
         </div>
       )}
 
@@ -85,26 +106,53 @@ const PlanCard = ({ p, onEdit }) => {
         {/* Icon + Plan name */}
         <div className="flex items-center gap-3 mb-4">
           <div
-            className="w-11 h-11 rounded-xl flex items-center justify-center text-white"
+            className="w-11 h-11 rounded-xl flex items-center justify-center text-white flex-shrink-0"
             style={{ background: s.gradient, boxShadow: `0 4px 12px ${s.glow}` }}
           >
             <Icon className="w-5 h-5" />
           </div>
           <div>
-            <span
-              className="text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-md"
-              style={s.badge}
-            >
-              {p.name}
-            </span>
-            <h3 className="text-base font-bold text-slate-800 leading-tight mt-0.5">{p.title}</h3>
+            <div className="flex items-center gap-1.5">
+              <span
+                className="text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-md"
+                style={s.badge}
+              >
+                {p.name}
+              </span>
+              {isProtected && (
+                <span className="text-[9px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded flex items-center gap-1" title="Standart tizim tarifi">
+                  <Lock className="w-2.5 h-2.5 text-slate-400" /> Standart
+                </span>
+              )}
+            </div>
+            <h3 className="text-base font-bold text-slate-800 leading-tight mt-1">{p.title}</h3>
           </div>
-          <button
-            onClick={() => onEdit(p)}
-            className="ml-auto w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition-all"
-          >
-            <Edit2 className="w-3.5 h-3.5" />
-          </button>
+
+          <div className="ml-auto flex items-center gap-1.5">
+            <button
+              onClick={() => onEdit(p)}
+              className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-slate-500 hover:text-emerald-700 hover:bg-emerald-50 transition-all cursor-pointer border border-slate-200"
+              title="Tarifni tahrirlash (Edit)"
+            >
+              <Edit2 className="w-3.5 h-3.5" />
+            </button>
+            {isProtected ? (
+              <span
+                className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-slate-300 bg-slate-50 cursor-not-allowed border border-slate-100"
+                title="Asosiy standart tarif (o'chirib bo'lmaydi, faqat tahrirlash mumkin)"
+              >
+                <Lock className="w-3.5 h-3.5 text-slate-400" />
+              </span>
+            ) : (
+              <button
+                onClick={() => onDelete(p)}
+                className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all cursor-pointer border border-slate-200"
+                title="Tarifni o'chirish"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Description */}
@@ -179,7 +227,7 @@ const PlanCard = ({ p, onEdit }) => {
         {/* Target role & ID footer */}
         <div className="flex items-center justify-between pt-3 border-t border-slate-100 mt-auto">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-            {p.role_target} UCHUN
+            {p.role_target === 'ALL' ? 'UNIVERSITET / BARCHASI (ALL)' : `${p.role_target} UCHUN`}
           </span>
           <span className="text-[10px] text-slate-400 font-mono">ID: {p.id}</span>
         </div>
@@ -222,6 +270,8 @@ const Plans = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingPlan, setEditingPlan] = useState(null);
   const [saving, setSaving]       = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting]   = useState(false);
 
   const [formData, setFormData] = useState({
     name: '', title: '', description: '',
@@ -292,6 +342,20 @@ const Plans = () => {
     }
   };
 
+  const handleDeletePlan = async () => {
+    if (!deleteTarget) return;
+    try {
+      setDeleting(true);
+      await api.delete(`/plans/${deleteTarget.id}`);
+      setPlans(plans.filter((p) => p.id !== deleteTarget.id));
+      setDeleteTarget(null);
+    } catch (err) {
+      alert(err.response?.data?.message || err.message || "Tarifni o'chirishda xatolik yuz berdi!");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <div className="min-h-full bg-slate-50">
 
@@ -320,8 +384,9 @@ const Plans = () => {
         <div className="max-w-7xl mx-auto flex flex-wrap gap-2 sm:gap-3 mt-4 sm:mt-5">
           {[
             { label: 'Jami tariflar', value: plans.length, icon: CreditCard, color: '#059669' },
-            { label: 'Teacher tariflar', value: plans.filter((p) => p.role_target === 'TEACHER').length, icon: Users, color: '#0d9488' },
-            { label: 'Student tariflar', value: plans.filter((p) => p.role_target === 'STUDENT').length, icon: BadgeCheck, color: '#d97706' },
+            { label: 'Universitet (ALL)', value: plans.filter((p) => p.role_target === 'ALL').length, icon: Building2, color: '#6366f1' },
+            { label: 'Boshlang‘ich (Starter)', value: '12 mln', icon: Sparkles, color: '#0d9488' },
+            { label: 'Enterprise (Yillik)', value: '36 mln', icon: Crown, color: '#d97706' },
           ].map(({ label, value, icon: Icon, color }) => (
             <div
               key={label}
@@ -359,7 +424,7 @@ const Plans = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {plans.map((p) => (
-              <PlanCard key={p.id} p={p} onEdit={openEditModal} />
+              <PlanCard key={p.id} p={p} onEdit={openEditModal} onDelete={(plan) => setDeleteTarget(plan)} />
             ))}
           </div>
         )}
@@ -450,6 +515,7 @@ const Plans = () => {
                 onChange={(e) => setFormData({ ...formData, role_target: e.target.value })}
                 className={inputCls}
               >
+                <option value="ALL">Barchasi / Universitet (ALL)</option>
                 <option value="TEACHER">O'qituvchi (TEACHER)</option>
                 <option value="STUDENT">Talaba (STUDENT)</option>
               </select>
@@ -489,6 +555,51 @@ const Plans = () => {
           </div>
         </form>
       </Modal>
+
+      {/* ══ DELETE CONFIRMATION MODAL ══ */}
+      {deleteTarget && (
+        <Modal
+          isOpen={Boolean(deleteTarget)}
+          onClose={() => setDeleteTarget(null)}
+          title="Tarifni O'chirish"
+        >
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-sm">
+              <AlertTriangle className="w-5 h-5 flex-shrink-0 text-rose-600" />
+              <div>
+                <p className="font-bold">Tarifni o'chirmoqchimisiz?</p>
+                <p className="text-xs text-rose-700 mt-0.5">
+                  <strong>{deleteTarget.title}</strong> ({deleteTarget.name}) tarifi platformadan butunlay o'chiriladi.
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600 space-y-1">
+              <div><strong>Tarif narxi:</strong> {Number(deleteTarget.price_uzs).toLocaleString()} UZS</div>
+              <div><strong>Amal qilish muddati:</strong> {deleteTarget.duration_days} kun</div>
+              <div><strong>Rol:</strong> {deleteTarget.role_target}</div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-sm hover:bg-slate-50 transition-colors cursor-pointer"
+              >
+                Bekor qilish
+              </button>
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={handleDeletePlan}
+                className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm shadow-md transition-all cursor-pointer disabled:opacity-50"
+              >
+                {deleting ? "O'chirilmoqda..." : "Ha, O'chirish"}
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

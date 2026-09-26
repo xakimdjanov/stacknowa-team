@@ -248,3 +248,39 @@ exports.getAllTransactions = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+/**
+ * 8. Admin tarifni o'chirishi (Delete Plan)
+ */
+exports.deletePlan = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const plan = await Plan.findByPk(id);
+    if (!plan) {
+      return res.status(404).json({ success: false, message: "Tarif topilmadi" });
+    }
+
+    const PROTECTED_PLANS = ["STARTER", "STANDART", "ENTERPRISE", "FREE", "PRO_MONTHLY", "PRO_ANNUAL"];
+    if (plan.is_default || PROTECTED_PLANS.includes(String(plan.name || '').toUpperCase())) {
+      return res.status(400).json({
+        success: false,
+        message: "Ushbu asosiy standart tarifni o'chirib bo'lmaydi! Uni faqat tahrirlash mumkin.",
+      });
+    }
+
+    try {
+      await plan.destroy();
+    } catch (dbErr) {
+      plan.is_active = false;
+      await plan.save();
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Tarif muvaffaqiyatli o'chirildi ✅",
+      deletedId: id,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};

@@ -1,29 +1,29 @@
-/* Smart Edu — Enterprise B2B SaaS Design System */
+/* EduMind AI — Enterprise B2B SaaS Design System (Light Mode Premium) */
 
 :root {
-  --color-accent: #34D399;
-  --color-accent-hover: #22C55E;
-  --color-accent-glow: rgba(52, 211, 153, 0.3);
-  --color-accent-light: rgba(52, 211, 153, 0.1);
-  --color-accent-border: rgba(52, 211, 153, 0.25);
+  --color-accent: #059669;
+  --color-accent-hover: #047857;
+  --color-accent-glow: rgba(5, 150, 105, 0.2);
+  --color-accent-light: #ECFDF5;
+  --color-accent-border: #A7F3D0;
   
-  --color-navy: #0B1220;
-  --color-navy-card: #131E32;
-  --color-navy-card-border: rgba(255, 255, 255, 0.08);
-  --color-navy-light: #1E293B;
-
-  --color-light-bg: #F5F7FA;
+  --color-primary: #0F172A;
+  --color-secondary: #334155;
+  --color-light-bg: #F8FAFC;
+  --color-card-bg: #FFFFFF;
   --color-white: #FFFFFF;
-  --color-text-dark: #111827;
-  --color-text-muted: #6B7280;
-  --color-text-light: #9CA3AF;
-  --color-border: #E5E7EB;
+  --color-text-dark: #0F172A;
+  --color-text-muted: #475569;
+  --color-text-light: #64748B;
+  --color-border: #E2E8F0;
+  --color-border-subtle: #F1F5F9;
 
   --font-family: 'Inter', 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
-  --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-  --shadow-glow: 0 0 35px rgba(52, 211, 153, 0.2);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 20px 40px -12px rgba(15, 23, 42, 0.08);
+  --shadow-glow: 0 0 35px rgba(5, 150, 105, 0.15);
 }
 
 * {
@@ -44,22 +44,25 @@ html {
 
 body {
   overflow-x: hidden;
+  background-color: var(--color-white);
+  color: var(--color-text-dark);
 }
 
 /* Typography Rules */
 .hero-heading {
-  font-size: clamp(38px, 5.5vw, 72px);
+  font-size: clamp(38px, 5.5vw, 68px);
   font-weight: 800;
-  line-height: 1.08;
+  line-height: 1.1;
   letter-spacing: -0.03em;
-  color: #FFFFFF;
+  color: #0F172A;
 }
 
 .section-heading {
-  font-size: clamp(30px, 3.8vw, 48px);
+  font-size: clamp(28px, 3.8vw, 44px);
   font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
+  line-height: 1.18;
+  letter-spacing: -0.025em;
+  color: #0F172A;
 }
 
 .section-subheading {
@@ -75,12 +78,12 @@ body {
   gap: 8px;
   padding: 6px 14px;
   border-radius: 9999px;
-  background: rgba(52, 211, 153, 0.12);
-  border: 1px solid rgba(52, 211, 153, 0.25);
-  color: var(--color-accent);
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  color: #047857;
   font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -90,23 +93,23 @@ body {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 16px 32px;
-  font-size: 16px;
+  padding: 15px 30px;
+  font-size: 15px;
   font-weight: 600;
-  color: #0B1220;
-  background-color: var(--color-accent);
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
   border: none;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 20px rgba(52, 211, 153, 0.35);
+  box-shadow: 0 4px 16px rgba(5, 150, 105, 0.3);
   text-decoration: none;
 }
 
 .btn-primary:hover {
-  background-color: #2ee09e;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(52, 211, 153, 0.5);
+  box-shadow: 0 8px 24px rgba(5, 150, 105, 0.4);
 }
 
 .btn-secondary-dark {
@@ -114,23 +117,24 @@ body {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 16px 28px;
-  font-size: 16px;
+  padding: 15px 28px;
+  font-size: 15px;
   font-weight: 600;
-  color: #FFFFFF;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #0F172A;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.25s ease;
   text-decoration: none;
-  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-secondary-dark:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.3);
-  color: #FFFFFF;
+  background: #F8FAFC;
+  border-color: #94A3B8;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-secondary-light {
@@ -152,20 +156,13 @@ body {
 }
 
 .btn-secondary-light:hover {
-  border-color: #CBD5E1;
+  border-color: #94A3B8;
   background-color: #F8FAFC;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 /* Glassmorphism & Cards */
-.glass-card-dark {
-  background: rgba(19, 30, 50, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--color-navy-card-border);
-  border-radius: 20px;
-}
-
 .glass-card-light {
   background: #FFFFFF;
   border: 1px solid var(--color-border);
@@ -176,8 +173,15 @@ body {
 
 .glass-card-light:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.08);
-  border-color: rgba(52, 211, 153, 0.4);
+  box-shadow: var(--shadow-xl);
+  border-color: #CBD5E1;
+}
+
+.glass-card-dark {
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
 }
 
 /* Custom Scrollbar */
@@ -185,14 +189,14 @@ body {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #0B1220;
+  background: #F1F5F9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1E293B;
+  background: #CBD5E1;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #34D399;
+  background: #059669;
 }
 
 /* Container */

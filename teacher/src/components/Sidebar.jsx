@@ -30,12 +30,6 @@ const navGroups = [
       { to: '/evaluations', label: 'AI Baholash Natijalari', shortLabel: 'AI Baholar', icon: Sparkles },
     ],
   },
-  {
-    title: 'MOLIYA & REJA',
-    items: [
-      { to: '/subscription', label: 'Pro Obuna & Tariflar', shortLabel: 'Pro Obuna', icon: CreditCard },
-    ],
-  },
 ];
 
 const bottomNavItems = [

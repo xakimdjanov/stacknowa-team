@@ -111,7 +111,7 @@ export default function Structure() {
             {/* Faculty Header */}
             <div className="bg-slate-50 p-5 border-b border-slate-200/80 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-slate-900 text-white font-black flex items-center justify-center text-sm">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 text-white font-black flex items-center justify-center text-sm shadow-sm shadow-amber-500/20">
                   {f.code || f.name.substring(0, 3).toUpperCase()}
                 </div>
                 <div>

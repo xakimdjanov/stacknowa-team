@@ -34,20 +34,31 @@ export default function Sidebar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+  const planRaw = user?.university_plan || user?.university?.plan_name || 'ENTERPRISE';
+  const isStarter = String(planRaw).toUpperCase().includes('STARTER');
+  const isStandart = String(planRaw).toUpperCase().includes('STANDART') || String(planRaw).toUpperCase().includes('STANDARD');
+  
+  const planTag = isStarter ? "STARTER" : isStandart ? "STANDART" : "ENTERPRISE";
+  const planTitle = isStarter ? "Starter Plan" : isStandart ? "Standart Plan" : "Enterprise Plan";
+  const planPrice = isStarter ? "12 mln so‘m / yil" : isStandart ? "24 mln so‘m / yil" : "36 mln so‘m / yil";
+
+  const displayName = user?.university_name || user?.name || "Namdtu University";
+  const initials = displayName.substring(0, 2).toUpperCase();
+
   return (
     <aside className="w-64 bg-white border-r border-slate-200/80 flex flex-col justify-between min-h-screen p-4 flex-shrink-0">
       <div className="space-y-6">
         {/* University Brand Header */}
         <div className="flex items-center gap-3 px-2 py-2 border-b border-slate-100 pb-4">
-          <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black text-base shadow-md">
-            {user?.name ? user.name.substring(0, 2).toUpperCase() : 'UN'}
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex items-center justify-center font-black text-base shadow-md shadow-emerald-600/20">
+            {initials}
           </div>
           <div className="min-w-0 flex-1">
             <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-600 block">
               Universitet Admin
             </span>
             <h2 className="font-bold text-sm text-slate-800 truncate leading-tight">
-              {user?.name || "TUIT University"}
+              {displayName}
             </h2>
             <div className="font-mono text-[10px] font-bold text-slate-400 mt-0.5 flex items-center gap-1">
               <KeyRound className="w-3 h-3 text-emerald-500" />
@@ -94,10 +105,10 @@ export default function Sidebar() {
         <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/80 text-xs">
           <div className="flex items-center justify-between text-[10px] font-extrabold uppercase text-slate-400 mb-1">
             <span>Obuna Ta'rifi</span>
-            <span className="text-emerald-600 font-extrabold">PRO</span>
+            <span className="text-emerald-700 font-extrabold">{planTag}</span>
           </div>
-          <div className="font-bold text-slate-800">{user?.plan_name || 'ENTERPRISE PRO'}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5">$3,500 / yillik obuna</div>
+          <div className="font-bold text-slate-800">{planTitle}</div>
+          <div className="text-[10px] text-emerald-700 font-bold mt-0.5">{planPrice} obuna</div>
         </div>
 
         <button

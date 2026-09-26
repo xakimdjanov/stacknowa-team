@@ -5,8 +5,8 @@ const bcrypt = require("bcryptjs");
 const updateUserSchema = Joi.object({
   name: Joi.string().min(2).max(100),
   email: Joi.string().email(),
-  role: Joi.string().valid("ADMIN", "TEACHER", "STUDENT"),
-  plan_type: Joi.string().valid("FREE", "PRO"),
+  role: Joi.string().valid("ADMIN", "UNIVERSITY_ADMIN", "TEACHER", "STUDENT"),
+  plan_type: Joi.string().allow("FREE", "STARTER", "STANDART", "ENTERPRISE", "PRO"),
   is_active: Joi.boolean(),
   password: Joi.string().min(6).allow(null, ""),
 });
@@ -35,6 +35,10 @@ exports.linkUniversityCode = async (req, res) => {
 
     user.university_code = university_code;
     user.university_id = university.id;
+    // Also inherit university plan
+    if (university.plan_name) {
+      user.plan_type = university.plan_name;
+    }
     user.approval_status = "PENDING"; // Approval pending by University Admin
     await user.save();
 
@@ -65,10 +69,28 @@ exports.getAllUsers = async (req, res) => {
     const users = await User.findAll({
       where,
       attributes: { exclude: ["password"] },
+      include: [
+        {
+          model: University,
+          as: "university",
+          attributes: ["id", "name", "plan_name", "unique_code"],
+        },
+      ],
       order: [["created_at", "DESC"]],
     });
 
-    return res.status(200).json({ success: true, users });
+    const formattedUsers = users.map((u) => {
+      const userJson = u.toJSON();
+      // Agar foydalanuvchi universitetga tegishli bo'lsa va universitet tarif sotib olgan bo'lsa,
+      // uning tarifi universitet tarifini meros qilib oladi!
+      if (userJson.university?.plan_name) {
+        userJson.plan_type = userJson.university.plan_name;
+        userJson.is_university_covered = true;
+      }
+      return userJson;
+    });
+
+    return res.status(200).json({ success: true, users: formattedUsers });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }

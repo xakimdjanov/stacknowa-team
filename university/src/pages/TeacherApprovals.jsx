@@ -153,7 +153,7 @@ export default function TeacherApprovals() {
             {filtered.map((t) => (
               <div key={t.id} className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/80 transition-colors">
                 <div className="flex items-start gap-4">
-                  <div className="w-11 h-11 rounded-xl bg-slate-900 text-white font-bold flex items-center justify-center flex-shrink-0 text-base shadow-sm">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white font-bold flex items-center justify-center flex-shrink-0 text-base shadow-sm shadow-indigo-500/20">
                     {t.name.substring(0, 2).toUpperCase()}
                   </div>
                   <div>

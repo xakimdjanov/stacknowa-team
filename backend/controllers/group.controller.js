@@ -1,4 +1,4 @@
-const { Group, GroupMember, User, Assignment, Submission, Event } = require("../models");
+const { Group, GroupMember, User, University, Assignment, Submission, Event } = require("../models");
 const { nanoid } = require("nanoid");
 const QRCode = require("qrcode");
 const Joi = require("joi");
@@ -215,9 +215,20 @@ exports.joinGroup = async (req, res) => {
       student_id: req.user.id,
     });
 
-    // Link student to university if teacher belongs to a university
-    if (group.teacher?.university_id && !req.user.university_id) {
-      await User.update({ university_id: group.teacher.university_id }, { where: { id: req.user.id } });
+    // Talaba guruhga qo'shilganda: agar guruh o'qituvchisi universitetga tegishli bo'lsa,
+    // talaba ham ushbu universitetga biriktiriladi va universitetning faol obuna tarifini (masalan, STANDART) meros qilib oladi!
+    if (group.teacher?.university_id) {
+      const uni = await University.findByPk(group.teacher.university_id);
+      if (uni) {
+        await User.update(
+          {
+            university_id: uni.id,
+            university_code: uni.unique_code,
+            plan_type: uni.plan_name || "STANDART",
+          },
+          { where: { id: req.user.id } }
+        );
+      }
     }
 
     return res.status(201).json({
@@ -289,6 +300,19 @@ exports.addStudentToGroup = async (req, res) => {
       where: { group_id: group.id, student_id: student.id },
       defaults: { group_id: group.id, student_id: student.id },
     });
+
+    if (group.teacher_id) {
+      const teacher = await User.findByPk(group.teacher_id);
+      if (teacher?.university_id) {
+        const uni = await University.findByPk(teacher.university_id);
+        if (uni) {
+          student.university_id = uni.id;
+          student.university_code = uni.unique_code;
+          student.plan_type = uni.plan_name || "STANDART";
+          await student.save();
+        }
+      }
+    }
 
     return res.status(200).json({
       success: true,

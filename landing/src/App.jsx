@@ -20,7 +20,7 @@ function App() {
   const handleCloseDemo = () => setIsDemoModalOpen(false);
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#0B1220' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: '#FFFFFF', color: '#0F172A' }}>
       {/* Sticky Top Navbar */}
       <Navbar onOpenDemo={handleOpenDemo} />
 

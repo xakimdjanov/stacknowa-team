@@ -1,19 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
-import { Building2, Mail, KeyRound, Save, ShieldCheck } from 'lucide-react';
+import { Building2, Mail, KeyRound, Save, ShieldCheck, Loader2 } from 'lucide-react';
 
 const EMERALD_GRADIENT = 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)';
 
 export default function Settings() {
-  const { user } = useAuth();
-  const [name, setName] = useState(user?.name || "Toshkent Axborot Texnologiyalari Universiteti");
-  const [email, setEmail] = useState(user?.email || "admin@tuit.uz");
+  const { user, updateUser } = useAuth();
+  const [name, setName] = useState(user?.university_name || user?.name || "Namdtu");
+  const [email, setEmail] = useState(user?.email || "university@gmail.com");
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const handleSave = (e) => {
+  useEffect(() => {
+    fetchProfile();
+  }, [user]);
+
+  const fetchProfile = async () => {
+    const uniId = user?.university_id || user?.id || '1';
+    try {
+      const res = await api.get(`/universities/${uniId}/profile`);
+      if (res.data?.university) {
+        setName(res.data.university.name);
+        setEmail(res.data.university.email);
+      }
+    } catch (err) {
+      console.log("Fetch profile error:", err.message);
+    }
+  };
+
+  const handleSave = async (e) => {
     e.preventDefault();
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    setSaving(true);
+    const uniId = user?.university_id || user?.id || '1';
+    try {
+      await api.put(`/universities/${uniId}`, { name, email });
+      if (updateUser) {
+        updateUser({ name, email, university_name: name });
+      }
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      alert("Saqlashda xatolik: " + (err.response?.data?.error || err.message));
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -72,11 +103,12 @@ export default function Settings() {
           <div className="pt-3 border-t flex justify-end">
             <button
               type="submit"
+              disabled={saving}
               style={{ background: EMERALD_GRADIENT }}
-              className="px-6 py-2.5 rounded-xl text-white font-bold text-xs shadow-md flex items-center gap-2 cursor-pointer hover:opacity-95"
+              className="px-6 py-2.5 rounded-xl text-white font-bold text-xs shadow-md flex items-center gap-2 cursor-pointer hover:opacity-95 disabled:opacity-60"
             >
-              <Save className="w-4 h-4" />
-              Sozlamalarni Saqlash
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              {saving ? "Saqlanmoqda..." : "Sozlamalarni Saqlash"}
             </button>
           </div>
         </form>

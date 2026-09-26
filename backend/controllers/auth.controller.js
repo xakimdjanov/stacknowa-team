@@ -30,11 +30,13 @@ exports.register = async (req, res) => {
     let universityId = null;
     let approvalStatus = "APPROVED";
 
-    if (value.role === "TEACHER" && value.university_code) {
+    if ((value.role === "TEACHER" || value.role === "STUDENT") && value.university_code) {
       const university = await University.findOne({ where: { unique_code: value.university_code, status: "ACTIVE" } });
       if (university) {
         universityId = university.id;
-        approvalStatus = "PENDING"; // Teacher needs University Admin approval!
+        if (value.role === "TEACHER") {
+          approvalStatus = "PENDING"; // Teacher needs University Admin approval!
+        }
       }
     }
 
@@ -94,12 +96,22 @@ exports.login = async (req, res) => {
     }
 
     let university_name = null;
+    let university_plan = "ENTERPRISE";
+    let university_obj = null;
     if (user.university_id) {
       const uni = await University.findByPk(user.university_id);
-      if (uni) university_name = uni.name;
+      if (uni) {
+        university_name = uni.name;
+        university_plan = uni.plan_name || "ENTERPRISE";
+        university_obj = uni;
+      }
     } else if (user.university_code) {
       const uni = await University.findOne({ where: { unique_code: user.university_code } });
-      if (uni) university_name = uni.name;
+      if (uni) {
+        university_name = uni.name;
+        university_plan = uni.plan_name || "ENTERPRISE";
+        university_obj = uni;
+      }
     }
 
     const token = jwt.sign(
@@ -121,7 +133,9 @@ exports.login = async (req, res) => {
         university_id: user.university_id,
         university_code: user.university_code,
         university_name,
-        plan_type: user.plan_type,
+        university_plan,
+        university: university_obj,
+        plan_type: university_obj?.plan_name || user.plan_type,
         plan_expires_at: user.plan_expires_at,
       },
     });
@@ -132,12 +146,22 @@ exports.login = async (req, res) => {
 
 exports.getMe = async (req, res) => {
   let university_name = null;
+  let university_plan = "ENTERPRISE";
+  let university_obj = null;
   if (req.user?.university_id) {
     const uni = await University.findByPk(req.user.university_id);
-    if (uni) university_name = uni.name;
+    if (uni) {
+      university_name = uni.name;
+      university_plan = uni.plan_name || "ENTERPRISE";
+      university_obj = uni;
+    }
   } else if (req.user?.university_code) {
     const uni = await University.findOne({ where: { unique_code: req.user.university_code } });
-    if (uni) university_name = uni.name;
+    if (uni) {
+      university_name = uni.name;
+      university_plan = uni.plan_name || "ENTERPRISE";
+      university_obj = uni;
+    }
   }
 
   return res.status(200).json({
@@ -151,7 +175,9 @@ exports.getMe = async (req, res) => {
       university_id: req.user.university_id,
       university_code: req.user.university_code,
       university_name,
-      plan_type: req.user.plan_type,
+      university_plan,
+      university: university_obj,
+      plan_type: university_obj?.plan_name || req.user.plan_type,
       plan_expires_at: req.user.plan_expires_at,
     },
   });

@@ -9,6 +9,7 @@ router.get("/", planController.getPlans);
 // Admin boshqaruvi
 router.post("/", authenticate, authorize("ADMIN"), planController.createPlan);
 router.put("/:id", authenticate, authorize("ADMIN"), planController.updatePlan);
+router.delete("/:id", authenticate, authorize("ADMIN"), planController.deletePlan);
 
 // Barcha to'lov tranzaksiyalari (Admin va OTM uchun barchasi, O'qituvchilar uchun o'ziningki)
 router.get("/transactions", authenticate, planController.getAllTransactions);

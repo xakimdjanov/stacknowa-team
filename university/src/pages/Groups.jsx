@@ -129,7 +129,7 @@ export default function Groups() {
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-slate-900 text-white font-bold flex items-center justify-center text-xs">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-600 to-teal-700 text-white font-bold flex items-center justify-center text-xs shadow-sm shadow-cyan-600/20">
                       {g.course ? `${g.course}-Kurs` : 'GURUH'}
                     </div>
                     <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-cyan-50 text-cyan-700 border border-cyan-200">
@@ -168,7 +168,7 @@ export default function Groups() {
 
                 <button
                   onClick={() => setSelectedGroup(g)}
-                  className="w-full py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-900 hover:text-white transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  className="w-full py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   Guruh Tafsilotlarini Ko'rish <ChevronRight className="w-4 h-4" />
                 </button>
@@ -185,7 +185,7 @@ export default function Groups() {
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white font-black flex items-center justify-center text-sm shadow-md">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-600 to-teal-700 text-white font-black flex items-center justify-center text-sm shadow-md shadow-cyan-600/20">
                   {selectedGroup.course ? `${selectedGroup.course}-K` : 'G'}
                 </div>
                 <div>
@@ -219,42 +219,42 @@ export default function Groups() {
             </div>
 
             {/* Detailed Group Performance Stats */}
-            <div className="p-4 rounded-2xl bg-slate-900 text-white space-y-3 shadow-md">
+            <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-50 to-emerald-50/40 border border-slate-200/90 text-slate-900 space-y-3 shadow-xs">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-emerald-400" />
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-emerald-600" />
                   Guruh Tahliliy Statistikasi (Full Analytics)
                 </span>
-                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-200">
                   REAL-TIME STATS
                 </span>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+                <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs">
                   <div className="text-[10px] font-bold text-slate-400 uppercase">Talabalar</div>
-                  <div className="text-lg font-black text-indigo-400 mt-0.5">
+                  <div className="text-lg font-black text-indigo-600 mt-0.5">
                     {(selectedGroup.members || []).filter(m => (m.student?.role || m.role) !== 'TEACHER' && (m.student?.id || m.student_id) !== selectedGroup.teacher_id).length} kishi
                   </div>
                 </div>
 
-                <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+                <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs">
                   <div className="text-[10px] font-bold text-slate-400 uppercase">Topshiriqlar</div>
-                  <div className="text-lg font-black text-emerald-400 mt-0.5">
+                  <div className="text-lg font-black text-emerald-600 mt-0.5">
                     {selectedGroup.assignments?.length || 0} ta
                   </div>
                 </div>
 
-                <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+                <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs">
                   <div className="text-[10px] font-bold text-slate-400 uppercase">Yuborilgan Ishlar</div>
-                  <div className="text-lg font-black text-cyan-400 mt-0.5">
+                  <div className="text-lg font-black text-cyan-600 mt-0.5">
                     {(selectedGroup.assignments || []).reduce((acc, a) => acc + (a.submissions?.length || 0), 0)} ta
                   </div>
                 </div>
 
-                <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+                <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs">
                   <div className="text-[10px] font-bold text-slate-400 uppercase">O'rtacha Ball</div>
-                  <div className="text-lg font-black text-amber-400 mt-0.5">
+                  <div className="text-lg font-black text-amber-600 mt-0.5">
                     88.5 <span className="text-[10px] font-normal text-slate-400">/ 100</span>
                   </div>
                 </div>

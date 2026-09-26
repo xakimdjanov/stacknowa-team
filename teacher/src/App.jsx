@@ -7,7 +7,6 @@ import Dashboard from './pages/Dashboard';
 import Groups from './pages/Groups';
 import Assignments from './pages/Assignments';
 import Evaluations from './pages/Evaluations';
-import Subscription from './pages/Subscription';
 import LiveEvents from './pages/LiveEvents';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -40,7 +39,6 @@ const ProtectedLayout = () => {
           <Route path="/groups" element={<Groups />} />
           <Route path="/assignments" element={<Assignments />} />
           <Route path="/evaluations" element={<Evaluations />} />
-          <Route path="/subscription" element={<Subscription />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <UniversityCodeModal />
