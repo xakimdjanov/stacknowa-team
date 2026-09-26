@@ -1,8 +1,53 @@
 const { Event, EventParticipant, User, Group } = require("../models");
 const aiService = require("../services/ai.service");
+const mammoth = require("mammoth");
 
 const generateGamePin = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+const extractTextFromFile = async (file, fallbackText = "") => {
+  if (!file || !file.buffer) return fallbackText;
+  try {
+    const filename = (file.originalname || "").toLowerCase();
+    const mimetype = file.mimetype || "";
+
+    // 1. PDF fayl
+    if (mimetype.includes("pdf") || filename.endsWith(".pdf")) {
+      const pdfModule = require("pdf-parse");
+      if (typeof pdfModule === "function") {
+        const data = await pdfModule(file.buffer);
+        if (data?.text && data.text.trim().length > 20) {
+          return data.text;
+        }
+      }
+      if (pdfModule.PDFParse) {
+        const parser = new pdfModule.PDFParse({ data: file.buffer });
+        const res = await parser.getText();
+        const extracted = typeof res === "string" ? res : res?.text || "";
+        if (extracted.trim().length > 20) {
+          return extracted;
+        }
+      }
+    }
+
+    // 2. Word .docx fayl
+    if (filename.endsWith(".docx") || mimetype.includes("wordprocessingml")) {
+      const docxRes = await mammoth.extractRawText({ buffer: file.buffer });
+      if (docxRes?.value && docxRes.value.trim().length > 20) {
+        return docxRes.value;
+      }
+    }
+
+    // 3. Oddiy matn (.txt va boshqalar)
+    const rawText = file.buffer.toString("utf-8");
+    if (rawText && rawText.trim().length > 10 && !rawText.startsWith("%PDF")) {
+      return rawText;
+    }
+  } catch (err) {
+    console.error("Fayldan matn o'qishda xatolik:", err.message);
+  }
+  return fallbackText;
 };
 
 class EventController {
@@ -10,8 +55,17 @@ class EventController {
   async generate20Questions(req, res) {
     try {
       const { material_name = "Dars Materiali", material_text = "" } = req.body;
+      let finalContent = material_text;
+
+      if (req.file) {
+        const extracted = await extractTextFromFile(req.file, material_text);
+        if (extracted && extracted.trim().length > 0) {
+          finalContent = extracted;
+        }
+      }
+
       const questions = await aiService.generate40Questions({
-        materialText: material_text,
+        materialText: finalContent,
         documentTitle: material_name,
         count: 20,
       });
@@ -31,8 +85,17 @@ class EventController {
   async generate40Questions(req, res) {
     try {
       const { material_name = "Amaliy Ish", material_text = "" } = req.body;
+      let finalContent = material_text;
+
+      if (req.file) {
+        const extracted = await extractTextFromFile(req.file, material_text);
+        if (extracted && extracted.trim().length > 0) {
+          finalContent = extracted;
+        }
+      }
+
       const questions = await aiService.generate40Questions({
-        materialText: material_text,
+        materialText: finalContent,
         documentTitle: material_name,
         count: 40,
       });
@@ -270,6 +333,41 @@ class EventController {
       });
     } catch (err) {
       console.error("Get my materials error:", err);
+      return res.status(500).json({ error: err.message });
+    }
+  }
+  // Material tahrirlash
+  async updateMaterial(req, res) {
+    try {
+      const { id } = req.params;
+      const teacher_id = req.user?.id || 1;
+      const { title, group_id } = req.body;
+
+      const event = await Event.findOne({ where: { id, teacher_id } });
+      if (!event) return res.status(404).json({ error: "Material topilmadi yoki ruxsat yo'q" });
+
+      if (title !== undefined) event.title = title;
+      if (group_id !== undefined) event.group_id = group_id || null;
+      await event.save();
+
+      return res.json({ message: "Material muvaffaqiyatli yangilandi ✅", event });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  // Material o'chirish
+  async deleteMaterial(req, res) {
+    try {
+      const { id } = req.params;
+      const teacher_id = req.user?.id || 1;
+
+      const event = await Event.findOne({ where: { id, teacher_id } });
+      if (!event) return res.status(404).json({ error: "Material topilmadi yoki ruxsat yo'q" });
+
+      await event.destroy();
+      return res.json({ message: "Material muvaffaqiyatli o'chirildi 🗑️" });
+    } catch (err) {
       return res.status(500).json({ error: err.message });
     }
   }

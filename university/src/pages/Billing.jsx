@@ -89,7 +89,7 @@ export default function Billing() {
     {
       id: "INV-2026-98421",
       date: "2026-09-25 14:20",
-      description: "AI Practice Enterprise Pro 1 Yillik Obuna",
+      description: "EduMind AI Enterprise Pro 1 Yillik Obuna",
       amount_usd: "$3,500.00",
       amount_uzs: "43,750,000 UZS",
       method: "InPay Gateway (Uzcard/Humo)",
@@ -98,7 +98,7 @@ export default function Billing() {
     {
       id: "INV-2025-44120",
       date: "2025-09-25 11:15",
-      description: "AI Practice Enterprise Starter Obuna",
+      description: "EduMind AI Enterprise Starter Obuna",
       amount_usd: "$1,200.00",
       amount_uzs: "15,000,000 UZS",
       method: "InPay Gateway (Click/Payme)",
@@ -220,7 +220,7 @@ export default function Billing() {
         <div class="receipt-box">
           <div class="header">
             <div>
-              <div class="logo">AI PRACTICE</div>
+              <div class="logo">EDUMIND AI</div>
               <div style="font-size: 12px; color: #64748b; font-weight: 600; margin-top: 4px;">inPAY Rasmiy To'lov Kvitansiyasi (Official Receipt)</div>
             </div>
             <div class="badge">✓ TASDIQLANGAN (PAID & VERIFIED)</div>
@@ -256,7 +256,7 @@ export default function Billing() {
               </thead>
               <tbody>
                 <tr>
-                  <td>${tx.description || "AI Practice Enterprise Pro Obunasi"}</td>
+                  <td>${tx.description || "EduMind AI Enterprise Pro Obunasi"}</td>
                   <td>1 Yil (Cheksiz Reja)</td>
                   <td style="text-align: right;">${tx.amount_uzs || (tx.amount ? (tx.amount).toLocaleString() + ' UZS' : '43,750,000 UZS')}</td>
                 </tr>
@@ -273,7 +273,7 @@ export default function Billing() {
           </div>
 
           <div class="stamp">
-            ✔ Ushbu kvitansiya inPAY va AI PRACTICE Enterprise tizimi tomonidan avtomatik shakllantirildi va rasmiy qonuniy kuchga ega.
+            ✔ Ushbu kvitansiya inPAY va EduMind AI Enterprise tizimi tomonidan avtomatik shakllantirildi va rasmiy qonuniy kuchga ega.
           </div>
         </div>
         <script>

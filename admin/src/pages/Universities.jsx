@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import api from '../api/client';
 import Modal from '../components/Modal';
 import {
@@ -516,7 +516,7 @@ export default function Universities() {
               <h3 className="font-bold text-lg text-slate-800">Universitetni O'chirish</h3>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Bazadagi <strong className="text-slate-900">{deleteTarget.name}</strong> va unga tegishli barcha o'qituvchilarning AI Practice platformasiga kirishi taqiqlanadi!
+              Bazadagi <strong className="text-slate-900">{deleteTarget.name}</strong> va unga tegishli barcha o'qituvchilarning EduMind AI platformasiga kirishi taqiqlanadi!
             </p>
 
             <div className="bg-rose-50 border border-rose-200 p-3 rounded-xl">
@@ -552,3 +552,4 @@ export default function Universities() {
     </div>
   );
 }
+

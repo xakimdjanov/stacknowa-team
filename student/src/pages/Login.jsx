@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Mail, Lock, Eye, EyeOff, Check } from 'lucide-react';
@@ -57,7 +57,7 @@ const Login = () => {
               <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
             </svg>
           </div>
-          <span className="font-black text-lg tracking-wider uppercase">AI PRACTICE</span>
+          <span className="font-black text-lg tracking-wider uppercase">EduMind AI</span>
         </div>
 
         {/* Markaziy rasm va matn */}
@@ -99,7 +99,7 @@ const Login = () => {
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
               </svg>
             </div>
-            <span>AI PRACTICE • TALABA PORTALI</span>
+            <span>EduMind AI • TALABA PORTALI</span>
           </div>
 
           <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">
@@ -250,3 +250,4 @@ const Login = () => {
 };
 
 export default Login;
+

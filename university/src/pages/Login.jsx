@@ -40,7 +40,7 @@ export default function Login() {
             <Building2 className="w-7 h-7" />
           </div>
           <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 inline-block">
-            AI Practice Enterprise
+            EduMind AI Enterprise
           </span>
           <h1 className="text-2xl font-black tracking-tight text-slate-800">Universitet Admin Portali</h1>
           <p className="text-xs text-slate-500 font-medium">Universitet tizimiga kirish uchun login va parolni kiriting</p>

@@ -403,7 +403,7 @@ const Dashboard = () => {
             <Clock className="w-3.5 h-3.5" />
             Oxirgi yangilanish: {now.toLocaleString('uz-UZ')}
           </span>
-          <span>AI Practice Admin Panel v2.4 • StackNowa</span>
+          <span>EduMind AI — Admin Panel v2.4</span>
         </div>
       </div>
     </div>

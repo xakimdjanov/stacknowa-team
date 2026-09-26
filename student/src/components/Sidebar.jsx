@@ -97,8 +97,8 @@ const Sidebar = () => {
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="text-base font-black text-slate-900 tracking-tight leading-none">
-                  AI Practice
+                <span className="text-base font-bold text-slate-900 tracking-tight leading-none">
+                  EduMind AI
                 </span>
               </div>
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-600 mt-1 block">
@@ -206,9 +206,7 @@ const Sidebar = () => {
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="text-sm font-black text-slate-900 tracking-tight leading-none">
-                AI Practice
-              </span>
+                EduMind AI
               <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-emerald-50 text-[9px] font-bold text-emerald-700 tracking-wide border border-emerald-200/50">
                 TALABA
               </span>
@@ -256,7 +254,7 @@ const Sidebar = () => {
               >
                 <GraduationCap className="w-4 h-4 text-white" />
               </div>
-              <span className="text-sm font-black text-slate-900">AI Practice Student</span>
+              <span className="text-sm font-black text-slate-900">EduMind AI Student</span>
             </div>
             <button
               onClick={() => setMobileOpen(false)}
@@ -346,7 +344,7 @@ const Sidebar = () => {
           </button>
 
           <p className="text-center text-[10px] text-slate-400 font-medium">
-            AI Practice v2.4 • StackNowa
+            EduMind AI v2.4
           </p>
         </div>
       </div>
@@ -406,3 +404,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+

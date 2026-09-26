@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -63,7 +63,7 @@ const Login = () => {
               Administrator Portali
             </h1>
             <p className="text-sm text-slate-500 mt-1.5">
-              AI Practice boshqaruv tizimiga kirish
+              EduMind AI boshqaruv tizimiga kirish
             </p>
           </div>
 
@@ -168,3 +168,4 @@ const Login = () => {
 };
 
 export default Login;
+

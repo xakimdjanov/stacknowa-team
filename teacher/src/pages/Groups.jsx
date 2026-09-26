@@ -22,15 +22,334 @@ import {
   Download,
   School,
   ArrowRight,
-  Filter
+  Filter,
+  Pencil,
+  Trash2,
+  AlertTriangle,
+  Loader2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+
+// ─── 3-BOSQICHLI GURUH O'CHIRISH MODALI ─────────────────────────
+function GroupDeleteModal({ isOpen, onClose, group, onConfirmed }) {
+  const [step, setStep] = useState(1); // 1 = ogohlantirish | 2 = nomini yozish | 3 = o'chirildi
+  const [confirmText, setConfirmText] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setStep(1);
+      setConfirmText('');
+    }
+  }, [isOpen]);
+
+  if (!isOpen || !group) return null;
+
+  const expectedText = group.name || '';
+
+  const handleDelete = async () => {
+    setLoading(true);
+    try {
+      await api.delete(`/groups/${group.id}`);
+      setStep(3);
+    } catch (err) {
+      alert(err.response?.data?.message || err.message || "Guruhni o'chirishda xatolik yuz berdi!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+        {/* Progress Steps Header */}
+        <div className="px-6 pt-6 pb-4 border-b border-slate-100">
+          <div className="flex items-center gap-2 mb-4">
+            {[1, 2, 3].map((s) => (
+              <React.Fragment key={s}>
+                <div className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-black transition-all ${
+                  s < step ? 'bg-emerald-600 text-white' :
+                  s === step ? 'bg-slate-900 text-white' :
+                  'bg-slate-100 text-slate-400'
+                }`}>
+                  {s < step ? <Check className="w-3.5 h-3.5" /> : s}
+                </div>
+                {s < 3 && <div className={`flex-1 h-0.5 rounded-full transition-all ${s < step ? 'bg-emerald-500' : 'bg-slate-200'}`} />}
+              </React.Fragment>
+            ))}
+          </div>
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            {step === 1 ? '1-bosqich: Ogohlantirish' : step === 2 ? '2-bosqich: Tasdiqlash' : '3-bosqich: Yakunlandi'}
+          </p>
+        </div>
+
+        <div className="p-6 space-y-4">
+          {/* STEP 1 */}
+          {step === 1 && (
+            <>
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center flex-shrink-0">
+                  <Trash2 className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-slate-900">Guruhni o'chirish</h3>
+                  <p className="text-xs text-slate-500 mt-1">Ushbu guruhni butunlay o'chirib tashlamoqchimisiz?</p>
+                </div>
+              </div>
+
+              <div className="bg-rose-50 border border-rose-200/80 rounded-2xl p-4 space-y-2">
+                <div className="flex items-center gap-2 text-rose-700 font-bold text-xs">
+                  <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                  <span>Diqqat! Bu amal qaytarib bo'lmaydi:</span>
+                </div>
+                <ul className="text-xs text-rose-800/80 space-y-1 list-disc list-inside">
+                  <li>Guruh nomi: <strong>{group.name}</strong></li>
+                  <li>Fan: <strong>{group.subject}</strong></li>
+                  <li>Guruhga biriktirilgan talabalar a'zoligi bekor qilinadi.</li>
+                </ul>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2 border-t border-slate-100">
+                <button
+                  onClick={onClose}
+                  className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs hover:bg-slate-50 transition-colors cursor-pointer"
+                >
+                  Bekor qilish
+                </button>
+                <button
+                  onClick={() => setStep(2)}
+                  className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-colors cursor-pointer"
+                >
+                  Davom etish →
+                </button>
+              </div>
+            </>
+          )}
+
+          {/* STEP 2 */}
+          {step === 2 && (
+            <>
+              <div className="space-y-3">
+                <h3 className="text-base font-black text-slate-900">2-bosqich: Nomini tasdiqlang</h3>
+                <p className="text-xs text-slate-500">
+                  Tasodifan o'chib ketishining oldini olish uchun quyidagi maydonga guruh nomini aynan yozing:
+                </p>
+                <div className="bg-slate-100 px-3 py-2 rounded-xl text-xs font-mono font-bold text-slate-800 select-all border border-slate-200">
+                  {expectedText}
+                </div>
+                <input
+                  type="text"
+                  placeholder="Guruh nomini kiriting..."
+                  value={confirmText}
+                  onChange={(e) => setConfirmText(e.target.value)}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-rose-500/25 focus:border-rose-400 transition-all"
+                  autoFocus
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2 border-t border-slate-100">
+                <button
+                  onClick={() => setStep(1)}
+                  className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs hover:bg-slate-50 transition-colors cursor-pointer"
+                >
+                  ← Orqaga
+                </button>
+                <button
+                  disabled={confirmText !== expectedText || loading}
+                  onClick={handleDelete}
+                  className="px-6 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-xs transition-colors flex items-center gap-2 cursor-pointer shadow-md"
+                >
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                  <span>Batamon O'chirish</span>
+                </button>
+              </div>
+            </>
+          )}
+
+          {/* STEP 3 */}
+          {step === 3 && (
+            <div className="text-center py-4 space-y-4">
+              <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
+                <Check className="w-7 h-7" />
+              </div>
+              <div>
+                <h3 className="text-base font-black text-slate-900">Guruh muvaffaqiyatli o'chirildi!</h3>
+                <p className="text-xs text-slate-500 mt-1">Ushbu guruh bazadan to'liq olib tashlandi.</p>
+              </div>
+              <button
+                onClick={() => { onClose(); onConfirmed(); }}
+                className="w-full py-3 bg-slate-900 text-white rounded-xl font-bold text-xs hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                Tushundim
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── GURUH TAHRIRLASH MODALI ──────────────────────────────────
+function GroupEditModal({ isOpen, onClose, group, onSaved }) {
+  const [formData, setFormData] = useState({
+    name: '',
+    subject: '',
+    course: 1,
+    semester: 1,
+    faculty: '',
+    academic_year: '2025-2026',
+    access_code: '',
+  });
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (group) {
+      setFormData({
+        name: group.name || '',
+        subject: group.subject || '',
+        course: group.course || 1,
+        semester: group.semester || 1,
+        faculty: group.faculty || '',
+        academic_year: group.academic_year || '2025-2026',
+        access_code: group.access_code || '',
+      });
+    }
+  }, [group]);
+
+  if (!isOpen || !group) return null;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await api.put(`/groups/${group.id}`, formData);
+      onSaved();
+      onClose();
+    } catch (err) {
+      alert(err.response?.data?.message || err.message || "Tahrirlashda xatolik yuz berdi!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="Guruh Ma'lumotlarini Tahrirlash" maxWidth="max-w-xl">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-xs font-bold text-slate-700 mb-1.5">Guruh Nomi</label>
+          <input
+            type="text"
+            required
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-400 transition-all"
+            placeholder="Masalan: DIF-22-01"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold text-slate-700 mb-1.5">Fan Nomi</label>
+          <input
+            type="text"
+            required
+            value={formData.subject}
+            onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-400 transition-all"
+            placeholder="Masalan: Algoritmlar va Ma'lumotlar Tuzilmasi"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">Kurs</label>
+            <select
+              value={formData.course}
+              onChange={(e) => setFormData({ ...formData, course: Number(e.target.value) })}
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-400 transition-all"
+            >
+              {[1, 2, 3, 4].map((c) => (
+                <option key={c} value={c}>{c}-kurs</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">Semestr</label>
+            <select
+              value={formData.semester}
+              onChange={(e) => setFormData({ ...formData, semester: Number(e.target.value) })}
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-400 transition-all"
+            >
+              <option value={1}>1-semestr (Kuzgi)</option>
+              <option value={2}>2-semestr (Bahorgi)</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">Fakultet (ixtiyoriy)</label>
+            <input
+              type="text"
+              value={formData.faculty}
+              onChange={(e) => setFormData({ ...formData, faculty: e.target.value })}
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-400 transition-all"
+              placeholder="Masalan: Dasturiy Injiniring"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">O'quv Yili</label>
+            <input
+              type="text"
+              value={formData.academic_year}
+              onChange={(e) => setFormData({ ...formData, academic_year: e.target.value })}
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-400 transition-all"
+              placeholder="2025-2026"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold text-slate-700 mb-1.5">Kirish Paroli (ixtiyoriy)</label>
+          <input
+            type="text"
+            value={formData.access_code}
+            onChange={(e) => setFormData({ ...formData, access_code: e.target.value })}
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-400 transition-all"
+            placeholder="Masalan: parol123 (bo'sh qoldirilsa parolsiz bo'ladi)"
+          />
+        </div>
+
+        <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs hover:bg-slate-50 transition-colors cursor-pointer"
+          >
+            Bekor qilish
+          </button>
+          <button
+            type="submit"
+            disabled={loading}
+            style={{ background: 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)' }}
+            className="px-6 py-2.5 rounded-xl text-white font-bold text-xs shadow-md shadow-emerald-700/20 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+          >
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+            <span>O'zgarishlarni Saqlash</span>
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
 
 const Groups = () => {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
+  const [editGroup, setEditGroup] = useState(null);
+  const [deleteGroup, setDeleteGroup] = useState(null);
   const [copiedToken, setCopiedToken] = useState(null);
   const [copiedLink, setCopiedLink] = useState(null);
   const [search, setSearch] = useState('');
@@ -213,77 +532,7 @@ const Groups = () => {
       ══════════════════════════════════════════════ */}
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
 
-        {/* ── FAST ONBOARDING BANNER (TEZKOR QR TAKLIF) ── */}
-        {firstGroup && (
-          <div className="bg-gradient-to-br from-emerald-950 via-slate-900 to-emerald-900 rounded-3xl p-5 sm:p-7 text-white shadow-xl relative overflow-hidden border border-emerald-500/20">
-            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="space-y-3 max-w-xl">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-extrabold uppercase tracking-wider">
-                  <Sparkles className="w-3 h-3 text-emerald-400" />
-                  Tezkor Ulanish (Fast Onboarding)
-                </div>
-                <h3 className="text-lg sm:text-xl font-black text-white tracking-tight">
-                  Talabalarni birgina QR-kod orqali auditoriyada guruhga qo'shing
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-                  Ruxsat etilgan guruh: <strong className="text-white font-bold">{firstGroup.name}</strong> ({firstGroup.subject}). Talaba o'z telefonida kamerani ochib ushbu QR-kodni skaner qilishi kifoya.
-                </p>
 
-                {/* Quick token box */}
-                <div className="flex flex-wrap items-center gap-2 pt-1">
-                  <div className="bg-white/10 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/15 text-xs font-mono text-emerald-200 select-all">
-                    Token: <strong className="text-white">{firstGroup.join_token}</strong>
-                  </div>
-                  <button
-                    onClick={() => copyToClipboard(firstGroup.join_token, 'token')}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-xs transition-colors cursor-pointer"
-                  >
-                    {copiedToken === firstGroup.join_token ? (
-                      <>
-                        <Check className="w-3.5 h-3.5 text-emerald-400" />
-                        <span>Nusxalandi!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-3.5 h-3.5" />
-                        <span>Tokenni nusxalash</span>
-                      </>
-                    )}
-                  </button>
-                  <button
-                    onClick={() => showQr(firstGroup.id)}
-                    style={{ background: 'linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(4, 120, 87) 100%)' }}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-white font-bold text-xs shadow-md shadow-emerald-700/30 hover:opacity-95 transition-all active:scale-95 cursor-pointer"
-                  >
-                    <QrCode className="w-3.5 h-3.5" />
-                    <span>Katta QR Kodni ko'rsatish</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Real QR Code Box */}
-              <div
-                onClick={() => showQr(firstGroup.id)}
-                className="p-4 bg-white rounded-2xl shadow-xl flex flex-col items-center justify-center self-start md:self-auto cursor-pointer group hover:scale-105 transition-transform"
-                title="Kattalashtirish uchun bosing"
-              >
-                <QRCodeSVG
-                  value={firstGroup.join_url || `${window.location.origin}/join/${firstGroup.join_token}`}
-                  size={120}
-                  level="M"
-                />
-                <span className="text-[10px] font-bold text-slate-700 mt-2 flex items-center gap-1">
-                  <QrCode className="w-3 h-3 text-emerald-600" />
-                  Kattalashtirish
-                </span>
-              </div>
-            </div>
-
-            {/* Ambient background lights */}
-            <div className="absolute -right-10 -bottom-10 w-44 h-44 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute left-1/3 -top-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-          </div>
-        )}
 
         {/* ── FILTER & SEARCH BAR ── */}
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
@@ -363,13 +612,23 @@ const Groups = () => {
                         </h3>
                       </div>
 
-                      <button
-                        onClick={() => showQr(group.id)}
-                        className="w-10 h-10 rounded-2xl bg-emerald-50 hover:bg-emerald-600 text-emerald-600 hover:text-white flex items-center justify-center transition-all flex-shrink-0 shadow-xs active:scale-95 cursor-pointer"
-                        title="QR Kodni ko'rish"
-                      >
-                        <QrCode className="w-5 h-5" />
-                      </button>
+                      {/* Doimiy ko'rinib turadigan amallar: Tahrirlash, O'chirish */}
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <button
+                          onClick={() => setEditGroup(group)}
+                          className="w-9 h-9 rounded-xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-slate-600 hover:text-emerald-700 flex items-center justify-center transition-all shadow-2xs hover:scale-105 cursor-pointer"
+                          title="Guruhni tahrirlash"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => setDeleteGroup(group)}
+                          className="w-9 h-9 rounded-xl bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-300 text-slate-600 hover:text-rose-600 flex items-center justify-center transition-all shadow-2xs hover:scale-105 cursor-pointer"
+                          title="Guruhni o'chirish (3 bosqichli)"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium mb-4">
@@ -665,6 +924,21 @@ const Groups = () => {
           </div>
         )}
       </Modal>
+      {/* ── GURUH TAHRIRLASH MODALI ── */}
+      <GroupEditModal
+        isOpen={Boolean(editGroup)}
+        onClose={() => setEditGroup(null)}
+        group={editGroup}
+        onSaved={fetchGroups}
+      />
+
+      {/* ── GURUHNI O'CHIRISH MODALI (3-bosqichli) ── */}
+      <GroupDeleteModal
+        isOpen={Boolean(deleteGroup)}
+        onClose={() => setDeleteGroup(null)}
+        group={deleteGroup}
+        onConfirmed={fetchGroups}
+      />
 
     </div>
   );
