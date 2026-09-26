@@ -987,7 +987,7 @@ const StudentDetail = () => {
 
       {/* ── MODAL: REMEDIATION TASK ASSIGNMENT ── */}
       {showAssignModal && (
-        <Modal onClose={() => setShowAssignModal(false)} title="Qayta Tayyorlov Amaliy Mashqini Biriktirish">
+        <Modal isOpen={true} onClose={() => setShowAssignModal(false)} title="Qayta Tayyorlov Amaliy Mashqini Biriktirish">
           <form onSubmit={handleAssignTaskSubmit} className="space-y-5">
             <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 space-y-1">
               <span className="text-[10px] font-black uppercase text-emerald-800 tracking-wider">Tanlangan Mavzu:</span>
@@ -1056,7 +1056,7 @@ const StudentDetail = () => {
 
       {/* ── MODAL: TEACHER NOTE ── */}
       {showNoteModal && (
-        <Modal onClose={() => setShowNoteModal(false)} title="O'qituvchi Izohini Qoldirish">
+        <Modal isOpen={true} onClose={() => setShowNoteModal(false)} title="O'qituvchi Izohini Qoldirish">
           <form onSubmit={handleSaveNoteSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700">Izoh va Tavsiya Matni</label>
